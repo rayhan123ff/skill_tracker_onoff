@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -497,7 +497,50 @@ textarea{resize:vertical;min-height:70px}
 [data-body-dash="neon"] .slider-btn:hover{box-shadow:0 0 14px var(--accent);border-color:var(--accent)}
 [data-body-dash="neon"] .modal{border-color:rgba(124,106,255,.35);box-shadow:0 0 0 1px rgba(124,106,255,.12),0 28px 80px rgba(0,0,0,.8),0 0 60px rgba(124,106,255,.1);border-radius:18px;background:rgba(10,8,18,.97)}
 [data-body-dash="neon"] .modal-title{color:var(--accent);text-shadow:0 0 14px rgba(124,106,255,.5);border-bottom:1px solid rgba(124,106,255,.16);padding-bottom:10px}
-[data-body-dash="neon"] .todo-item{background:rgba(14,12,22,.85);border-bottom:1px solid rgba(124,106,255,.1)}
+[data-body-dash="neon"] .todo-item{
+  background:rgba(14,12,22,.85);
+  border-bottom:1px solid rgba(124,106,255,.1);
+  box-shadow:inset 0 0 20px rgba(124,106,255,.04);
+  transition:box-shadow .2s,border-color .2s;
+}
+[data-body-dash="neon"] .todo-item:hover{
+  border-bottom-color:rgba(124,106,255,.3);
+  box-shadow:inset 0 0 28px rgba(124,106,255,.1),0 0 12px rgba(124,106,255,.08);
+}
+[data-body-dash="neon"] .todo-check:checked+.todo-body .todo-text{
+  text-shadow:none;
+}
+[data-body-dash="neon"] .todo-check{
+  accent-color:var(--accent);
+  filter:drop-shadow(0 0 4px var(--accent));
+}
+[data-body-dash="neon"] .priority-high{
+  text-shadow:0 0 8px var(--coral);
+  filter:brightness(1.2);
+}
+[data-body-dash="neon"] .todo-text:not(.done){
+  text-shadow:0 0 12px rgba(232,232,255,.2);
+}
+[data-body-dash="neon"] tr:hover td{
+  background:rgba(124,106,255,.05);
+}
+[data-body-dash="neon"] table tr{
+  transition:background .15s;
+}
+[data-body-dash="neon"] table thead th{
+  text-shadow:0 0 10px rgba(124,106,255,.4);
+  color:var(--accent) !important;
+}
+[data-body-dash="neon"] table td span[style*="cursor:pointer"]{
+  transition:text-shadow .2s;
+}
+[data-body-dash="neon"] table td span[style*="cursor:pointer"]:hover{
+  text-shadow:0 0 12px var(--accent);
+  color:var(--accent);
+}
+[data-body-dash="neon"] .routine-row-done td{
+  opacity:.6;
+}
 [data-body-dash="neon"] .notification{border-color:var(--accent);box-shadow:0 0 20px rgba(124,106,255,.4);border-radius:14px}
 [data-body-dash="neon"] table tr:hover td{background:rgba(124,106,255,.05)}
 [data-body-dash="neon"] .icon-btn:hover{background:rgba(124,106,255,.15);box-shadow:0 0 10px rgba(124,106,255,.3)}
@@ -1684,31 +1727,47 @@ var renders={
   },
 
   todo: function(){
-    document.getElementById('main-content').innerHTML=`
-    <div class="card">
-      <div class="card-title">To-Do List <span style="font-size:11px;font-weight:400;color:var(--muted)">${getTodayTodos().filter(t=>!t.done).length} remaining</span></div>
-      <div id="todo-list">${renderTodoList()}</div>
-      <div class="divider"></div>
-      <div class="field">
-        <div class="label">Add new task</div>
-        <div class="input-row" style="flex-wrap:wrap;gap:8px">
-          <input type="text" id="todo-inp" placeholder="Task description..." style="flex:2;min-width:180px" onkeydown="if(event.key==='Enter')addTodo()">
-          <select id="todo-type" style="flex:1;min-width:100px">
-            <option value="todo">General</option>
-            <option value="skill">Skill Goal</option>
-            <option value="week">Weekly</option>
-            <option value="month">Monthly</option>
-            <option value="habit">Habit</option>
-          </select>
-          <select id="todo-priority" style="flex:1;min-width:100px">
-            <option value="med">Medium</option>
-            <option value="high">High !</option>
-            <option value="low">Low</option>
-          </select>
-          <button class="btn btn-accent" onclick="addTodo()">+ Add</button>
-        </div>
-      </div>
-    </div>`;
+    // Build next-7-days date tabs
+    var dateTabHtml='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px" id="todo-date-tabs">';
+    var today_d=today();
+    if(!window._todoActiveDate)window._todoActiveDate=today_d;
+    for(var di=0;di<7;di++){
+      var dt=new Date(); dt.setDate(dt.getDate()+di);
+      var ds=dt.toISOString().slice(0,10);
+      var dayN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dt.getDay()];
+      var label=di===0?'Today':di===1?'Tomorrow':dayN;
+      var cnt=(DB.dailyTodos&&DB.dailyTodos[ds]||[]).filter(function(t){return !t.done;}).length;
+      var isAct=ds===window._todoActiveDate;
+      dateTabHtml+='<button onclick="switchTodoDate(\''+ds+'\')" style="padding:7px 14px;border-radius:20px;border:1.5px solid '+(isAct?'var(--accent)':'var(--border2)')+';background:'+(isAct?'var(--accent-glow)':'var(--surface2)')+';color:'+(isAct?'var(--accent)':'var(--muted)')+';font-size:12px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;transition:all .18s">'+label+(cnt>0?' <span style="opacity:.8">\u2022'+cnt+'</span>':'')+'</button>';
+    }
+    dateTabHtml+='</div>';
+    var activeDate=window._todoActiveDate||today_d;
+    var activeTodos=(DB.dailyTodos&&DB.dailyTodos[activeDate])||[];
+    var remaining=activeTodos.filter(function(t){return !t.done;}).length;
+    document.getElementById('main-content').innerHTML=
+      '<div class="card">'
+      +dateTabHtml
+      +'<div class="card-title">To-Do \u2014 <span style="color:var(--accent)">'+(activeDate===today_d?'Today':activeDate)+'</span>'
+      +' <span style="font-size:11px;font-weight:400;color:var(--muted)">'+remaining+' remaining</span></div>'
+      +'<div id="todo-list">'+renderTodoList()+'</div>'
+      +'<div class="divider"></div>'
+      +'<div class="field"><div class="label">Add task</div>'
+      +'<div class="input-row" style="flex-wrap:wrap;gap:8px">'
+      +'<input type="text" id="todo-inp" placeholder="Task description..." style="flex:2;min-width:180px" onkeydown="if(event.key===\'Enter\')addTodo()">'
+      +'<select id="todo-type" style="flex:1;min-width:100px">'
+      +'<option value="todo">General</option>'
+      +'<option value="skill">Skill Goal</option>'
+      +'<option value="week">Weekly</option>'
+      +'<option value="month">Monthly</option>'
+      +'<option value="habit">Habit</option>'
+      +'</select>'
+      +'<select id="todo-priority" style="flex:1;min-width:100px">'
+      +'<option value="med">Medium</option>'
+      +'<option value="high">High !</option>'
+      +'<option value="low">Low</option>'
+      +'</select>'
+      +'<button class="btn btn-accent" onclick="addTodo()">+ Add</button>'
+      +'</div></div></div>';
   },
 
   deadlines: function(){
@@ -2254,10 +2313,14 @@ function renderTodoList(){
 }
 
 function getTodayTodos(){
-  var d=today();
+  var d=window._todoActiveDate||today();
   if(!DB.dailyTodos)DB.dailyTodos={};
   if(!DB.dailyTodos[d])DB.dailyTodos[d]=[];
   return DB.dailyTodos[d];
+}
+function switchTodoDate(ds){
+  window._todoActiveDate=ds;
+  renders.todo();
 }
 function getDateTodos(d){
   if(!DB.dailyTodos)return [];
@@ -2271,7 +2334,7 @@ function addTodo(){
   save();var el=document.getElementById('todo-list');if(el)el.innerHTML=renderTodoList();
 }
 function toggleTodo(id){var todos=getTodayTodos();var t=todos.find(x=>x.id===id);if(t)t.done=!t.done;save();var el=document.getElementById('todo-list');if(el)el.innerHTML=renderTodoList();}
-function deleteTodo(id){var d=today();if(DB.dailyTodos&&DB.dailyTodos[d])DB.dailyTodos[d]=DB.dailyTodos[d].filter(x=>x.id!==id);save();var el=document.getElementById('todo-list');if(el)el.innerHTML=renderTodoList();}
+function deleteTodo(id){var d=window._todoActiveDate||today();if(DB.dailyTodos&&DB.dailyTodos[d])DB.dailyTodos[d]=DB.dailyTodos[d].filter(x=>x.id!==id);save();var el=document.getElementById('todo-list');if(el)el.innerHTML=renderTodoList();}
 
 function renderDeadlines(list){
   if(!list.length)return '<div class="empty">No deadlines.</div>';
@@ -2870,13 +2933,16 @@ var _sb = null;
 async function _initSupabase(){
   if(_sb) return _sb;
   try {
-    await new Promise(function(res,rej){
-      if(window.supabase){res();return;}
-      var s=document.createElement('script');
-      s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
-      s.onload=res; s.onerror=rej;
-      document.head.appendChild(s);
-    });
+    await Promise.race([
+      new Promise(function(res,rej){
+        if(window.supabase){res();return;}
+        var s=document.createElement('script');
+        s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+        s.onload=res; s.onerror=rej;
+        document.head.appendChild(s);
+      }),
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 5000); })
+    ]);
     _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     return _sb;
   } catch(e){ console.warn('Supabase SDK failed:',e); return null; }
@@ -3026,21 +3092,44 @@ var AUTH = (function(){
   return {
     init: async function(){
       loadTheme();
-      _sb=await _initSupabase();
-      var configured=SUPABASE_URL&&SUPABASE_URL!=='YOUR_SUPABASE_URL'&&_sb;
-      if(!configured){ AUTH.continueOffline(); return; }
+
+      // Always show overlay first so buttons are always clickable
+      // (overlay hides itself after successful login or offline choice)
+      var supabaseConfigured = SUPABASE_URL && SUPABASE_URL !== 'YOUR_SUPABASE_URL';
+
+      if(!supabaseConfigured){
+        // No Supabase configured — go offline immediately, no overlay needed
+        AUTH.continueOffline();
+        return;
+      }
+
+      // Show overlay immediately — don't wait for SDK
+      _showOverlay();
+
+      // Load SDK in background
+      _sb = await _initSupabase();
+
+      if(!_sb){
+        // SDK failed to load — still show overlay, buttons will show error
+        console.warn('Supabase SDK could not load. Login unavailable.');
+        document.getElementById('auth-err') && (document.getElementById('auth-err').textContent='Internet connection needed to sign in.');
+        return;
+      }
+
+      // Check existing session (returning user / page reload)
       try {
         var sessRes=await _sb.auth.getSession();
         if(sessRes.data&&sessRes.data.session&&sessRes.data.session.user){
           await _onSignedIn(sessRes.data.session.user); return;
         }
       } catch(e){ console.warn('Session check error:',e); }
+
+      // Listen for OAuth redirect callbacks
       _sb.auth.onAuthStateChange(async function(event,session){
         if((event==='SIGNED_IN'||event==='TOKEN_REFRESHED')&&session){
           await _onSignedIn(session.user);
         } else if(event==='SIGNED_OUT'){ _mode='offline'; _user=null; _showOverlay(); }
       });
-      _showOverlay();
     },
 
     switchTab: function(tab){
@@ -3083,7 +3172,11 @@ var AUTH = (function(){
     },
 
     signInEmail: async function(){
-      if(!_sb){alert('Supabase configured নেই!');return;}
+      if(!_sb){
+        // SDK not yet loaded — try loading again
+        _sb=await _initSupabase();
+        if(!_sb){ _setErr('Connection error — internet check করুন এবং page reload করুন।'); return; }
+      }
       var email=(document.getElementById('auth-email-inp')||{}).value||'';
       var pass=(document.getElementById('auth-pass-inp')||{}).value||'';
       if(!email||!pass){_setErr('Email ও password দিন!');return;}
