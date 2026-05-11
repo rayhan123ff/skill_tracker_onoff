@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1918,26 +1918,50 @@ var renders={
           ${secs>0?`<div style="font-size:9px;color:var(--green);margin-top:2px">${hm(secs)}</div>`:`<div style="font-size:9px;color:var(--muted2);margin-top:2px">—</div>`}
         </th>`;
       }).join('');
-      var bodyRows=slots.map(s=>{
-        var cells=week.map(d=>{
+      // Group slots by task name — same name = one row
+      var taskGroups={};
+      slots.forEach(function(s){
+        var key=s.task.trim().toLowerCase();
+        if(!taskGroups[key]) taskGroups[key]={slots:[],task:s.task,color:s.color,time:s.time,allDays:[]};
+        taskGroups[key].slots.push(s);
+        // Collect all days this task is assigned to
+        if(s.days&&s.days.length>0){
+          s.days.forEach(function(d){ if(taskGroups[key].allDays.indexOf(d)===-1) taskGroups[key].allDays.push(d); });
+        }
+      });
+      var bodyRows=Object.values(taskGroups).map(function(grp){
+        var cells=week.map(function(d){
+          var dt2=new Date(d+'T12:00');
+          var wday=dt2.getDay();
+          // Find the slot assigned to this weekday
+          var matchSlot=grp.slots.find(function(s){
+            if(!s.days||s.days.length===0){
+              // Old slot with no days — only show if no other slot in group has days defined
+              return grp.allDays.length===0;
+            }
+            return s.days.includes(wday);
+          });
+          if(!matchSlot){
+            // This task not assigned to this day — show empty grey
+            return '<td style="padding:6px;text-align:center"><div style="width:28px;height:28px;border-radius:7px;margin:0 auto;background:var(--surface2);border:1.5px solid var(--border);opacity:.25"></div></td>';
+          }
           var prog=DB.routine.dailyProgress[d]||{};
-          var done=!!prog[s.id];
-          return `<td style="padding:6px;text-align:center">
-            <div style="width:28px;height:28px;border-radius:7px;margin:0 auto;background:${done?'var(--green-bg)':'var(--surface3)'};border:1.5px solid ${done?'rgba(61,214,140,0.3)':'var(--border)'};display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;transition:all .2s" onclick="toggleRoutineWeek('${s.id}','${d}')" title="${d}">${done?'✓':''}</div>
-          </td>`;
+          var done=!!prog[matchSlot.id];
+          return '<td style="padding:6px;text-align:center">'
+            +'<div style="width:28px;height:28px;border-radius:7px;margin:0 auto;background:'+(done?'var(--green-bg)':'var(--surface3)')
+            +';border:1.5px solid '+(done?'rgba(61,214,140,0.3)':'var(--border)')
+            +';display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;transition:all .2s"'
+            +' onclick="toggleRoutineWeek(&quot;'+matchSlot.id+'&quot;,&quot;'+d+'&quot;)" title="'+d+'">'+(done?'&#10003;':'')+'</div></td>';
         }).join('');
-        return `<tr style="border-bottom:1px solid var(--border)">
-          <td style="padding:8px 10px;white-space:nowrap">
-            <div style="display:flex;align-items:center;gap:7px">
-              <div style="width:8px;height:8px;border-radius:2px;background:${s.color||'var(--accent)'}"></div>
-              <div>
-                <div style="font-size:12px;font-weight:500">${s.task}</div>
-                <div style="font-size:10px;color:var(--muted)">${s.time||''}</div>
-              </div>
-            </div>
-          </td>
-          ${cells}
-        </tr>`;
+        return '<tr style="border-bottom:1px solid var(--border)">'
+          +'<td style="padding:8px 10px;white-space:nowrap">'
+          +'<div style="display:flex;align-items:center;gap:7px">'
+          +'<div style="width:8px;height:8px;border-radius:2px;background:'+(grp.color||'var(--accent)')+'"></div>'
+          +'<div>'
+          +'<div style="font-size:12px;font-weight:500">'+grp.task+'</div>'
+          +'<div style="font-size:10px;color:var(--muted)">'+(grp.time||'')+'</div>'
+          +'</div></div></td>'
+          +cells+'</tr>';
       }).join('');
       weekRoutineHtml=`<div class="card" style="margin-top:14px">
         <div class="card-title">Weekly Routine <span style="font-size:11px;font-weight:400;color:var(--muted)">Click a day header to see full details</span></div>
@@ -2084,24 +2108,54 @@ var renders={
         var {year,month,days:daysInMonth,firstDay}=get_month_dates();
         var allDays=[];
         for(var dd=1;dd<=daysInMonth;dd++){allDays.push(year+'-'+pad(month+1)+'-'+pad(dd));}
-        // header row = slot names
-        var slotHeaders=slots.map(s=>`<th style="padding:5px 4px;font-size:9px;color:var(--muted);font-weight:600;text-align:center;max-width:40px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${s.task}"><div style="width:8px;height:8px;border-radius:2px;background:${s.color||'var(--accent)'};margin:0 auto 2px"></div>${s.task.slice(0,6)}</th>`).join('');
-        var bodyRows=allDays.map(ds=>{
+        // Group slots by task name — same name = one column
+        var mTaskGroups={};
+        slots.forEach(function(s){
+          var key=s.task.trim().toLowerCase();
+          if(!mTaskGroups[key]) mTaskGroups[key]={slots:[],task:s.task,color:s.color||'var(--accent)',allDays:[]};
+          mTaskGroups[key].slots.push(s);
+          if(s.days&&s.days.length>0){
+            s.days.forEach(function(d){ if(mTaskGroups[key].allDays.indexOf(d)===-1) mTaskGroups[key].allDays.push(d); });
+          }
+        });
+        var mGroups=Object.values(mTaskGroups);
+        var slotHeaders=mGroups.map(function(grp){
+          return '<th style="padding:5px 4px;font-size:9px;color:var(--muted);font-weight:600;text-align:center;max-width:40px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+grp.task+'">'
+            +'<div style="width:8px;height:8px;border-radius:2px;background:'+grp.color+';margin:0 auto 2px"></div>'
+            +grp.task.slice(0,6)+'</th>';
+        }).join('');
+        var bodyRows=allDays.map(function(ds){
           var dt=new Date(ds+'T12:00');
+          var wday=dt.getDay();
           var isT=ds===today();
           var prog=DB.routine.dailyProgress[ds]||{};
-          var doneCnt=slots.filter(s=>prog[s.id]).length;
-          var secs=0;DB.sessions.filter(s=>s.date===ds).forEach(s=>secs+=(s.learn||0)+(s.prac||0));
-          var cells2=slots.map(s=>{
-            var done=!!prog[s.id];
-            return `<td style="padding:3px;text-align:center"><div style="width:16px;height:16px;border-radius:4px;margin:0 auto;background:${done?s.color||'var(--accent)':'var(--surface3)'};opacity:${done?1:0.3};font-size:9px;display:flex;align-items:center;justify-content:center;color:#fff">${done?'✓':''}</div></td>`;
+          var secs=0;DB.sessions.filter(function(s){return s.date===ds;}).forEach(function(s){secs+=(s.learn||0)+(s.prac||0);});
+          // Count unique task groups done today
+          var doneCnt=mGroups.filter(function(grp){
+            return grp.slots.some(function(s){ return !!prog[s.id]; });
+          }).length;
+          var cells2=mGroups.map(function(grp){
+            // Find slot assigned to this weekday
+            var matchSlot=grp.slots.find(function(s){
+              if(!s.days||s.days.length===0){
+                return grp.allDays.length===0;
+              }
+              return s.days.includes(wday);
+            });
+            if(!matchSlot){
+              return '<td style="padding:3px;text-align:center"><div style="width:16px;height:16px;border-radius:4px;margin:0 auto;background:var(--surface2);opacity:0.2"></div></td>';
+            }
+            var done=!!prog[matchSlot.id];
+            return '<td style="padding:3px;text-align:center"><div style="width:16px;height:16px;border-radius:4px;margin:0 auto;background:'+(done?grp.color:'var(--surface3)')+';opacity:'+(done?1:0.3)+';font-size:9px;display:flex;align-items:center;justify-content:center;color:#fff">'+(done?'✓':'')+'</div></td>';
           }).join('');
-          return `<tr style="border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s" onclick="showDayDetail('${ds}')" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
-            <td style="padding:5px 8px;white-space:nowrap;font-size:11px;font-weight:${isT?700:400};color:${isT?'var(--amber)':'var(--text)'}">${DAY_NAMES[dt.getDay()]} ${dt.getDate()}</td>
-            <td style="padding:5px 4px;font-size:10px;color:${secs>0?'var(--green)':'var(--muted2)'};white-space:nowrap">${secs>0?hm(secs):'—'}</td>
-            <td style="padding:5px 4px;font-size:10px;color:var(--muted);white-space:nowrap">${doneCnt}/${slots.length}</td>
-            ${cells2}
-          </tr>`;
+          return '<tr style="border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s"'
+            +' onclick="showDayDetail(\''+ds+'\')">'
+            +'<td style="padding:5px 8px;white-space:nowrap;font-size:11px;font-weight:'+(isT?700:400)+';color:'+(isT?'var(--amber)':'var(--text)')+'">'+(DAY_NAMES[dt.getDay()])+' '+dt.getDate()+'</td>'
+            +'<td style="padding:5px 4px;font-size:10px;color:'+(secs>0?'var(--green)':'var(--muted2)')+';white-space:nowrap">'+(secs>0?hm(secs):'—')+'</td>'
+            +'<td style="padding:5px 4px;font-size:10px;color:var(--muted);white-space:nowrap">'+doneCnt+'/'+mGroups.length+'</td>'
+            +cells2+'</tr>';
+
+
         }).join('');
         return `<div style="overflow-x:auto;max-height:420px;overflow-y:auto">
         <table style="width:100%;border-collapse:collapse;font-size:12px">
