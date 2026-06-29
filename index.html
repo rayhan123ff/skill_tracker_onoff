@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -93,7 +94,7 @@ body{display:flex;overflow:hidden}
 .nav-item{display:flex;align-items:center;gap:10px;padding:9px 18px;cursor:pointer;color:var(--muted);font-size:13px;font-weight:500;transition:all .18s;border-left:3px solid transparent;white-space:nowrap}
 .nav-item:hover{color:var(--text);background:var(--surface2)}
 .nav-item.active{color:var(--accent);background:var(--accent-glow);border-left-color:var(--accent)}
-.nav-icon{font-size:16px;min-width:20px;text-align:center;flex-shrink:0}
+.nav-icon{font-size:16px;min-width:20px;text-align:center;flex-shrink:0;display:flex;align-items:center;justify-content:center}.nav-icon svg{width:16px;height:16px;flex-shrink:0}
 .nav-label{overflow:hidden;white-space:nowrap}
 .nav-section{font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;padding:10px 18px 3px;font-weight:600;white-space:nowrap}
 .sidebar-bottom{padding:14px 18px;border-top:1px solid var(--border);flex-shrink:0}
@@ -112,6 +113,22 @@ body{display:flex;overflow:hidden}
 .page-sub{font-size:12px;color:var(--muted);margin-top:2px}
 .content{padding:18px 24px 40px;flex:1}
 #topbar-actions{display:flex;gap:8px;align-items:center;flex-shrink:0}
+
+/* Dashboard-only: fit everything on one screen, no scrolling */
+body[data-page="dashboard"] .main{overflow:hidden}
+body[data-page="dashboard"] .content{
+  padding:12px 20px 14px;flex:1;display:flex;flex-direction:column;
+  overflow:hidden;min-height:0;
+}
+body[data-page="dashboard"] .topbar{padding:12px 20px 0;flex-shrink:0}
+body[data-page="dashboard"] #main-content{flex:1;display:flex;flex-direction:column;min-height:0;gap:8px}
+body[data-page="dashboard"] .card{padding:11px 14px;margin-bottom:0}
+body[data-page="dashboard"] .card-title{margin-bottom:5px;font-size:12px}
+body[data-page="dashboard"] .stat{padding:11px 14px}
+body[data-page="dashboard"] .stat-val{font-size:23px;font-weight:800}
+body[data-page="dashboard"] .stat-label{margin-bottom:4px;font-size:11px;font-weight:700}
+body[data-page="dashboard"] .stat-sub{margin-top:2px;font-size:10px}
+body[data-page="dashboard"] .card-grid.grid4{gap:8px}
 
 /* ── CARDS ───────────────────────────────────────────────────────────────── */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:14px}
@@ -161,10 +178,18 @@ textarea{resize:vertical;min-height:70px}
 .skill-color{width:12px;height:12px;border-radius:3px;flex-shrink:0}
 .skill-name{font-size:14px;font-weight:600;flex:1}
 .skill-hours{font-size:11px;color:var(--muted);margin-left:auto}
-.skill-bar-wrap{display:flex;gap:6px;align-items:center;margin-bottom:8px}
-.skill-bar-label{font-size:10px;color:var(--muted);min-width:52px}
-.skill-bar{flex:1;height:6px;background:var(--surface3);border-radius:3px;overflow:hidden}
-.skill-bar-fill{height:100%;border-radius:3px}
+.skill-bar-wrap{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.skill-bar-label{font-size:15px;font-weight:700;color:var(--muted);min-width:96px}
+.skill-bar{flex:1;height:14px;background:var(--surface3);border-radius:7px;overflow:hidden}
+.skill-bar-fill{height:100%;border-radius:5px}
+/* Today's Routine — continuous right-to-left auto-scrolling row */
+@keyframes routineMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.routine-row-track{display:flex;gap:12px;align-items:stretch;animation:routineMarquee linear infinite;will-change:transform}
+.routine-row-track.paused{animation-play-state:paused}
+.routine-row-card{flex-shrink:0}
+.routine-row-card:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.routine-row-scroll{overflow:hidden;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%);mask-image:linear-gradient(to right,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%)}
+.routine-row-scroll.no-scroll-fx{-webkit-mask-image:none;mask-image:none}
 .skill-topics{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .topic-chip{font-size:10px;padding:3px 10px;border-radius:20px;background:var(--surface3);color:var(--muted);font-weight:500;cursor:default}
 .skill-actions{display:flex;gap:6px;margin-top:10px;border-top:1px solid var(--border);padding-top:10px}
@@ -626,9 +651,18 @@ textarea{resize:vertical;min-height:70px}
   .content{padding:14px 14px 30px}
   .grid3,.grid4{grid-template-columns:1fr 1fr}
   .grid2{grid-template-columns:1fr}
+  /* On small screens, the dashboard reverts to a normal scrollable layout —
+     fitting every widget on one screen isn't practical at this width. */
+  body[data-page="dashboard"] .main{overflow-y:auto}
+  body[data-page="dashboard"] .content{overflow:visible;display:block}
+  body[data-page="dashboard"] #main-content{display:block}
+  body[data-page="dashboard"] #main-content > div{flex:none!important;margin-bottom:10px}
+  body[data-page="dashboard"] #main-content > div > div[style*="grid-template-columns:1.6fr 1fr"],
+  body[data-page="dashboard"] #main-content > div[style*="grid-template-columns:1.6fr 1fr"],
+  body[data-page="dashboard"] #main-content > div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
+  body[data-page="dashboard"] .card{margin-bottom:10px}
 }
 </style>
-
 <!-- ── AUTH OVERLAY STYLES ──────────────────────────────────────────────── -->
 <style>
 #auth-overlay{
@@ -662,7 +696,93 @@ textarea{resize:vertical;min-height:70px}
 .auth-spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* Topbar user badge */
+/* ── POMODORO FLOATING WIDGET ──────────────────────────────────────── */
+#pomo-float{
+  position:fixed; top:80px; right:24px; z-index:8000;
+  width:260px; background:var(--surface); border:1.5px solid var(--border2);
+  border-radius:16px; box-shadow:0 16px 50px rgba(0,0,0,.4);
+  font-family:'DM Sans',sans-serif; overflow:hidden;
+  user-select:none;
+}
+#pomo-float.hidden{display:none}
+#pomo-float.minimized #pomo-float-body{display:none}
+#pomo-float.minimized{width:auto}
+#pomo-float-header{
+  display:flex; align-items:center; gap:8px;
+  padding:10px 12px; background:var(--surface2);
+  cursor:grab; border-bottom:1px solid var(--border);
+}
+#pomo-float.minimized #pomo-float-header{border-bottom:none}
+#pomo-float-header:active{cursor:grabbing}
+.pf-title{flex:1; font-size:12px; font-weight:700; color:var(--text); white-space:nowrap}
+#pomo-float-header button{
+  background:none; border:none; color:var(--muted); cursor:pointer;
+  font-size:14px; padding:2px 6px; border-radius:5px; line-height:1;
+}
+#pomo-float-header button:hover{background:var(--surface3); color:var(--text)}
+#pomo-float-body{padding:14px}
+.pf-progress{width:100%; height:5px; background:var(--surface3); border-radius:10px; overflow:hidden; margin-bottom:10px}
+.pf-progress-bar{height:100%; background:var(--accent); border-radius:10px; transition:width 1s linear}
+.pf-time{
+  text-align:center; font-family:'DM Mono',monospace; font-size:36px;
+  font-weight:800; color:var(--accent); letter-spacing:1px; margin-bottom:10px;
+}
+.pf-phase-tabs{display:flex; gap:4px; margin-bottom:10px}
+.pf-phase-tabs button{
+  flex:1; padding:5px 4px; border-radius:7px; border:1.5px solid var(--border2);
+  background:var(--surface2); color:var(--muted); font-size:10px; font-weight:700;
+  cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .15s;
+}
+.pf-phase-tabs button.active-focus{border-color:var(--accent); background:var(--accent-glow); color:var(--accent)}
+.pf-phase-tabs button.active-short{border-color:var(--green); background:rgba(61,214,140,.12); color:var(--green)}
+.pf-phase-tabs button.active-long{border-color:var(--amber); background:rgba(245,200,66,.1); color:var(--amber)}
+.pf-controls{display:flex; gap:6px; margin-bottom:12px}
+.pf-controls button{
+  border:none; border-radius:9px; cursor:pointer; font-family:'DM Sans',sans-serif;
+  font-weight:800; font-size:12px;
+}
+.pf-start{flex:1; padding:9px; background:var(--accent); color:#fff}
+.pf-reset,.pf-skip{padding:9px 12px; background:var(--surface2); color:var(--muted); border:1px solid var(--border2)!important}
+.pf-setup{border-top:1px solid var(--border); padding-top:10px}
+.pf-row{margin-bottom:8px}
+.pf-label{font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px}
+.pf-row select{
+  width:100%; padding:6px 8px; border-radius:7px; border:1px solid var(--border2);
+  background:var(--surface2); color:var(--text); font-size:11px; font-family:'DM Sans',sans-serif;
+}
+.pf-type-btns{display:flex; gap:6px}
+.pf-type-btns button{
+  flex:1; padding:6px 4px; border-radius:7px; border:1.5px solid var(--border2);
+  background:var(--surface2); color:var(--muted); font-size:10px; font-weight:700;
+  cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .15s;
+}
+.pf-type-btns button.pf-learn-active{border-color:var(--accent); background:var(--accent-glow); color:var(--accent)}
+.pf-type-btns button.pf-prac-active{border-color:var(--green); background:rgba(61,214,140,.12); color:var(--green)}
+.pf-preset{display:grid; grid-template-columns:repeat(4,1fr); gap:5px}
+.pf-preset button{
+  padding:6px 0; border-radius:7px; border:1.5px solid var(--border2);
+  background:var(--surface2); color:var(--muted); font-size:10px; font-weight:700;
+  cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .15s;
+}
+.pf-preset button.pf-preset-active{border-color:var(--accent); background:var(--accent-glow); color:var(--accent)}
+
+/* Dashboard pomodoro launcher icon */
+#pomo-launcher{
+  position:fixed; bottom:28px; right:28px; z-index:7500;
+  width:56px; height:56px; border-radius:50%;
+  background:var(--accent); display:flex; align-items:center; justify-content:center;
+  font-size:26px; cursor:pointer; box-shadow:0 6px 24px rgba(124,106,255,.45);
+  transition:transform .2s, box-shadow .2s;
+  border:none;
+}
+#pomo-launcher:hover{transform:scale(1.08); box-shadow:0 8px 30px rgba(124,106,255,.6)}
+#pomo-launcher.hidden{display:none}
+#pomo-launcher .pl-badge{
+  position:absolute; top:-2px; right:-2px; background:var(--coral);
+  color:#fff; font-size:9px; font-weight:800; border-radius:10px;
+  min-width:16px; height:16px; display:flex; align-items:center; justify-content:center;
+  padding:0 3px; border:2px solid var(--bg);
+}
 #user-badge{
   display:flex;align-items:center;gap:8px;
   background:var(--surface2);border:1px solid var(--border2);
@@ -713,6 +833,85 @@ textarea{resize:vertical;min-height:70px}
 
 
 <!-- ── AUTH OVERLAY ────────────────────────────────────────────────────────── -->
+<!-- ── POMODORO FLOATING WIDGET ──────────────────────────────────────────── -->
+<div id="pomo-float" class="hidden">
+  <div id="pomo-float-header">
+    <span style="font-size:16px">🍅</span>
+    <span class="pf-title">Pomodoro — <span id="pf-phase-label">Focus</span></span>
+    <span id="pf-mini-time" style="display:none;font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);white-space:nowrap;margin-right:2px"></span>
+    <button onclick="pomoFloatMinToggle()" id="pf-min-btn" title="Minimize">—</button>
+    <button onclick="pomoFloatToggle()" title="Close">✕</button>
+  </div>
+  <div id="pomo-float-body">
+    <!-- Progress bar -->
+    <div class="pf-progress"><div class="pf-progress-bar" id="pf-progress" style="width:0%"></div></div>
+    <!-- Timer -->
+    <div class="pf-time" id="pf-time">25:00</div>
+    <!-- Phase tabs -->
+    <div class="pf-phase-tabs">
+      <button onclick="pomoSetPhase('focus')" id="pf-tab-focus" class="active-focus">🍅 Focus</button>
+      <button onclick="pomoSetPhase('short')" id="pf-tab-short">☕ Break</button>
+    </div>
+    <!-- Controls -->
+    <div class="pf-controls">
+      <button class="pf-start" id="pf-start-btn" onclick="pomoStart()">▶ Start</button>
+      <button class="pf-reset" onclick="pomoReset()">↺</button>
+      <button class="pf-skip" onclick="pomoSkip()">⏭</button>
+    </div>
+    <!-- Setup -->
+    <div class="pf-setup">
+      <div class="pf-row">
+        <div class="pf-label">Mode</div>
+        <div style="display:flex;gap:6px">
+          <button id="pf-mode-skill" onclick="pomoSetMode('skill')" style="flex:1;padding:6px;border-radius:8px;border:1.5px solid var(--accent);background:var(--accent-glow);color:var(--accent);font-size:11px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif">🧠 Skill</button>
+          <button id="pf-mode-acad" onclick="pomoSetMode('academic')" style="flex:1;padding:6px;border-radius:8px;border:1.5px solid var(--border2);background:var(--surface2);color:var(--muted);font-size:11px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif">🎓 Academic</button>
+        </div>
+      </div>
+      <div class="pf-row" id="pf-subj-row">
+        <div class="pf-label" id="pf-subj-label">Skill</div>
+        <select id="pf-subj-sel" onchange="if(window._pomo)window._pomo.skillId=this.value" style="width:100%">
+          <option value="">— Select —</option>
+        </select>
+      </div>
+      <div class="pf-row">
+        <div class="pf-label">Topic <span style="font-weight:400;text-transform:none;color:var(--muted2)">(what are you working on?)</span></div>
+        <input type="text" id="pf-topic-inp" placeholder="e.g. Linear regression, Chapter 4..." oninput="if(window._pomo)window._pomo.topic=this.value" style="width:100%">
+      </div>
+      <div class="pf-row">
+        <div class="pf-label">Type</div>
+        <div class="pf-type-btns">
+          <button id="pf-type-learn" onclick="pomoSetType('learn')" class="pf-learn-active">📖 Learning</button>
+          <button id="pf-type-prac" onclick="pomoSetType('prac')">💻 Practice</button>
+        </div>
+      </div>
+      <div class="pf-row">
+        <div class="pf-label">Focus Duration <span style="font-weight:400;text-transform:none;color:var(--muted2)">(minutes, custom)</span></div>
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px">
+          <input type="number" id="pf-focus-inp" min="1" max="180" placeholder="25" oninput="pomoSetCustomFocus(parseInt(this.value)||1,true)" style="width:100%">
+        </div>
+        <div class="pf-preset">
+          <button onclick="pomoSetCustomFocus(25)">25m</button>
+          <button onclick="pomoSetCustomFocus(30)">30m</button>
+          <button onclick="pomoSetCustomFocus(45)">45m</button>
+          <button onclick="pomoSetCustomFocus(60)">60m</button>
+        </div>
+      </div>
+      <div class="pf-row">
+        <div class="pf-label">Break Duration <span style="font-weight:400;text-transform:none;color:var(--muted2)">(minutes)</span></div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <input type="number" id="pf-short-inp" min="1" max="60" style="width:100%;padding:5px 7px;font-size:11px" placeholder="5" oninput="pomoSetBreakDurations()">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Floating launcher icon — opens the pomodoro widget -->
+<button id="pomo-launcher" onclick="pomoFloatToggle()" title="Open Pomodoro Timer">
+  🍅
+  <span id="pomo-launcher-time" style="display:none;position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);background:var(--surface);color:var(--accent);font-family:'DM Mono',monospace;font-size:10px;font-weight:800;padding:1px 6px;border-radius:8px;border:1.5px solid var(--accent);white-space:nowrap"></span>
+</button>
+
 <div id="auth-overlay">
   <div class="auth-box">
     <div class="auth-logo">SkillPath</div>
@@ -781,25 +980,32 @@ textarea{resize:vertical;min-height:70px}
   </div>
   <nav class="nav">
     <div class="nav-section">Overview</div>
-    <div class="nav-item active" data-label="Dashboard" onclick="nav('dashboard')"><span class="nav-icon">&#11041;</span><span class="nav-label">Dashboard</span></div>
-    <div class="nav-item" data-label="Timer" onclick="nav('timer')"><span class="nav-icon">&#9711;</span><span class="nav-label">Timer</span></div>
-    <div class="nav-item" data-label="Log Session" onclick="nav('log')"><span class="nav-icon">&#10022;</span><span class="nav-label">Log Session</span></div>
+    <div class="nav-item active" data-label="Dashboard" onclick="nav('dashboard')"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Dashboard</span></div>
+    <div class="nav-item" data-label="Timer" onclick="nav('timer')"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg></span><span class="nav-label">Timer</span></div>
+    <div class="nav-item" data-label="Log Session" onclick="nav('log')"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span><span class="nav-label">Log Session</span></div>
+    <div class="nav-item" data-label="Analytics" onclick="nav('analytics')"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span class="nav-label">Analytics</span></div>
+    <div class="nav-item" data-label="Achievements" onclick="nav('xp')"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span><span class="nav-label">Achievements</span></div>
+    <div class="nav-item" data-label="Leaderboard" onclick="nav('leaderboard')"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span class="nav-label">Leaderboard</span></div>
     <div class="nav-section">Skills</div>
-    <div class="nav-item" data-label="My Skills" onclick="nav('skills')"><span class="nav-icon">&#9672;</span><span class="nav-label">My Skills</span></div>
-    <div class="nav-item" data-label="History" onclick="nav('history')"><span class="nav-icon">&#9647;</span><span class="nav-label">History</span></div>
+    <div class="nav-item" data-label="My Skills" onclick="nav('skills')"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><span class="nav-label">My Skills</span></div>
+    <div class="nav-item" data-label="History" onclick="nav('history')"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><polyline points="12 7 12 12 15 15"/></svg></span><span class="nav-label">History</span></div>
+    <div class="nav-section">Academic</div>
+    <div class="nav-item" data-label="My Subject" onclick="nav('mysubjects')"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span><span class="nav-label">My Subject</span></div>
+    <div class="nav-item" data-label="Academic Tracker" onclick="nav('academic')"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span><span class="nav-label">Academic Tracker</span></div>
     <div class="nav-section">Planning</div>
-    <div class="nav-item" data-label="To-Do" onclick="nav('todo')"><span class="nav-icon">&#10003;</span><span class="nav-label">To-Do</span></div>
-    <div class="nav-item" data-label="Deadlines" onclick="nav('deadlines')"><span class="nav-icon">&#9711;</span><span class="nav-label">Deadlines</span></div>
-    <div class="nav-item" data-label="Habits" onclick="nav('habits')"><span class="nav-icon">&#9898;</span><span class="nav-label">Habits</span></div>
+    <div class="nav-item" data-label="Planner" onclick="nav('planner')"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span><span class="nav-label">Planner</span></div>
+    <div class="nav-item" data-label="To-Do" onclick="nav('todo')"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><span class="nav-label">To-Do</span></div>
+    <div class="nav-item" data-label="Deadlines" onclick="nav('deadlines')"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg></span><span class="nav-label">Deadlines</span></div>
+    <div class="nav-item" data-label="Habits" onclick="nav('habits')"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span><span class="nav-label">Habits</span></div>
     <div class="nav-section">Notes</div>
-    <div class="nav-item" data-label="Notes" onclick="nav('notes')"><span class="nav-icon">&#128193;</span><span class="nav-label">Notes</span></div>
+    <div class="nav-item" data-label="Notes" onclick="nav('notes')"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span><span class="nav-label">Notes</span></div>
     <div class="nav-section">Reviews</div>
-    <div class="nav-item" data-label="Weekly" onclick="nav('weekly')"><span class="nav-icon">&#9646;</span><span class="nav-label">Weekly</span></div>
-    <div class="nav-item" data-label="Monthly" onclick="nav('monthly')"><span class="nav-icon">&#9645;</span><span class="nav-label">Monthly</span></div>
+    <div class="nav-item" data-label="Weekly" onclick="nav('weekly')"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg></span><span class="nav-label">Weekly</span></div>
+    <div class="nav-item" data-label="Monthly" onclick="nav('monthly')"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></span><span class="nav-label">Monthly</span></div>
     <div class="nav-section">Schedule</div>
-    <div class="nav-item" data-label="Routine" onclick="nav('routine')"><span class="nav-icon">&#9680;</span><span class="nav-label">Routine</span></div>
+    <div class="nav-item" data-label="Routine" onclick="nav('routine')"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></span><span class="nav-label">Routine</span></div>
     <div class="nav-section">More</div>
-    <div class="nav-item" data-label="Settings" onclick="nav('settings')"><span class="nav-icon">&#9881;</span><span class="nav-label">Settings</span></div>
+    <div class="nav-item" data-label="Settings" onclick="nav('settings')"><span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Settings</span></div>
   </nav>
   <div class="sidebar-bottom">
     <div class="streak-badge">
@@ -816,23 +1022,26 @@ textarea{resize:vertical;min-height:70px}
       <div class="page-title" id="page-title">Dashboard</div>
       <div class="page-sub" id="page-sub"></div>
     </div>
-    <div id="topbar-actions">
-      <!-- Sync badge + user badge injected by AUTH on login -->
-      <div id="sync-badge" style="display:none">
-        <span id="sync-icon">↻</span><span id="sync-text">Synced</span>
-      </div>
-      <div id="user-badge" style="display:none" onclick="AUTH.toggleUserMenu()">
-        <div class="avatar" id="user-avatar"><span id="user-initials">?</span></div>
-        <span id="user-name-short">User</span>
-        <div id="user-menu">
-          <div class="um-email" id="um-email-label"></div>
-          <div class="um-mode" id="um-mode-label">● Online</div>
-          <div class="um-divider"></div>
-          <div class="um-item" onclick="AUTH.manualSync();event.stopPropagation()">↻ Sync Now</div>
-          <div class="um-item" onclick="AUTH.exportData();event.stopPropagation()">⬇ Export JSON</div>
-          <div class="um-item" onclick="AUTH.importFromLocal();event.stopPropagation()">⬆ Import from localStorage</div>
-          <div class="um-divider"></div>
-          <div class="um-item" style="color:var(--coral)" onclick="AUTH.signOut();event.stopPropagation()">⬡ Sign Out</div>
+    <div id="topbar-right" style="display:flex;align-items:center;gap:8px">
+      <div id="topbar-actions"></div>
+      <!-- Permanent account area — page renders never touch this, so Sign Out always stays reachable -->
+      <div id="topbar-persistent" style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+        <div id="sync-badge" style="display:none">
+          <span id="sync-icon">↻</span><span id="sync-text">Synced</span>
+        </div>
+        <div id="user-badge" style="display:none" onclick="AUTH.toggleUserMenu()">
+          <div class="avatar" id="user-avatar"><span id="user-initials">?</span></div>
+          <span id="user-name-short">User</span>
+          <div id="user-menu">
+            <div class="um-email" id="um-email-label"></div>
+            <div class="um-mode" id="um-mode-label">● Online</div>
+            <div class="um-divider"></div>
+            <div class="um-item" onclick="AUTH.manualSync();event.stopPropagation()">↻ Sync Now</div>
+            <div class="um-item" onclick="AUTH.exportData();event.stopPropagation()">⬇ Export JSON</div>
+            <div class="um-item" onclick="AUTH.importFromLocal();event.stopPropagation()">⬆ Import from localStorage</div>
+            <div class="um-divider"></div>
+            <div class="um-item" style="color:var(--coral)" onclick="AUTH.signOut();event.stopPropagation()">⬡ Sign Out</div>
+          </div>
         </div>
       </div>
     </div>
@@ -925,6 +1134,9 @@ function _ensureDBFields(){
   if(!DB.routine.snapshots)DB.routine.snapshots={};
   if(!DB.skillSnapshots)DB.skillSnapshots={};
   if(!DB.settings)DB.settings={theme:'dark'};
+  if(!DB.xp)DB.xp={points:0,level:1,badges:[],history:[]};
+  if(!DB.academic)DB.academic={subjects:[],exams:[],grades:[]};
+  if(!DB.planner)DB.planner={weeks:{}};
   initDailySnapshot(today());
 }
 
@@ -991,8 +1203,14 @@ function appStart(){
     el.addEventListener('click',function(){closeSidebar();});
   });
 
+  document.body.setAttribute('data-page','dashboard');
   renders.dashboard();
   setInterval(function(){if(currentPage==='dashboard')renders.dashboard();},10000);
+  var _resizeTO=null;
+  window.addEventListener('resize',function(){
+    clearTimeout(_resizeTO);
+    _resizeTO=setTimeout(function(){if(currentPage==='dashboard')updateRoutineRowFade();},150);
+  });
 }
 
 
@@ -1053,6 +1271,16 @@ function renderSettings(){
   html+='<div class="card"><div class="card-title">Dashboard Design</div>';
   html+='<div style="font-size:12px;color:var(--muted);margin-bottom:14px">Select a design — changes apply instantly across the whole app.</div>';
   html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px">'+dashCards+'</div></div>';
+  // Pomodoro Settings
+  var pomoDuration=(DB.settings&&DB.settings.pomoDuration)||25;
+  var pomoShort=(DB.settings&&DB.settings.pomoShort)||5;
+  html+='<div class="card"><div class="card-title">⏱ Pomodoro Settings</div>';
+  html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">';
+  html+='<div class="field"><div class="label">Focus (mins) — fully custom</div><input type="number" id="pomo-focus" value="'+pomoDuration+'" min="1" max="180" style="width:100%" oninput="savePomo()"></div>';
+  html+='<div class="field"><div class="label">Break (mins)</div><input type="number" id="pomo-short" value="'+pomoShort+'" min="1" max="60" style="width:100%" oninput="savePomo()"></div>';
+  html+='</div>';
+  html+='<div style="font-size:11px;color:var(--muted)">Timer page এ Pomodoro mode activate করুন। এই settings সেখানে apply হবে।</div>';
+  html+='</div>';
   html+='<div class="card"><div class="card-title">Data — Import &amp; Export</div>';
   html+='<div style="font-size:13px;color:var(--muted);margin-bottom:14px">Export করে backup রাখুন। Import করে আগের data ফিরিয়ে আনুন।</div>';
   html+='<div style="display:flex;gap:10px;flex-wrap:wrap">';
@@ -1071,6 +1299,20 @@ function changeTheme(t){
   renderSettings();
 }
 
+function savePomo(){
+  if(!DB.settings)DB.settings={};
+  var f=parseInt(document.getElementById('pomo-focus')?.value||25);
+  var s=parseInt(document.getElementById('pomo-short')?.value||5);
+  if(f>0&&s>0){
+    DB.settings.pomoDuration=f;DB.settings.pomoShort=s;save();notify('✓ Pomodoro settings saved!');
+    var pomo=window._pomo;
+    if(pomo&&!pomo.running){
+      if(pomo.phase==='focus') pomo.duration=f;
+      pomo.remaining=_pomoPhaseSecs(pomo.phase);
+      _pomoRefreshUI();
+    }
+  }
+}
 function changeDashLayout(layout){
   if(!DB.settings)DB.settings={};
   DB.settings.dashLayout=layout;
@@ -1088,105 +1330,6 @@ function applyDashLayout(layout){
     document.body.setAttribute('data-body-dash',layout);
 }
 
-function showDayDetail(d){
-  var dt=new Date(d+'T12:00');
-  var dayLabel=DAY_NAMES[dt.getDay()]+', '+dt.getDate()+' '+MON_NAMES[dt.getMonth()]+' '+dt.getFullYear();
-  var sessions=DB.sessions.filter(function(s){return s.date===d;});
-  var learn=0,prac=0,read=0;
-  sessions.forEach(function(s){learn+=s.learn||0;prac+=s.prac||0;read+=s.read||0;});
-
-  // Routine: use frozen snapshot for that date
-  routineInit();
-  var dateWday=new Date(d+'T12:00').getDay();
-  var slots;
-  if(DB.routine.snapshots&&DB.routine.snapshots[d]!==undefined){
-    slots=DB.routine.snapshots[d];  // could be [] if no routine that day
-  } else {
-    // No snapshot — filter live slots by weekday
-    slots=(DB.routine.slots||[]).filter(function(s){
-      if(s.days&&s.days.length>0)return s.days.includes(dateWday);
-      return true;
-    });
-  }
-  var prog=(DB.routine.dailyProgress&&DB.routine.dailyProgress[d])||{};
-  var done=slots.filter(function(s){return !!prog[s.id];}).length;
-
-  // Skills: use snapshot so deleted skills still show
-  var skillSnap=(DB.skillSnapshots&&DB.skillSnapshots[d])?DB.skillSnapshots[d]:DB.skills||[];
-
-  // Todos for that date
-  var todos=getDateTodos(d);
-  var pendingTodos=todos.filter(function(t){return !t.done;});
-
-  var isToday=d===today();
-
-  var statHtml='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">';
-  statHtml+='<div style="background:var(--surface2);border-radius:10px;padding:12px;text-align:center"><div style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.6px;margin-bottom:4px">LEARNING</div><div style="font-size:20px;font-weight:700;color:var(--accent)">'+hm(learn)+'</div></div>';
-  statHtml+='<div style="background:var(--surface2);border-radius:10px;padding:12px;text-align:center"><div style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.6px;margin-bottom:4px">PRACTICE</div><div style="font-size:20px;font-weight:700;color:var(--green)">'+hm(prac)+'</div></div>';
-  statHtml+='<div style="background:var(--surface2);border-radius:10px;padding:12px;text-align:center"><div style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.6px;margin-bottom:4px">READING</div><div style="font-size:20px;font-weight:700;color:var(--amber)">'+hm(read)+'</div></div>';
-  statHtml+='</div>';
-
-  var sessHtml='<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.6px;margin-bottom:8px">SESSIONS</div>';
-  if(sessions.length){
-    sessions.forEach(function(s){
-      var sk=skillSnap.find(function(x){return x.id===s.skillId;})||DB.skills.find(function(x){return x.id===s.skillId;})||{name:'Unknown',color:'var(--accent)'};
-      sessHtml+='<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">';
-      sessHtml+='<div style="width:8px;height:8px;border-radius:2px;background:'+sk.color+';flex-shrink:0"></div>';
-      sessHtml+='<span style="flex:1;font-size:13px;font-weight:500">'+sk.name+(s.topic?' <span style=\'color:var(--muted);font-weight:400\'>· '+s.topic+'</span>':'')+'</span>';
-      sessHtml+='<span style="font-size:12px;color:var(--accent)">'+hm((s.learn||0)+(s.prac||0)+(s.read||0))+'</span>';
-      sessHtml+='</div>';
-    });
-  } else {
-    sessHtml+='<div style="color:var(--muted2);font-size:13px;font-style:italic">No sessions logged</div>';
-  }
-  sessHtml+='</div>';
-
-  var routHtml='<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.6px;margin-bottom:8px">ROUTINE ('+done+'/'+slots.length+')</div>';
-  if(slots.length){
-    slots.forEach(function(s){
-      var isDone=!!prog[s.id];
-      routHtml+='<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">';
-      routHtml+='<span style="font-size:14px;color:'+(isDone?'var(--green)':'var(--muted2)')+'">'+( isDone?'\u2713':'\u25cb')+'</span>';
-      routHtml+='<span style="font-size:13px;color:'+(isDone?'var(--green)':'var(--text)')+';'+(isDone?'text-decoration:line-through':'')+'">'+s.task+'</span>';
-      if(s.time)routHtml+='<span style="font-size:11px;color:var(--muted2);margin-left:auto">'+s.time+'</span>';
-      routHtml+='</div>';
-    });
-  } else {
-    routHtml+='<div style="color:var(--muted2);font-size:13px;font-style:italic">No routine recorded</div>';
-  }
-  routHtml+='</div>';
-
-  var allTodos_d1=getDateTodos(d);
-  var doneCnt_d1=allTodos_d1.filter(function(t){return t.done;}).length;
-  var todoHtml='<div><div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.6px;margin-bottom:8px">TO-DOS ('+doneCnt_d1+'/'+allTodos_d1.length+' done)</div>';
-  if(allTodos_d1.length){
-    allTodos_d1.slice(0,6).forEach(function(t){
-      todoHtml+='<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">';
-      if(t.done){todoHtml+='<span style="font-size:13px;color:var(--green)">&#10003;</span><span style="font-size:13px;text-decoration:line-through;color:var(--muted)">'+t.text+'</span>';}
-      else{todoHtml+='<span style="font-size:12px;color:var(--amber)">\u25a1</span><span style="font-size:13px">'+t.text+'</span>';}
-      todoHtml+='</div>';
-    });
-    if(allTodos_d1.length>6)todoHtml+='<div style="font-size:11px;color:var(--muted2);margin-top:4px">+'+(allTodos_d1.length-6)+' more</div>';
-  } else {
-    todoHtml+='<div style="color:var(--muted2);font-size:13px;font-style:italic">No tasks that day</div>';
-  }
-  todoHtml+='</div>';
-
-  var html='<div class="modal-overlay" id="daydtl-modal" onclick="if(event.target.id===\'daydtl-modal\')document.getElementById(\'daydtl-modal\').remove()">'
-    +'<div class="modal" style="width:500px">'
-    +'<div class="modal-title">'
-    +'<span>\ud83d\udcc5 '+(isToday?'<span style=\"color:var(--amber)\">Today &mdash; </span>':'')+dayLabel+'</span>'
-    +'<button class="close-btn" onclick="document.getElementById(\'daydtl-modal\').remove()">&#10005;</button>'
-    +'</div>'
-    +statHtml
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'
-    +sessHtml+routHtml
-    +'</div>'
-    +todoHtml
-    +'</div></div>';
-  document.body.insertAdjacentHTML('beforeend',html);
-}
-
 // ============ DATA ============
 var DB = {skills:[],sessions:[],todos:[],dailyTodos:{},deadlines:[],habits:[],habitLog:{},routine:{slots:[],dailyProgress:{}},notes:{folders:[]}};
 var timers = {learn:{s:0,run:false,iv:null},prac:{s:0,run:false,iv:null},read:{s:0,run:false,iv:null}};
@@ -1199,9 +1342,15 @@ var PAGE_META = {
   timer:{title:'Session Timer',sub:'Track time as you work'},
   log:{title:'Log Session',sub:'Record what you studied today'},
   skills:{title:'My Skills',sub:'Skills you are building'},
+  mysubjects:{title:'My Subject',sub:'Academic subjects you are studying'},
   history:{title:'History',sub:'All your past sessions'},
   todo:{title:'To-Do List',sub:'Tasks and goals'},
   deadlines:{title:'Deadlines',sub:'Weekly & monthly targets'},
+  analytics:{title:'Analytics',sub:'Your study insights & streaks'},
+  xp:{title:'Achievements',sub:'XP, levels & badges'},
+  leaderboard:{title:'Leaderboard',sub:'Study buddy — অন্যদের progress দেখুন'},
+  academic:{title:'Academic Tracker',sub:'Subjects, exams & grades'},
+  planner:{title:'Weekly Planner',sub:'Plan your week ahead'},
   habits:{title:'Habits',sub:'Daily habits tracker'},
   weekly:{title:'Weekly Review',sub:'This week\'s performance'},
   monthly:{title:'Monthly Review',sub:'This month\'s overview'},
@@ -1391,6 +1540,92 @@ function skill_total(skillId){
   DB.sessions.filter(s=>s.skillId===skillId).forEach(s=>{total.learn+=s.learn||0;total.prac+=s.prac||0;});
   return total;
 }
+function isAcadId(skillId){
+  var acadSubjs=(DB.academic&&DB.academic.subjects)||[];
+  return acadSubjs.some(function(s){return s.id===skillId;});
+}
+function subjectById(skillId,skillSnapArr){
+  // Looks up a skill/subject by id across live skills, live academic subjects,
+  // and an optional date-specific snapshot array (so deleted items still resolve).
+  var snap=skillSnapArr||[];
+  return snap.find(function(x){return x.id===skillId;})
+    ||DB.skills.find(function(x){return x.id===skillId;})
+    ||((DB.academic&&DB.academic.subjects)||[]).find(function(x){return x.id===skillId;})
+    ||{name:'Unknown',color:'var(--accent)'};
+}
+// ── GOAL PROGRESS HELPERS (weekly/monthly target vs actual + ETA) ─────────
+function skill_secs_in_range(skillId,fromDs,toDs){
+  var secs=0;
+  DB.sessions.forEach(function(s){
+    if(s.skillId!==skillId) return;
+    if(s.date<fromDs||s.date>toDs) return;
+    secs+=(s.learn||0)+(s.prac||0);
+  });
+  return secs;
+}
+function week_range_dates(){
+  // Monday-start week containing today
+  var d=new Date();
+  var dow=d.getDay(); // 0=Sun..6=Sat
+  var offsetToMon=(dow===0?-6:1-dow);
+  var mon=new Date(d); mon.setDate(d.getDate()+offsetToMon);
+  var sun=new Date(mon); sun.setDate(mon.getDate()+6);
+  return {from:localDateStr(mon),to:localDateStr(sun),daysLeft:Math.max(0,days_between(localDateStr(sun),today()))};
+}
+function month_range_dates(){
+  var d=new Date();
+  var first=new Date(d.getFullYear(),d.getMonth(),1);
+  var last=new Date(d.getFullYear(),d.getMonth()+1,0);
+  return {from:localDateStr(first),to:localDateStr(last),daysLeft:Math.max(0,days_between(localDateStr(last),today()))};
+}
+function goal_progress_for_skill(sk){
+  var wTargetH=sk.weeklyGoalHours||0;
+  var mTargetH=sk.monthlyGoalHours||0;
+  var wr=week_range_dates(), mr=month_range_dates();
+  var wActualH=Math.round(skill_secs_in_range(sk.id,wr.from,wr.to)/3600*10)/10;
+  var mActualH=Math.round(skill_secs_in_range(sk.id,mr.from,mr.to)/3600*10)/10;
+  function eta(targetH,actualH,daysLeftInPeriod){
+    if(!targetH) return null;
+    if(actualH>=targetH) return 'done';
+    // recent daily pace: avg hrs/day over last 7 logged days for this skill
+    var paceSecs=0,paceDays=0;
+    for(var i=0;i<7;i++){
+      var dt=new Date(); dt.setDate(dt.getDate()-i);
+      var ds=localDateStr(dt);
+      var s=skill_secs_in_range(sk.id,ds,ds);
+      if(s>0){paceSecs+=s;paceDays++;}
+    }
+    var dailyPaceH=paceDays>0?(paceSecs/paceDays)/3600:0;
+    var remainingH=targetH-actualH;
+    if(daysLeftInPeriod<=0){
+      // period is over (today is the last day) and target still not hit
+      return 'overdue:'+(Math.round(remainingH*10)/10);
+    }
+    if(dailyPaceH<=0) return 'no-pace';
+    var daysNeeded=Math.ceil(remainingH/dailyPaceH);
+    if(daysNeeded<=daysLeftInPeriod) return daysNeeded<=0?'today':daysNeeded+'d';
+    return 'behind:'+(daysNeeded-daysLeftInPeriod);
+  }
+  return {
+    weekly:{target:wTargetH,actual:wActualH,pct:wTargetH?Math.min(100,Math.round(wActualH/wTargetH*100)):0,eta:eta(wTargetH,wActualH,wr.daysLeft),daysLeft:wr.daysLeft},
+    monthly:{target:mTargetH,actual:mActualH,pct:mTargetH?Math.min(100,Math.round(mActualH/mTargetH*100)):0,eta:eta(mTargetH,mActualH,mr.daysLeft),daysLeft:mr.daysLeft}
+  };
+}
+function goalEtaLabel(eta){
+  if(eta===null||eta===undefined) return '';
+  if(eta==='done') return '<span style="color:var(--green);font-weight:700">✓ Goal met</span>';
+  if(eta==='today') return '<span style="color:var(--amber);font-weight:700">ETA: today</span>';
+  if(eta==='no-pace') return '<span style="color:var(--muted)">No recent activity</span>';
+  if(eta.indexOf('overdue:')===0){
+    var shortH=eta.split(':')[1];
+    return '<span style="color:var(--coral);font-weight:700">Overdue — '+shortH+'h short</span>';
+  }
+  if(eta.indexOf('behind:')===0){
+    var dShort=eta.split(':')[1];
+    return '<span style="color:var(--coral)">Behind pace — '+dShort+'d short</span>';
+  }
+  return '<span style="color:var(--accent)">ETA: '+eta+'</span>';
+}
 function calc_score(){
   var week=get_week_dates();
   var days_with_sessions=week.filter(d=>DB.sessions.some(s=>s.date===d)).length;
@@ -1404,14 +1639,19 @@ function calc_score(){
 var currentPage='dashboard';
 function nav(page){
   currentPage=page;
-  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
-  var navItems=['dashboard','timer','log','skills','history','todo','deadlines','habits','notes','weekly','monthly','routine','settings'];
-  var idx=navItems.indexOf(page);
-  if(idx>=0)document.querySelectorAll('.nav-item')[idx].classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(function(el){
+    el.classList.remove('active');
+    var oc=el.getAttribute('onclick')||'';
+    // Match nav('pagename') — exact match with quotes
+    if(oc.indexOf("nav('"+page+"')")!==-1||oc.indexOf('nav("'+page+'")')!==-1){
+      el.classList.add('active');
+    }
+  });
   var meta=PAGE_META[page]||{title:page,sub:''};
   document.getElementById('page-title').textContent=meta.title;
   document.getElementById('page-sub').textContent=meta.sub;
   document.getElementById('topbar-actions').innerHTML='';
+  document.body.setAttribute('data-page',page);
   renders[page]();
   document.getElementById('sidebar-streak').textContent=calc_streak();
 }
@@ -1419,28 +1659,52 @@ function nav(page){
 // ============ RENDERS ============
 var renders={
   dashboard: function(){
+    // Add pomodoro icon to topbar
+    document.getElementById('topbar-actions').innerHTML=
+      '<button id="pomo-fab" onclick="pomoFloatToggle()" title="Pomodoro Timer" style="'
+      +'width:36px;height:36px;border-radius:50%;border:none;background:var(--accent);color:#fff;'
+      +'font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;'
+      +'box-shadow:0 2px 12px rgba(124,106,255,.4);transition:all .2s;flex-shrink:0">🍅</button>';
     var tod=today_secs();
-    var totLearn=tod.learn+timers.learn.s, totPrac=tod.prac+timers.prac.s, totRead=tod.read+timers.read.s;
+    var totLearn=tod.learn+timers.learn.s, totPrac=tod.prac+timers.prac.s;
+    // Academic today — count sessions where skillId matches an academic subject
+    var acadSubjects=(DB.academic&&DB.academic.subjects)||[];
+    var acadIds=acadSubjects.map(function(s){return s.id;});
+    var acadSessions=DB.sessions.filter(function(s){return s.date===today()&&acadIds.indexOf(s.skillId)!==-1;});
+    var acadLearn=0,acadPrac=0;
+    acadSessions.forEach(function(s){acadLearn+=s.learn||0;acadPrac+=s.prac||0;});
+    var hasAcad=acadSubjects.length>0;
     var score=calc_score();
     var streak=calc_streak();
     var week=get_week_dates();
     var todayTodos=getTodayTodos();var pending_todos=todayTodos.filter(t=>!t.done).length;
     var upcoming_dl=DB.deadlines.filter(d=>!d.done&&days_between(d.date,today())>=0).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,3);
+    // Upcoming = deadlines that haven't started yet (start date is in the future) — shows when they'll start
+    // Recent = deadlines that have already started (start date is today or earlier) and aren't done yet — shows days left until they end
+    var upcoming_by_start=[...DB.deadlines].filter(d=>!d.done&&days_between(d.startDate||d.date,today())>0).sort((a,b)=>(a.startDate||a.date).localeCompare(b.startDate||b.date)).slice(0,3);
+    var recent_by_end=[...DB.deadlines].filter(d=>!d.done&&days_between(d.startDate||d.date,today())<=0).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,3);
     
-    // week bar chart data
+    // week bar chart data — always split into skill-only vs academic-only seconds
     var weekBars=week.map(d=>{
-      var secs=0;DB.sessions.filter(s=>s.date===d).forEach(s=>secs+=((s.learn||0)+(s.prac||0)));
-      return {d,secs};
+      var skillSecs=0,acadSecs=0;
+      DB.sessions.filter(s=>s.date===d).forEach(s=>{
+        var total=(s.learn||0)+(s.prac||0);
+        if(acadIds.indexOf(s.skillId)!==-1) acadSecs+=total; else skillSecs+=total;
+      });
+      return {d,skillSecs,acadSecs};
     });
-    var maxBar=Math.max(3600,...weekBars.map(w=>w.secs));
+    var maxBar=Math.max(3600,...weekBars.map(w=>Math.max(w.skillSecs,w.acadSecs)));
     var weekBarHtml=weekBars.map(w=>{
-      var pct=Math.round(w.secs/maxBar*80);
+      var skillPct=Math.round(w.skillSecs/maxBar*80);
+      var acadPct=Math.round(w.acadSecs/maxBar*80);
+      var dayTot=w.skillSecs+w.acadSecs;
       var dt=new Date(w.d+'T12:00');
       var isT=w.d===today();
       return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">
-        <div style="font-size:10px;color:${isT?'var(--amber)':'var(--muted)'}">${w.secs>0?hm(w.secs):''}</div>
-        <div style="display:flex;align-items:flex-end;height:80px">
-          <div style="width:28px;min-height:4px;height:${Math.max(4,pct)}px;background:${isT?'var(--amber)':'var(--accent)'};border-radius:6px 6px 0 0;opacity:${w.secs>0?1:0.2};transition:.3s"></div>
+        <div style="font-size:10px;color:${isT?'var(--amber)':'var(--muted)'}">${dayTot>0?hm(dayTot):''}</div>
+        <div style="display:flex;align-items:flex-end;height:80px;gap:2px">
+          <div style="width:14px;min-height:${w.skillSecs>0?4:0}px;height:${Math.max(w.skillSecs>0?4:0,skillPct)}px;background:${isT?'var(--amber)':'var(--accent)'};border-radius:6px 6px 0 0;opacity:${w.skillSecs>0?1:0.2};transition:.3s" title="Skill: ${hm(w.skillSecs)}"></div>
+          <div style="width:14px;min-height:${w.acadSecs>0?4:0}px;height:${Math.max(w.acadSecs>0?4:0,acadPct)}px;background:var(--green);border-radius:6px 6px 0 0;opacity:${w.acadSecs>0?0.85:0.2};transition:.3s" title="Academic: ${hm(w.acadSecs)}"></div>
         </div>
         <div style="font-size:9px;color:${isT?'var(--amber)':'var(--muted)'};font-weight:${isT?700:400}">${DAY_NAMES[dt.getDay()]}</div>
       </div>`;
@@ -1469,56 +1733,69 @@ var renders={
     }).join(''):'<div class="empty">No sessions yet</div>';
     
     document.getElementById('main-content').innerHTML=`
-    <div class="card-grid grid4" style="margin-bottom:12px">
-      <div class="stat"><div class="stat-label">Learning Today</div><div class="stat-val" style="color:var(--accent)">${hm(totLearn)}</div><div class="stat-sub">study time</div></div>
-      <div class="stat"><div class="stat-label">Practice Today</div><div class="stat-val" style="color:var(--green)">${hm(totPrac)}</div><div class="stat-sub">hands-on</div></div>
-      <div class="stat"><div class="stat-label">Study Today</div><div class="stat-val" style="color:var(--amber)">${hm(totRead)}</div><div class="stat-sub">reading & study</div></div>
-      <div class="stat"><div class="stat-label">Streak</div><div class="stat-val" style="color:var(--coral)">${streak} days</div><div class="stat-sub">🔥 Keep going!</div></div>
+    <div class="card-grid grid4" style="margin-bottom:0;flex-shrink:0">
+      <div class="stat" style="grid-column:span 1">
+        <div class="stat-label"><span style="font-size:18px">🧠</span><br>Skill Learn</div>
+        <div class="stat-val" style="color:var(--accent)">${hm(totLearn-acadLearn)}</div>
+        <div class="stat-sub">today</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label"><span style="font-size:18px">🔧</span><br>Skill Prac</div>
+        <div class="stat-val" style="color:var(--green)">${hm(totPrac-acadPrac)}</div>
+        <div class="stat-sub">today</div>
+      </div>
+      <div class="stat" style="border:1px solid rgba(124,106,255,.25)">
+        <div class="stat-label"><span style="font-size:18px">🎓</span><br>Acad. Learn</div>
+        <div class="stat-val" style="color:var(--accent)">${hm(acadLearn)}</div>
+        <div class="stat-sub">today</div>
+      </div>
+      <div class="stat" style="border:1px solid rgba(61,214,140,.2)">
+        <div class="stat-label"><span style="font-size:18px">🎓</span><br>Acad. Prac</div>
+        <div class="stat-val" style="color:var(--green)">${hm(acadPrac)}</div>
+        <div class="stat-sub">today</div>
+      </div>
     </div>
-    <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:12px;margin-bottom:12px">
-      <div class="card" style="margin-bottom:0">
-        <div class="card-title">This Week <span style="font-size:11px;color:var(--muted);font-weight:400">${pending_todos} tasks pending</span></div>
-        <div style="display:flex;align-items:flex-end;gap:4px;justify-content:space-between">${weekBarHtml}</div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:12px">
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;">
-          <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.7px;text-transform:uppercase;margin-bottom:8px">Skill Progress</div>
-          ${renderSkillSlider()}
+    <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:8px;flex:1;min-height:0">
+      <div class="card" style="margin-bottom:0;display:flex;flex-direction:column;min-height:0">
+        <div class="card-title" style="flex-shrink:0">This Week <span style="font-size:11px;color:var(--muted);font-weight:400">${pending_todos} tasks pending</span></div>
+        <div style="display:flex;gap:14px;align-items:center;margin-bottom:6px;font-size:10px;color:var(--muted);flex-shrink:0">
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:2px;background:var(--accent);display:inline-block"></span>Skill</span>
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:2px;background:var(--green);display:inline-block"></span>Academic</span>
         </div>
+        <div style="display:flex;align-items:flex-end;gap:4px;justify-content:space-between;flex:1;min-height:0">${weekBarHtml}</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;min-height:0">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.7px;text-transform:uppercase;margin-bottom:6px;flex-shrink:0">Skill Progress</div>
+        <div style="flex:1;min-height:0;overflow-y:auto">${renderSkillSlider()}</div>
       </div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-      <div class="card" style="margin-bottom:0">
-        <div class="card-title">
-          Today's Routine
-          <span style="font-size:11px;font-weight:400;color:var(--muted)">${new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'})}</span>
-          <button class="btn btn-sm" onclick="nav('routine')" style="margin-left:auto">Edit →</button>
+    <div style="display:grid;grid-template-columns:2.8fr 1fr;gap:8px;flex:1;min-height:0">
+      <div class="card" style="margin-bottom:0;display:flex;flex-direction:column;min-height:0;min-width:0">
+        <div class="card-title" style="flex-shrink:0;align-items:center">
+          <span style="flex-shrink:0">Today's Routine</span>
+          <span style="font-size:11px;font-weight:400;color:var(--muted);flex-shrink:0">${new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'})}</span>
+          ${(()=>{var rs=getTodayRoutineSummary();if(!rs.slots.length)return '';return `
+          <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:60px;margin-left:6px">
+            <div style="flex:1;max-width:160px;height:6px;background:var(--surface3);border-radius:4px;overflow:hidden">
+              <div style="height:100%;width:${rs.pct}%;background:${rs.pColor};border-radius:4px;transition:.4s"></div>
+            </div>
+            <span style="font-size:11px;font-weight:700;color:${rs.pColor};white-space:nowrap">${rs.done}/${rs.slots.length} · ${rs.pct}%</span>
+            ${rs.pct===100?'<span style="font-size:15px" title="All done!">🎉</span>':''}
+          </div>`;})()}
+          <button class="btn btn-sm" onclick="nav('routine')" style="margin-left:auto;flex-shrink:0">Edit →</button>
         </div>
-        ${renderRoutineDashRow()}
+        <div style="flex:1;min-height:0;min-width:0;display:flex;flex-direction:column;margin-top:8px">${renderRoutineDashRow()}</div>
       </div>
-      <div class="card" style="margin-bottom:0">
-        <div class="card-title">Today's To-Do
+      <div class="card" style="margin-bottom:0;display:flex;flex-direction:column;min-height:0">
+        <div class="card-title" style="flex-shrink:0">Today's To-Do
           <span style="font-size:11px;font-weight:400;color:var(--muted)">${pending_todos} pending</span>
           <button class="btn btn-sm btn-accent" onclick="nav('todo')" style="margin-left:auto">+ Add</button>
         </div>
-        ${(()=>{
+        <div style="flex:1;min-height:0;overflow-y:auto">${(()=>{
           var pending=todayTodos.filter(t=>!t.done);
           var doneT=todayTodos.filter(t=>t.done).slice(-2);
           var all=[...pending,...doneT];
           if(!all.length)return '<div class="empty">No tasks today — click + Add</div>';
-          var items=all.slice(0,8).map(t=>{
-            var pri=t.priority==='high'?'<span style="font-size:9px;font-weight:800;color:#fff;background:var(--coral);padding:1px 6px;border-radius:4px;letter-spacing:.5px">HIGH</span>':
-                    t.priority==='low'?'<span style="font-size:9px;color:var(--muted);border:1px solid var(--border2);padding:1px 6px;border-radius:4px">low</span>':'';
-            return '<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:9px;margin-bottom:5px;background:'+(t.done?'transparent':'var(--surface2)')+';border:1.5px solid '+(t.priority==='high'&&!t.done?'rgba(255,107,107,0.3)':t.done?'transparent':'var(--border)')+';">'
-              +'<input type="checkbox" class="todo-check" '+(t.done?'checked':'')+' onchange="dashToggleTodo(\''+t.id+'\')">'
-              +'<span style="flex:1;font-size:12px;font-weight:'+(t.done?400:600)+';'+(t.done?'text-decoration:line-through;color:var(--muted)':'color:var(--text)')+'">'+t.text+'</span>'
-              +pri
-              +'</div>';
-          }).join('');
-          // 2-column grid
-          var half=Math.ceil(all.slice(0,8).length/2);
-          var leftItems=all.slice(0,8).slice(0,half);
-          var rightItems=all.slice(0,8).slice(half);
           var mkItem=function(t){
             var pri=t.priority==='high'?'<span style="font-size:9px;font-weight:800;color:#fff;background:var(--coral);padding:1px 5px;border-radius:4px">!</span>':'';
             return '<div style="display:flex;align-items:center;gap:7px;padding:6px 9px;border-radius:8px;margin-bottom:4px;background:'+(t.done?'transparent':'var(--surface2)')+';border:1.5px solid '+(t.priority==='high'&&!t.done?'rgba(255,107,107,0.28)':t.done?'var(--border)':'var(--border)')+';">'
@@ -1526,44 +1803,58 @@ var renders={
               +'<span style="flex:1;font-size:12px;font-weight:'+(t.done?400:600)+';'+(t.done?'text-decoration:line-through;color:var(--muted2)':'color:var(--text)')+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+t.text+'</span>'
               +pri+'</div>';
           };
-          return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 8px">'
-            +'<div>'+leftItems.map(mkItem).join('')+'</div>'
-            +'<div>'+rightItems.map(mkItem).join('')+'</div>'
-            +'</div>';
-        })()}
+          return '<div>'+all.slice(0,8).map(mkItem).join('')+'</div>';
+        })()}</div>
       </div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div class="card" style="margin-bottom:0">
-        <div class="card-title">Upcoming Deadlines <button class="btn btn-sm" onclick="nav('deadlines')" style="margin-left:auto">Manage →</button></div>
-        ${upcoming_dl.length?upcoming_dl.map(d=>{
-          var diff=days_between(d.date,today());
-          var urgent=diff<=3;
-          return `<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
-            <div style="flex:1"><div style="font-size:12px;font-weight:600;color:${urgent?'var(--coral)':'var(--text)'}">${d.text}</div><div style="font-size:10px;color:var(--muted)">${d.date}</div></div>
-            <span class="days-left ${diff<=3?'days-over':diff<=7?'days-warn':'days-ok'}" style="font-weight:700">${diff===0?'Today':diff<0?'Overdue':diff+'d'}</span>
-          </div>`;
-        }).join(''):'<div class="empty">No upcoming deadlines</div>'}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;min-height:0">
+      <div class="card" style="margin-bottom:0;display:flex;flex-direction:column;min-height:0">
+        <div class="card-title" style="flex-shrink:0">Deadlines <button class="btn btn-sm" onclick="nav('deadlines');setTimeout(()=>{var el=document.getElementById('dl-inp');if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.focus();}},150)" style="margin-left:auto">Manage →</button></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1;min-height:0;overflow-y:auto">
+          <div>
+            <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">📅 Upcoming <span style="font-weight:400;text-transform:none">(starts)</span></div>
+            ${upcoming_by_start.length?upcoming_by_start.map(d=>{
+              var sd=d.startDate||d.date;
+              var diff=days_between(sd,today());
+              return `<div style="padding:5px 0;border-bottom:1px solid var(--border)">
+                <div style="font-size:11px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.text}</div>
+                <div style="font-size:10px;color:var(--muted)">Starts: ${sd} ${diff===0?'· Today':diff>0?'· in '+diff+'d':'· started'}</div>
+              </div>`;
+            }).join(''):'<div class="empty" style="padding:8px 0">No upcoming deadlines</div>'}
+          </div>
+          <div>
+            <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">⏰ Recent <span style="font-weight:400;text-transform:none">(ends)</span></div>
+            ${recent_by_end.length?recent_by_end.map(d=>{
+              var diff=days_between(d.date,today());
+              var urgent=!d.done&&diff<=3;
+              return `<div style="padding:5px 0;border-bottom:1px solid var(--border)">
+                <div style="font-size:11px;font-weight:600;color:${d.done?'var(--green)':urgent?'var(--coral)':'var(--text)'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.done?'✓ ':''}${d.text}</div>
+                <div style="font-size:10px;color:var(--muted)">Ends: ${d.date} ${d.done?'· Completed':diff===0?'· Today':diff<0?'· Overdue':'· in '+diff+'d'}</div>
+              </div>`;
+            }).join(''):'<div class="empty" style="padding:8px 0">No recent deadlines</div>'}
+          </div>
+        </div>
       </div>
-      <div class="card" style="margin-bottom:0">
-        <div class="card-title">Recent Sessions <button class="btn btn-sm" onclick="nav('history')" style="margin-left:auto">See all →</button></div>
-        ${recentHtml}
+      <div class="card" style="margin-bottom:0;display:flex;flex-direction:column;min-height:0">
+        <div class="card-title" style="flex-shrink:0">Recent Sessions <button class="btn btn-sm" onclick="nav('history')" style="margin-left:auto">See all →</button></div>
+        <div style="flex:1;min-height:0;overflow-y:auto">${recentHtml}</div>
       </div>
     </div>`;
     var dl=(DB.settings&&DB.settings.dashLayout)||'default';
     var mc=document.getElementById('main-content');
     if(mc){mc.removeAttribute('data-dash');if(dl&&dl!=='default')mc.setAttribute('data-dash',dl);}
     startSliderAuto();
+    updateRoutineRowFade();
   },
 
   timer: function(){
     document.getElementById('main-content').innerHTML=`
     <div class="card" style="margin-bottom:14px">
       <div class="card-title">Live Timers <span style="font-size:11px;color:var(--muted);font-weight:400">Goal: 2h per session</span></div>
-      ${['learn','prac','read'].map(k=>{
-        var colors={learn:'var(--accent)',prac:'var(--green)',read:'var(--amber)'};
-        var labels={learn:'Learning','prac':'Practice',read:'Reading'};
-        var banlabels={learn:'শেখা',prac:'অনুশীলন',read:'বই পড়া'};
+      ${['learn','prac'].map(k=>{
+        var colors={learn:'var(--accent)',prac:'var(--green)'};
+        var labels={learn:'Learning','prac':'Practice'};
+        var banlabels={learn:'শেখা',prac:'অনুশীলন'};
         var pct=Math.min(100,Math.round(timers[k].s/GOAL_SECS*100));
         return `<div class="timer-block">
           <div class="timer-dot" style="background:${colors[k]}"></div>
@@ -1581,10 +1872,20 @@ var renders={
         <div class="progress-track"><div class="progress-fill" id="tp-${k}" style="background:${colors[k]};width:${pct}%"></div></div>`;
       }).join('')}
     </div>
+    <div class="card" style="margin-bottom:14px;text-align:center">
+      <div style="font-size:38px;margin-bottom:8px">🍅</div>
+      <div class="card-title" style="justify-content:center;border:none;padding:0;margin-bottom:6px">Pomodoro Timer</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Focus sessions get auto-saved to Skill or Academic — open the floating widget anytime from the 🍅 button at the bottom-right.</div>
+      <button class="btn btn-accent" onclick="pomoFloatToggle()" style="padding:10px 24px">🍅 Open Pomodoro</button>
+    </div>
     <div class="card">
-      <div class="card-title">Save Session</div>
-      <div style="margin-bottom:12px">
-        <div class="label">Which skill? (optional — or log properly in Log Session)</div>
+      <div class="card-title">Save Manual Session</div>
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <button id="tsave-mode-skill" onclick="window._timerSaveMode='skill';_refreshTimerSaveMode()" style="flex:1;padding:7px;border-radius:9px;border:1.5px solid var(--accent);background:var(--accent-glow);color:var(--accent);font-size:12px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif">🧠 Skill</button>
+        <button id="tsave-mode-acad" onclick="window._timerSaveMode='academic';_refreshTimerSaveMode()" style="flex:1;padding:7px;border-radius:9px;border:1.5px solid var(--border2);background:var(--surface2);color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif">🎓 Academic</button>
+      </div>
+      <div class="field">
+        <div class="label" id="tsave-subj-label">Which skill? (optional)</div>
         <select id="t-skill-sel">
           <option value="">— General session —</option>
           ${DB.skills.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')}
@@ -1604,15 +1905,26 @@ var renders={
   },
 
   log: function(){
+    if(!window._logMode) window._logMode='skill';
+    var mode=window._logMode;
+    var acadSubjs=(DB.academic&&DB.academic.subjects)||[];
+    var subjOpts= mode==='academic'
+      ? acadSubjs.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')
+      : DB.skills.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
     document.getElementById('main-content').innerHTML=`
     <div class="card">
       <div class="card-title">Log a Study Session</div>
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <button data-m="skill" onclick="window._logMode='skill';renders.log()" style="flex:1;padding:9px;border-radius:10px;border:1.5px solid ${mode==='skill'?'var(--accent)':'var(--border2)'};background:${mode==='skill'?'var(--accent-glow)':'var(--surface2)'};color:${mode==='skill'?'var(--accent)':'var(--muted)'};font-size:13px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif">🧠 Skill</button>
+        <button data-m="academic" onclick="window._logMode='academic';renders.log()" style="flex:1;padding:9px;border-radius:10px;border:1.5px solid ${mode==='academic'?'var(--accent)':'var(--border2)'};background:${mode==='academic'?'var(--accent-glow)':'var(--surface2)'};color:${mode==='academic'?'var(--accent)':'var(--muted)'};font-size:13px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif">🎓 Academic</button>
+      </div>
+      ${mode==='academic'&&!acadSubjs.length?`<div class="empty" style="margin-bottom:12px">No academic subjects yet. <a onclick="nav('academic')" style="color:var(--accent);cursor:pointer">Add one in Academic Tracker →</a></div>`:''}
       <div class="card-grid grid2" style="margin-bottom:12px">
         <div class="field">
-          <div class="label">Skill / Subject *</div>
+          <div class="label">${mode==='academic'?'Subject':'Skill'} *</div>
           <select id="log-skill">
-            <option value="">Select skill...</option>
-            ${DB.skills.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')}
+            <option value="">Select ${mode==='academic'?'subject':'skill'}...</option>
+            ${subjOpts}
           </select>
         </div>
         <div class="field">
@@ -1624,18 +1936,14 @@ var renders={
         <div class="label">Topic Covered *</div>
         <input type="text" id="log-topic" placeholder="e.g. Linear Regression, File Handling, Limits...">
       </div>
-      <div class="card-grid grid3" style="margin-bottom:12px">
+      <div class="card-grid grid2" style="margin-bottom:12px">
         <div class="field">
-          <div class="label">Learn Time (minutes)</div>
+          <div class="label">📖 Learn Time (minutes)</div>
           <input type="number" id="log-learn" placeholder="0" min="0">
         </div>
         <div class="field">
-          <div class="label">Practice Time (mins)</div>
+          <div class="label">💻 Practice Time (mins)</div>
           <input type="number" id="log-prac" placeholder="0" min="0">
-        </div>
-        <div class="field">
-          <div class="label">Reading Time (mins)</div>
-          <input type="number" id="log-read" placeholder="0" min="0">
         </div>
       </div>
       <div class="field">
@@ -1664,33 +1972,139 @@ var renders={
       var pracH=Math.round(tot.prac/3600*10)/10;
       var totalH=learnH+pracH;
       var pct=Math.min(100,Math.round(totalH/maxH*100));
+      var gp=goal_progress_for_skill(sk);
+      var isComplete=!!sk.completionDate;
+      var deadlineDiff=sk.deadline?days_between(sk.deadline,today()):null;
+      var overdueTag=(!isComplete&&deadlineDiff!==null&&deadlineDiff<0)?' <span style="color:var(--coral);font-weight:800">('+Math.abs(deadlineDiff)+'d overdue)</span>':(!isComplete&&deadlineDiff!==null&&deadlineDiff>=0)?' <span style="color:var(--muted)">('+deadlineDiff+'d left)</span>':'';
+      var dateRow='<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:10.5px;color:var(--muted);margin:-2px 0 10px;padding-bottom:8px;border-bottom:1px solid var(--border)">'
+        +'<span>🚀 Start: <strong style="color:var(--text)">'+(sk.startDate||'—')+'</strong></span>'
+        +(sk.deadline?'<span>🎯 Deadline: <strong style="color:'+(isComplete?'var(--text)':deadlineDiff<0?'var(--coral)':deadlineDiff<=7?'var(--amber)':'var(--text)')+'">'+sk.deadline+'</strong>'+overdueTag+'</span>':'<span style="font-style:italic">No deadline set</span>')
+        +(isComplete?'<span>✅ Completed: <strong style="color:var(--green)">'+sk.completionDate+'</strong></span>':'')
+        +'</div>';
+      // Goal progress bars (weekly & monthly target vs actual + ETA)
+      var goalRow='';
+      if(gp.weekly.target||gp.monthly.target){
+        goalRow='<div style="margin-bottom:10px;display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+          +['weekly','monthly'].map(function(period){
+            var g=gp[period];
+            if(!g.target) return '<div style="font-size:10px;color:var(--muted2);font-style:italic;padding:6px 0">No '+period+' target set</div>';
+            var barPct=Math.min(100,g.pct);
+            var over=g.actual>=g.target;
+            return '<div>'
+              +'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">'
+              +'<span style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">'+(period==='weekly'?'This Week':'This Month')+'</span>'
+              +'<span style="font-size:10px;color:var(--text)">'+g.actual+'h / '+g.target+'h</span>'
+              +'</div>'
+              +'<div class="progress-track"><div class="progress-fill" style="background:'+(over?'var(--green)':sk.color)+';width:'+barPct+'%"></div></div>'
+              +'<div style="font-size:10px;margin-top:3px">'+goalEtaLabel(g.eta)+'</div>'
+              +'</div>';
+          }).join('')
+          +'</div>';
+      }
       return `<div class="skill-card">
         <div class="skill-header">
           <div class="skill-color" style="background:${sk.color};width:16px;height:16px;border-radius:4px"></div>
-          <div class="skill-name">${sk.name}</div>
+          <div class="skill-name">${sk.name}${isComplete?' <span style="font-size:10px;color:var(--green);font-weight:800">✓ DONE</span>':''}</div>
           <div class="skill-hours">${totalH}h / ${maxH}h goal</div>
+          <button class="icon-btn" onclick="toggleSkillComplete('${sk.id}')" title="${isComplete?'Mark incomplete':'Mark complete'}" style="color:${isComplete?'var(--green)':'var(--muted2)'}">${isComplete?'✓':'○'}</button>
           <button class="icon-btn" onclick="deleteSkill('${sk.id}')">✕</button>
         </div>
+        ${dateRow}
         <div style="margin-bottom:6px">
           <div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:10px;color:var(--muted)">Overall Progress</span><span style="font-size:10px;color:var(--accent)">${pct}%</span></div>
           <div class="progress-track"><div class="progress-fill" style="background:${sk.color};width:${pct}%"></div></div>
         </div>
         <div class="skill-bar-wrap">
-          <span class="skill-bar-label" style="font-size:10px;color:var(--muted)">Learn ${learnH}h</span>
+          <span class="skill-bar-label" style="font-size:15px;font-weight:800;color:var(--text)">📖 Learn ${learnH}h</span>
           <div class="skill-bar"><div class="skill-bar-fill" style="background:var(--accent);width:${Math.min(100,Math.round(learnH/maxH*100))}%"></div></div>
         </div>
         <div class="skill-bar-wrap">
-          <span class="skill-bar-label" style="font-size:10px;color:var(--muted)">Prac ${pracH}h</span>
+          <span class="skill-bar-label" style="font-size:15px;font-weight:800;color:var(--text)">🔧 Prac ${pracH}h</span>
           <div class="skill-bar"><div class="skill-bar-fill" style="background:var(--green);width:${Math.min(100,Math.round(pracH/maxH*100))}%"></div></div>
         </div>
+        ${goalRow}
         ${topics.length?`<div class="skill-topics">${topics.map(t=>`<span class="topic-chip">${t}</span>`).join('')}</div>`:''}
         <div class="skill-actions">
           <button class="btn btn-sm" onclick="nav('log')">+ Log Session</button>
           <button class="btn btn-sm" onclick="filterHistory('${sk.id}')">View History →</button>
-          ${sk.deadline?`<span style="font-size:11px;color:var(--muted);margin-left:auto">Deadline: ${sk.deadline}</span>`:''}
         </div>
       </div>`;
     }).join(''):'<div class="empty">No skills added yet.<br>Click "+ Add Skill" to start.</div>';
+    document.getElementById('main-content').innerHTML=content;
+  },
+
+  mysubjects: function(){
+    if(!DB.academic)DB.academic={subjects:[],exams:[],grades:[]};
+    var subs=DB.academic.subjects||[];
+    document.getElementById('topbar-actions').innerHTML=`<button class="btn btn-accent" onclick="addAcademicSubject()">+ Add Subject</button>`;
+    var content=subs.length?subs.map(sk=>{
+      var tot=skill_total(sk.id);
+      var topics=[...new Set(DB.sessions.filter(s=>s.skillId===sk.id&&s.topic).map(s=>s.topic))].slice(0,6);
+      var maxH=sk.goalHours||100;
+      var learnH=Math.round(tot.learn/3600*10)/10;
+      var pracH=Math.round(tot.prac/3600*10)/10;
+      var totalH=learnH+pracH;
+      var pct=Math.min(100,Math.round(totalH/maxH*100));
+      var gp=goal_progress_for_skill(sk);
+      var isComplete=!!sk.completionDate;
+      var deadlineDiff=sk.deadline?days_between(sk.deadline,today()):null;
+      var overdueTag=(!isComplete&&deadlineDiff!==null&&deadlineDiff<0)?' <span style="color:var(--coral);font-weight:800">('+Math.abs(deadlineDiff)+'d overdue)</span>':(!isComplete&&deadlineDiff!==null&&deadlineDiff>=0)?' <span style="color:var(--muted)">('+deadlineDiff+'d left)</span>':'';
+      var dateRow='<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:10.5px;color:var(--muted);margin:-2px 0 10px;padding-bottom:8px;border-bottom:1px solid var(--border)">'
+        +'<span>🚀 Start: <strong style="color:var(--text)">'+(sk.startDate||'—')+'</strong></span>'
+        +(sk.deadline?'<span>🎯 Deadline: <strong style="color:'+(isComplete?'var(--text)':deadlineDiff<0?'var(--coral)':deadlineDiff<=7?'var(--amber)':'var(--text)')+'">'+sk.deadline+'</strong>'+overdueTag+'</span>':'<span style="font-style:italic">No deadline set</span>')
+        +(isComplete?'<span>✅ Completed: <strong style="color:var(--green)">'+sk.completionDate+'</strong></span>':'')
+        +(sk.code?'<span>📋 '+sk.code+'</span>':'')
+        +(sk.teacher?'<span>👤 '+sk.teacher+'</span>':'')
+        +'</div>';
+      // Goal progress bars (weekly & monthly target vs actual + ETA)
+      var goalRow='';
+      if(gp.weekly.target||gp.monthly.target){
+        goalRow='<div style="margin-bottom:10px;display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+          +['weekly','monthly'].map(function(period){
+            var g=gp[period];
+            if(!g.target) return '<div style="font-size:10px;color:var(--muted2);font-style:italic;padding:6px 0">No '+period+' target set</div>';
+            var barPct=Math.min(100,g.pct);
+            var over=g.actual>=g.target;
+            return '<div>'
+              +'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">'
+              +'<span style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">'+(period==='weekly'?'This Week':'This Month')+'</span>'
+              +'<span style="font-size:10px;color:var(--text)">'+g.actual+'h / '+g.target+'h</span>'
+              +'</div>'
+              +'<div class="progress-track"><div class="progress-fill" style="background:'+(over?'var(--green)':sk.color)+';width:'+barPct+'%"></div></div>'
+              +'<div style="font-size:10px;margin-top:3px">'+goalEtaLabel(g.eta)+'</div>'
+              +'</div>';
+          }).join('')
+          +'</div>';
+      }
+      return `<div class="skill-card">
+        <div class="skill-header">
+          <div class="skill-color" style="background:${sk.color};width:16px;height:16px;border-radius:4px"></div>
+          <div class="skill-name">🎓 ${sk.name}${isComplete?' <span style="font-size:10px;color:var(--green);font-weight:800">✓ DONE</span>':''}</div>
+          <div class="skill-hours">${totalH}h / ${maxH}h goal</div>
+          <button class="icon-btn" onclick="toggleSubjectComplete('${sk.id}')" title="${isComplete?'Mark incomplete':'Mark complete'}" style="color:${isComplete?'var(--green)':'var(--muted2)'}">${isComplete?'✓':'○'}</button>
+          <button class="icon-btn" onclick="deleteSubject('${sk.id}')">✕</button>
+        </div>
+        ${dateRow}
+        <div style="margin-bottom:6px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:10px;color:var(--muted)">Overall Progress</span><span style="font-size:10px;color:var(--accent)">${pct}%</span></div>
+          <div class="progress-track"><div class="progress-fill" style="background:${sk.color};width:${pct}%"></div></div>
+        </div>
+        <div class="skill-bar-wrap">
+          <span class="skill-bar-label" style="font-size:15px;font-weight:800;color:var(--text)">📖 Learn ${learnH}h</span>
+          <div class="skill-bar"><div class="skill-bar-fill" style="background:var(--accent);width:${Math.min(100,Math.round(learnH/maxH*100))}%"></div></div>
+        </div>
+        <div class="skill-bar-wrap">
+          <span class="skill-bar-label" style="font-size:15px;font-weight:800;color:var(--text)">🔧 Prac ${pracH}h</span>
+          <div class="skill-bar"><div class="skill-bar-fill" style="background:var(--green);width:${Math.min(100,Math.round(pracH/maxH*100))}%"></div></div>
+        </div>
+        ${goalRow}
+        ${topics.length?`<div class="skill-topics">${topics.map(t=>`<span class="topic-chip">${t}</span>`).join('')}</div>`:''}
+        <div class="skill-actions">
+          <button class="btn btn-sm" onclick="window._logMode='academic';nav('log')">+ Log Session</button>
+          <button class="btn btn-sm" onclick="filterHistory('${sk.id}')">View History →</button>
+        </div>
+      </div>`;
+    }).join(''):'<div class="empty">No subjects added yet.<br>Click "+ Add Subject" to start.</div>';
     document.getElementById('main-content').innerHTML=content;
   },
 
@@ -1698,19 +2112,22 @@ var renders={
     var skill_filter=window._histFilter||'';
     var filtered=skill_filter?DB.sessions.filter(s=>s.skillId===skill_filter):DB.sessions;
     var sorted=[...filtered].reverse();
+    var acadSubjs=(DB.academic&&DB.academic.subjects)||[];
     document.getElementById('topbar-actions').innerHTML=`
       <select onchange="filterHistory(this.value)" style="width:auto;padding:6px 10px">
-        <option value="">All Skills</option>
-        ${DB.skills.map(s=>`<option value="${s.id}" ${s.id===skill_filter?'selected':''}>${s.name}</option>`).join('')}
+        <option value="">All Skills &amp; Subjects</option>
+        ${DB.skills.map(s=>`<option value="${s.id}" ${s.id===skill_filter?'selected':''}>🧠 ${s.name}</option>`).join('')}
+        ${acadSubjs.map(s=>`<option value="${s.id}" ${s.id===skill_filter?'selected':''}>🎓 ${s.name}</option>`).join('')}
       </select>`;
     document.getElementById('main-content').innerHTML=sorted.length?sorted.map(s=>{
-      var sk=skill_by_id(s.skillId);
+      var sk=subjectById(s.skillId);
+      var isAcad=isAcadId(s.skillId);
       var tot=(s.learn||0)+(s.prac||0)+(s.read||0);
       return `<div class="log-entry">
         <div class="log-date">
           <span>${s.date}${s.difficulty?' · '+s.difficulty:''}</span>
           <div style="display:flex;gap:6px;align-items:center">
-            ${sk?`<span class="tag tag-skill" style="background:${sk.color}22;color:${sk.color}">${sk.name}</span>`:''}
+            ${sk?`<span class="tag tag-skill" style="background:${sk.color}22;color:${sk.color}">${isAcad?'🎓':'🧠'} ${sk.name}</span>`:''}
             <button class="icon-btn" onclick="deleteSession('${s.id}')">✕</button>
           </div>
         </div>
@@ -1800,9 +2217,15 @@ var renders={
       </div>
       <div class="card-grid grid2" style="margin-bottom:10px">
         <div class="field">
-          <div class="label">Date *</div>
+          <div class="label">Start Date</div>
+          <input type="date" id="dl-startdate" value="${today()}">
+        </div>
+        <div class="field">
+          <div class="label">Deadline (ends) *</div>
           <input type="date" id="dl-date">
         </div>
+      </div>
+      <div class="card-grid grid2" style="margin-bottom:10px">
         <div class="field">
           <div class="label">Type</div>
           <select id="dl-type">
@@ -1810,6 +2233,9 @@ var renders={
             <option value="month">Monthly</option>
             <option value="skill">Skill Deadline</option>
           </select>
+        </div>
+        <div class="field" style="display:flex;align-items:flex-end">
+          <div style="font-size:11px;color:var(--muted);padding-bottom:9px">💡 Set a Start Date in the future to make this an <strong style="color:var(--text)">upcoming</strong> deadline.</div>
         </div>
       </div>
       <button class="btn btn-accent" onclick="addDeadline()">+ Add Deadline</button>
@@ -1901,6 +2327,15 @@ var renders={
       });
       if(t.learn||t.prac)skillStats[sk.id]={...t,sk};
     });
+    var acadStatsW={};
+    ((DB.academic&&DB.academic.subjects)||[]).forEach(sk=>{
+      var t={learn:0,prac:0,topics:[]};
+      DB.sessions.filter(s=>s.date>=week[0]&&s.date<=week[6]&&s.skillId===sk.id).forEach(s=>{
+        t.learn+=s.learn||0;t.prac+=s.prac||0;
+        if(s.topic&&!t.topics.includes(s.topic))t.topics.push(s.topic);
+      });
+      if(t.learn||t.prac)acadStatsW[sk.id]={...t,sk};
+    });
     var weekDeadlines=DB.deadlines.filter(d=>d.type==='week'&&!d.done);
     routineInit();
     var slots=DB.routine.slots;
@@ -1979,10 +2414,57 @@ var renders={
 
     document.getElementById('main-content').innerHTML=`
     <div class="card-grid grid4" style="margin-bottom:14px">
-      <div class="stat"><div class="stat-label">Learning</div><div class="stat-val" style="color:var(--accent)">${hm(stats.learn)}</div><div class="stat-sub">this week</div></div>
-      <div class="stat"><div class="stat-label">Practice</div><div class="stat-val" style="color:var(--green)">${hm(stats.prac)}</div><div class="stat-sub">this week</div></div>
-      <div class="stat"><div class="stat-label">Reading</div><div class="stat-val" style="color:var(--amber)">${hm(stats.read)}</div><div class="stat-sub">this week</div></div>
+      <div class="stat"><div class="stat-label">🧠 Skill Learning</div><div class="stat-val" style="color:var(--accent)">${hm(stats.learn)}</div><div class="stat-sub">this week</div></div>
+      <div class="stat"><div class="stat-label">🔧 Skill Practice</div><div class="stat-val" style="color:var(--green)">${hm(stats.prac)}</div><div class="stat-sub">this week</div></div>
       <div class="stat"><div class="stat-label">Sessions</div><div class="stat-val" style="color:var(--coral)">${stats.sessions}</div><div class="stat-sub">logged</div></div>
+      <div class="stat"><div class="stat-label">Active Days</div><div class="stat-val" style="color:var(--amber)">${week.filter(d=>DB.sessions.some(s=>s.date===d)).length}/7</div><div class="stat-sub">this week</div></div>
+    </div>
+    ${(()=>{
+      var acadSubjs=(DB.academic&&DB.academic.subjects)||[];
+      if(!acadSubjs.length)return '';
+      var acadIds2=acadSubjs.map(function(s){return s.id;});
+      var wAcadLearn=0,wAcadPrac=0;
+      week.forEach(function(d){DB.sessions.filter(function(s){return s.date===d&&acadIds2.indexOf(s.skillId)!==-1;}).forEach(function(s){wAcadLearn+=s.learn||0;wAcadPrac+=s.prac||0;});});
+      return '<div class="card-grid grid4" style="margin-bottom:14px">'
+        +'<div class="stat" style="border:1px solid rgba(124,106,255,.25);background:var(--accent-glow)"><div class="stat-label">🎓 Acad. Learning</div><div class="stat-val" style="color:var(--accent)">'+hm(wAcadLearn)+'</div><div class="stat-sub">this week</div></div>'
+        +'<div class="stat" style="border:1px solid rgba(61,214,140,.2);background:var(--green-bg)"><div class="stat-label">🎓 Acad. Practice</div><div class="stat-val" style="color:var(--green)">'+hm(wAcadPrac)+'</div><div class="stat-sub">this week</div></div>'
+        +'<div class="stat" style="border:1px solid rgba(124,106,255,.25)"><div class="stat-label">🎓 Acad. Sessions</div><div class="stat-val" style="color:var(--amber)">'+DB.sessions.filter(function(s){return week.indexOf(s.date)!==-1&&acadIds2.indexOf(s.skillId)!==-1;}).length+'</div><div class="stat-sub">this week</div></div>'
+        +'<div class="stat" style="border:1px solid rgba(124,106,255,.25)"><div class="stat-label">🎓 Total Acad. Time</div><div class="stat-val" style="color:var(--coral)">'+hm(wAcadLearn+wAcadPrac)+'</div><div class="stat-sub">this week</div></div>'
+        +'</div>';
+    })()}
+    <div class="card-grid grid4">
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-title">Weekly Overview</div>
+      <div style="display:flex;align-items:flex-end;gap:8px;height:130px;padding-top:20px">
+      ${week.map(d=>{
+        var dt=new Date(d+'T12:00');
+        var isT=d===today();
+        var dSkillSecs=0,dAcadSecs=0;
+        var acadIdsW=((DB.academic&&DB.academic.subjects)||[]).map(s=>s.id);
+        DB.sessions.filter(s=>s.date===d).forEach(s=>{
+          var t=(s.learn||0)+(s.prac||0);
+          if(acadIdsW.indexOf(s.skillId)!==-1) dAcadSecs+=t; else dSkillSecs+=t;
+        });
+        var maxDay=Math.max(3600,...week.map(wd=>{
+          var t=0;DB.sessions.filter(s=>s.date===wd).forEach(s=>t+=(s.learn||0)+(s.prac||0));return t;
+        }));
+        var skillPct=Math.round(dSkillSecs/maxDay*90);
+        var acadPct=Math.round(dAcadSecs/maxDay*90);
+        return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">
+          <div style="font-size:9px;color:${isT?'var(--amber)':'var(--muted)'}">${(dSkillSecs+dAcadSecs)>0?hm(dSkillSecs+dAcadSecs):''}</div>
+          <div style="display:flex;align-items:flex-end;height:90px;gap:2px">
+            <div style="width:14px;min-height:${dSkillSecs>0?4:0}px;height:${Math.max(dSkillSecs>0?4:0,skillPct)}px;background:${isT?'var(--amber)':'var(--accent)'};border-radius:5px 5px 0 0;opacity:${dSkillSecs>0?1:0.15};transition:.3s" title="Skill: ${hm(dSkillSecs)}"></div>
+            <div style="width:14px;min-height:${dAcadSecs>0?4:0}px;height:${Math.max(dAcadSecs>0?4:0,acadPct)}px;background:var(--green);border-radius:5px 5px 0 0;opacity:${dAcadSecs>0?0.85:0.15};transition:.3s" title="Academic: ${hm(dAcadSecs)}"></div>
+          </div>
+          <div style="font-size:9px;color:${isT?'var(--amber)':'var(--muted)'};font-weight:${isT?700:400}">${DAY_NAMES[dt.getDay()]}</div>
+        </div>`;
+      }).join('')}
+      </div>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:10px;font-size:10px;color:var(--muted)">
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--accent);display:inline-block"></span>Skill</span>
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--green);display:inline-block"></span>Academic</span>
+      </div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
       <div class="card">
@@ -2013,10 +2495,22 @@ var renders={
       </div>
     </div>
     ${Object.keys(skillStats).length?`<div class="card" style="margin-top:14px">
-      <div class="card-title">Skill Breakdown — This Week</div>
+      <div class="card-title">🧠 Skill Breakdown — This Week</div>
       ${Object.values(skillStats).map(({sk,learn,prac,topics})=>`
       <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border)">
         <div style="width:10px;height:10px;border-radius:3px;background:${sk.color}"></div>
+        <div style="font-size:13px;font-weight:600;min-width:120px">${sk.name}</div>
+        <div style="font-size:11px;color:var(--muted)">Learn: ${hm(learn)} · Practice: ${hm(prac)}</div>
+        <div style="flex:1;display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end">
+          ${topics.map(t=>`<span class="topic-chip">${t}</span>`).join('')}
+        </div>
+      </div>`).join('')}
+    </div>`:''}
+    ${Object.keys(acadStatsW).length?`<div class="card" style="margin-top:14px">
+      <div class="card-title">🎓 Academic Breakdown — This Week</div>
+      ${Object.values(acadStatsW).map(({sk,learn,prac,topics})=>`
+      <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border)">
+        <div style="width:10px;height:10px;border-radius:3px;background:${sk.color||'var(--accent)'}"></div>
         <div style="font-size:13px;font-weight:600;min-width:120px">${sk.name}</div>
         <div style="font-size:11px;color:var(--muted)">Learn: ${hm(learn)} · Practice: ${hm(prac)}</div>
         <div style="flex:1;display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end">
@@ -2043,6 +2537,15 @@ var renders={
       });
       if(t.learn||t.prac)skillStats[sk.id]={...t,sk};
     });
+    var acadStatsM={};
+    ((DB.academic&&DB.academic.subjects)||[]).forEach(sk=>{
+      var t={learn:0,prac:0,topics:[]};
+      DB.sessions.filter(s=>s.date.startsWith(monthKey)&&s.skillId===sk.id).forEach(s=>{
+        t.learn+=s.learn||0;t.prac+=s.prac||0;
+        if(s.topic&&!t.topics.includes(s.topic))t.topics.push(s.topic);
+      });
+      if(t.learn||t.prac)acadStatsM[sk.id]={...t,sk};
+    });
     var cells='';
     for(var i=0;i<firstDay;i++)cells+='<div class="hm-cell empty-before"></div>';
     for(var d=1;d<=days;d++){
@@ -2066,7 +2569,23 @@ var renders={
       </div>
       <div class="stat"><div class="stat-label">Learning</div><div class="stat-val" style="color:var(--accent)">${hm(stats.learn)}</div><div class="stat-sub">${MON_NAMES[month]}</div></div>
       <div class="stat"><div class="stat-label">Practice</div><div class="stat-val" style="color:var(--green)">${hm(stats.prac)}</div><div class="stat-sub">${MON_NAMES[month]}</div></div>
-      <div class="stat"><div class="stat-label">Study</div><div class="stat-val" style="color:var(--amber)">${hm(stats.read)}</div><div class="stat-sub">${MON_NAMES[month]}</div></div>
+    </div>
+    ${(()=>{
+      var acadSubjsM=(DB.academic&&DB.academic.subjects)||[];
+      if(!acadSubjsM.length)return '';
+      var acadIdsM=acadSubjsM.map(function(s){return s.id;});
+      var mAcadLearn=0,mAcadPrac=0;
+      var mPrefix=get_month_dates().year+'-'+pad(get_month_dates().month+1);
+      DB.sessions.filter(function(s){return s.date.startsWith(mPrefix)&&acadIdsM.indexOf(s.skillId)!==-1;}).forEach(function(s){mAcadLearn+=s.learn||0;mAcadPrac+=s.prac||0;});
+      return '<div class="card-grid grid4" style="margin-bottom:14px">'
+        +'<div class="stat" style="border:1px solid rgba(124,106,255,.25);background:var(--accent-glow)"><div class="stat-label">🎓 Acad. Learning</div><div class="stat-val" style="color:var(--accent)">'+hm(mAcadLearn)+'</div><div class="stat-sub">this month</div></div>'
+        +'<div class="stat" style="border:1px solid rgba(61,214,140,.2);background:var(--green-bg)"><div class="stat-label">🎓 Acad. Practice</div><div class="stat-val" style="color:var(--green)">'+hm(mAcadPrac)+'</div><div class="stat-sub">this month</div></div>'
+        +'<div class="stat" style="border:1px solid rgba(124,106,255,.25)"><div class="stat-label">🎓 Acad. Sessions</div><div class="stat-val" style="color:var(--amber)">'+DB.sessions.filter(function(s){return s.date.startsWith(mPrefix)&&acadIdsM.indexOf(s.skillId)!==-1;}).length+'</div><div class="stat-sub">this month</div></div>'
+        +'<div class="stat" style="border:1px solid rgba(124,106,255,.25)"><div class="stat-label">🎓 Total Acad. Time</div><div class="stat-val" style="color:var(--coral)">'+hm(mAcadLearn+mAcadPrac)+'</div><div class="stat-sub">this month</div></div>'
+        +'</div>';
+    })()}
+    <div class="card-grid grid4">
+      <div class="stat"><div class="stat-label">Sessions</div><div class="stat-val" style="color:var(--amber)">${stats.sessions}</div><div class="stat-sub">${MON_NAMES[month]}</div></div>
       <div class="stat"><div class="stat-label">Active Days</div><div class="stat-val" style="color:var(--coral)">${stats.days.size}/${days}</div><div class="stat-sub">days studied</div></div>
       <div class="stat"><div class="stat-label">Sessions</div><div class="stat-val" style="color:var(--purple)">${stats.sessions}</div><div class="stat-sub">logged</div></div>
     </div>
@@ -2172,11 +2691,25 @@ var renders={
       })()}
     </div>
     ${Object.keys(skillStats).length?`<div class="card" style="margin-top:14px">
-      <div class="card-title">Monthly Skill Progress</div>
+      <div class="card-title">🧠 Monthly Skill Progress</div>
       ${Object.values(skillStats).map(({sk,learn,prac,topics})=>`
       <div style="padding:10px 0;border-bottom:1px solid var(--border)">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
           <div style="width:10px;height:10px;border-radius:3px;background:${sk.color}"></div>
+          <div style="font-size:13px;font-weight:600">${sk.name}</div>
+          <div style="font-size:11px;color:var(--muted);margin-left:auto">Learn: ${hm(learn)} · Practice: ${hm(prac)}</div>
+        </div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          ${topics.map(t=>`<span class="topic-chip">${t}</span>`).join('')}
+        </div>
+      </div>`).join('')}
+    </div>`:''}
+    ${Object.keys(acadStatsM).length?`<div class="card" style="margin-top:14px">
+      <div class="card-title">🎓 Monthly Academic Progress</div>
+      ${Object.values(acadStatsM).map(({sk,learn,prac,topics})=>`
+      <div style="padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <div style="width:10px;height:10px;border-radius:3px;background:${sk.color||'var(--accent)'}"></div>
           <div style="font-size:13px;font-weight:600">${sk.name}</div>
           <div style="font-size:11px;color:var(--muted);margin-left:auto">Learn: ${hm(learn)} · Practice: ${hm(prac)}</div>
         </div>
@@ -2191,8 +2724,12 @@ function showDayDetail(d){
   var dt=new Date(d+'T12:00');
   var dayLabel=DAY_NAMES[dt.getDay()]+', '+dt.getDate()+' '+MON_NAMES[dt.getMonth()]+' '+dt.getFullYear();
   var sessions=DB.sessions.filter(function(s){return s.date===d;});
-  var learn=0,prac=0,read=0;
-  sessions.forEach(function(s){learn+=s.learn||0;prac+=s.prac||0;read+=s.read||0;});
+  // Split totals into Academic vs Skill, each broken into Learning vs Practice (Reading dropped)
+  var acadLearn=0,acadPrac=0,skillLearn=0,skillPrac=0;
+  sessions.forEach(function(s){
+    if(isAcadId(s.skillId)){ acadLearn+=s.learn||0; acadPrac+=s.prac||0; }
+    else { skillLearn+=s.learn||0; skillPrac+=s.prac||0; }
+  });
   // Routine - use frozen snapshot so deleted/changed routines still show
   routineInit();
   var dateWday=new Date(d+'T12:00').getDay();
@@ -2212,20 +2749,47 @@ function showDayDetail(d){
   // Todos pending that day
   var pendingTodos=getDateTodos(d).filter(function(t){return !t.done;});
 
-  var statHtml='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">';
-  statHtml+='<div style="background:var(--surface2);border-radius:10px;padding:12px;text-align:center"><div style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.6px;margin-bottom:4px">LEARNING</div><div style="font-size:20px;font-weight:700;color:var(--accent)">'+hm(learn)+'</div></div>';
-  statHtml+='<div style="background:var(--surface2);border-radius:10px;padding:12px;text-align:center"><div style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.6px;margin-bottom:4px">PRACTICE</div><div style="font-size:20px;font-weight:700;color:var(--green)">'+hm(prac)+'</div></div>';
-  statHtml+='<div style="background:var(--surface2);border-radius:10px;padding:12px;text-align:center"><div style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.6px;margin-bottom:4px">READING</div><div style="font-size:20px;font-weight:700;color:var(--amber)">'+hm(read)+'</div></div>';
+  var statHtml='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px">';
+  statHtml+='<div style="background:var(--surface2);border-radius:10px;padding:12px 8px;text-align:center;border:1px solid rgba(124,106,255,.25)"><div style="font-size:20px;margin-bottom:4px">🎓</div><div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.4px;margin-bottom:5px">ACAD. LEARN</div><div style="font-size:21px;font-weight:700;color:var(--accent)">'+hm(acadLearn)+'</div></div>';
+  statHtml+='<div style="background:var(--surface2);border-radius:10px;padding:12px 8px;text-align:center;border:1px solid rgba(61,214,140,.2)"><div style="font-size:20px;margin-bottom:4px">🎓</div><div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.4px;margin-bottom:5px">ACAD. PRAC</div><div style="font-size:21px;font-weight:700;color:var(--green)">'+hm(acadPrac)+'</div></div>';
+  statHtml+='<div style="background:var(--surface2);border-radius:10px;padding:12px 8px;text-align:center"><div style="font-size:20px;margin-bottom:4px">🧠</div><div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.4px;margin-bottom:5px">SKILL LEARN</div><div style="font-size:21px;font-weight:700;color:var(--accent)">'+hm(skillLearn)+'</div></div>';
+  statHtml+='<div style="background:var(--surface2);border-radius:10px;padding:12px 8px;text-align:center"><div style="font-size:20px;margin-bottom:4px">🧠</div><div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.4px;margin-bottom:5px">SKILL PRAC</div><div style="font-size:21px;font-weight:700;color:var(--green)">'+hm(skillPrac)+'</div></div>';
   statHtml+='</div>';
 
+  // Group sessions by subject (skillId) so the same skill/subject logged multiple
+  // times in a day collapses into a single row, summing learn/prac and merging topics.
+  var byId={};
+  var order=[];
+  sessions.forEach(function(s){
+    var key=s.skillId||('__none__'+s.topic);
+    if(!byId[key]){ byId[key]={learn:0,prac:0,topics:[],skillId:s.skillId}; order.push(key); }
+    byId[key].learn+=s.learn||0;
+    byId[key].prac+=s.prac||0;
+    if(s.topic&&byId[key].topics.indexOf(s.topic)===-1) byId[key].topics.push(s.topic);
+  });
+
   var sessHtml='<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.6px;margin-bottom:8px">SESSIONS</div>';
-  if(sessions.length){
-    sessions.forEach(function(s){
-      var sk=skillSnap.find(function(x){return x.id===s.skillId;})||DB.skills.find(function(x){return x.id===s.skillId;})||{name:'Unknown',color:'var(--accent)'};
+  if(order.length){
+    order.forEach(function(key){
+      var grp=byId[key];
+      var sk=subjectById(grp.skillId,skillSnap);
+      var acad=isAcadId(grp.skillId);
+      var typeTag='';
+      if(grp.learn>0&&grp.prac>0) typeTag='<span style="font-size:9px;font-weight:700;color:var(--accent);background:rgba(124,106,255,.14);padding:2px 6px;border-radius:5px;white-space:nowrap">📖 Learn + 🔧 Prac</span>';
+      else if(grp.learn>0) typeTag='<span style="font-size:9px;font-weight:700;color:var(--accent);background:rgba(124,106,255,.14);padding:2px 6px;border-radius:5px;white-space:nowrap">📖 Learning</span>';
+      else if(grp.prac>0) typeTag='<span style="font-size:9px;font-weight:700;color:var(--green);background:rgba(61,214,140,.14);padding:2px 6px;border-radius:5px;white-space:nowrap">🔧 Practice</span>';
+      var srcTag='<span style="font-size:9px;font-weight:700;color:var(--muted);white-space:nowrap">'+(acad?'🎓':'🧠')+'</span>';
+      var isPomo=grp.topics.some(function(t){return t==='Pomodoro session';});
       sessHtml+='<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">';
-      sessHtml+='<div style="width:8px;height:8px;border-radius:2px;background:'+sk.color+';flex-shrink:0"></div>';
-      sessHtml+='<span style="flex:1;font-size:13px;font-weight:500">'+sk.name+(s.topic?' · <span style="color:var(--muted);font-weight:400">'+s.topic+'</span>':'')+'</span>';
-      sessHtml+='<span style="font-size:12px;color:var(--accent)">'+hm((s.learn||0)+(s.prac||0)+(s.read||0))+'</span>';
+      if(isPomo){
+        sessHtml+='<span style="font-size:16px;flex-shrink:0" title="Pomodoro session">🍅</span>';
+      } else {
+        sessHtml+='<div style="width:8px;height:8px;border-radius:2px;background:'+sk.color+';flex-shrink:0"></div>';
+      }
+      sessHtml+=srcTag;
+      sessHtml+='<span style="flex:1;font-size:13px;font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+sk.name+(grp.topics.length&&!isPomo?' <span style="color:var(--muted);font-weight:400">· '+grp.topics.join(', ')+'</span>':isPomo?' <span style="color:var(--muted);font-weight:400">· Pomodoro</span>':'')+'</span>';
+      sessHtml+=typeTag;
+      sessHtml+='<span style="font-size:12px;color:var(--accent);white-space:nowrap">'+hm(grp.learn+grp.prac)+'</span>';
       sessHtml+='</div>';
     });
   } else {
@@ -2252,13 +2816,13 @@ function showDayDetail(d){
   var doneCnt_d2=allTodos_d2.filter(function(t){return t.done;}).length;
   var todoHtml='<div><div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.6px;margin-bottom:8px">TO-DOS ('+doneCnt_d2+'/'+allTodos_d2.length+' done)</div>';
   if(allTodos_d2.length){
-    allTodos_d2.slice(0,5).forEach(function(t){
+    // Show all todos — no limit
+    allTodos_d2.forEach(function(t){
       todoHtml+='<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">';
       if(t.done){todoHtml+='<span style="font-size:13px;color:var(--green)">&#10003;</span><span style="font-size:13px;text-decoration:line-through;color:var(--muted)">'+t.text+'</span>';}
       else{todoHtml+='<span style="font-size:12px;color:var(--amber)">&#9633;</span><span style="font-size:13px">'+t.text+'</span>';}
       todoHtml+='</div>';
     });
-    if(allTodos_d2.length>5)todoHtml+='<div style="font-size:11px;color:var(--muted2);margin-top:4px">+'+(allTodos_d2.length-5)+' more...</div>';
   } else {
     todoHtml+='<div style="color:var(--muted2);font-size:13px;font-style:italic">No tasks that day</div>';
   }
@@ -2266,7 +2830,7 @@ function showDayDetail(d){
 
   var isToday=d===today();
   var html='<div class="modal-overlay" id="daydtl-modal" onclick="if(event.target.id===\'daydtl-modal\')document.getElementById(\'daydtl-modal\').remove()">'
-    +'<div class="modal" style="width:480px;max-height:80vh;overflow-y:auto">'
+    +'<div class="modal" style="width:520px;max-height:80vh;overflow-y:auto">'
     +'<div class="modal-title" style="display:flex;align-items:center;gap:8px">'
     +'<span>&#128197;</span>'
     +'<span style="flex:1">'+(isToday?'<span style="color:var(--amber)">&mdash; Today &nbsp;</span>':'')+dayLabel+'</span>'
@@ -2287,17 +2851,454 @@ function startT(k){if(timers[k].run)return;timers[k].run=true;timers[k].iv=setIn
 function stopT(k){clearInterval(timers[k].iv);timers[k].run=false;}
 function resetT(k){stopT(k);timers[k].s=0;var el=document.getElementById('td-'+k);if(el)el.textContent=fmt(0);var p=document.getElementById('tp-'+k);if(p)p.style.width='0%';}
 
+// ════════════════════════════════════════════════
+// POMODORO ENGINE — floating widget, drag, minimize,
+// skill/academic × learning/practice fully separated,
+// break durations customizable via Settings
+// ════════════════════════════════════════════════
+if(!window._pomo) window._pomo = {
+  duration: (DB.settings&&DB.settings.pomoDuration)||25, // focus minutes
+  mode: 'skill',        // 'skill' | 'academic'
+  type: 'learn',        // 'learn' | 'prac'
+  phase: 'focus',       // 'focus' | 'short'
+  topic: '',            // what the user is working on this session
+  session: 0,
+  running: false,
+  remaining: ((DB.settings&&DB.settings.pomoDuration)||25)*60,
+  interval: null,
+  skillId: '',
+  acadId: '',
+};
+if(!window._pomoLog) window._pomoLog = [];
+
+function _pomoPhaseSecs(ph){
+  if(ph==='focus') return (window._pomo.duration||25)*60;
+  return ((DB.settings&&DB.settings.pomoShort)||5)*60; // 'short' — the only break phase now
+}
+
+function _pomoAlarm(type){
+  try {
+    var ctx = new (window.AudioContext||window.webkitAudioContext)();
+    if(type==='break'){
+      // Focus done → break time: ascending triumphant chime, 3 rounds
+      var pattern=[
+        {f:523,t:0},{f:659,t:0.22},{f:784,t:0.44},{f:1047,t:0.66},
+        {f:523,t:1.1},{f:659,t:1.3},{f:784,t:1.5},{f:1047,t:1.7},
+        {f:784,t:2.2},{f:880,t:2.4},{f:1047,t:2.6},{f:1175,t:2.85}
+      ];
+      pattern.forEach(function(n){
+        var osc=ctx.createOscillator();var gain=ctx.createGain();
+        osc.connect(gain);gain.connect(ctx.destination);
+        osc.frequency.value=n.f;osc.type='sine';
+        gain.gain.setValueAtTime(0,ctx.currentTime+n.t);
+        gain.gain.linearRampToValueAtTime(0.32,ctx.currentTime+n.t+0.04);
+        gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+n.t+0.38);
+        osc.start(ctx.currentTime+n.t);osc.stop(ctx.currentTime+n.t+0.42);
+      });
+    } else {
+      // Break done → focus time: 3 alert pulses
+      var pulses=[0,0.55,1.1];
+      pulses.forEach(function(t){
+        [880,660,880].forEach(function(f,j){
+          var osc=ctx.createOscillator();var gain=ctx.createGain();
+          osc.connect(gain);gain.connect(ctx.destination);
+          osc.frequency.value=f;osc.type='square';
+          gain.gain.setValueAtTime(0,ctx.currentTime+t+j*0.13);
+          gain.gain.linearRampToValueAtTime(0.18,ctx.currentTime+t+j*0.13+0.03);
+          gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+t+j*0.13+0.25);
+          osc.start(ctx.currentTime+t+j*0.13);osc.stop(ctx.currentTime+t+j*0.13+0.28);
+        });
+      });
+    }
+  } catch(e){}
+  if(window.Notification&&Notification.permission==='granted'){
+    new Notification(type==='break'?'☕ Break time!':'🍅 Focus time!',{body:type==='break'?'Great job! Take a break.':'Break over — back to work!'});
+  }
+}
+// Alarm repeating interval — keeps firing until user clicks start for next phase
+var _pomoAlarmInterval=null;
+var _pomoAlarmSoundLoop=null;
+var _pomoAlarmModalOpen=false;
+function _pomoStartAlarmLoop(type){
+  _pomoStopAlarmLoop();
+  _pomoAlarm(type); // play immediately
+  _showPomoAlarmModal(type);
+  // Keep ringing every 4 seconds until user clicks
+  _pomoAlarmSoundLoop=setInterval(function(){ if(_pomoAlarmModalOpen) _pomoAlarm(type); },4000);
+}
+function _pomoStopAlarmLoop(){
+  if(_pomoAlarmInterval){ clearTimeout(_pomoAlarmInterval); _pomoAlarmInterval=null; }
+  if(_pomoAlarmSoundLoop){ clearInterval(_pomoAlarmSoundLoop); _pomoAlarmSoundLoop=null; }
+  _closePomoAlarmModal();
+}
+function _showPomoAlarmModal(type){
+  _closePomoAlarmModal();
+  _pomoAlarmModalOpen=true;
+  var isBreak=(type==='break');
+  var html='<div id="pomo-alarm-modal" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(4px)">'
+    +'<div style="background:var(--surface);border:1.5px solid '+(isBreak?'rgba(61,214,140,.4)':'rgba(124,106,255,.4)')+';border-radius:20px;padding:32px 28px;text-align:center;width:320px;box-shadow:0 20px 60px rgba(0,0,0,.6)">'
+    +'<div style="font-size:48px;margin-bottom:10px">'+(isBreak?'☕':'🍅')+'</div>'
+    +'<div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:6px">'+(isBreak?'Focus Complete!':'Break Complete!')+'</div>'
+    +'<div style="font-size:13px;color:var(--muted);margin-bottom:24px">'+(isBreak?'Time for a well-deserved break.':'Ready to focus again?')+'</div>'
+    +'<div style="display:flex;gap:10px;justify-content:center">'
+    +'<button onclick="_pomoAlarmStart(\''+type+'\')" style="flex:1;padding:12px;border-radius:12px;border:none;background:'+(isBreak?'var(--green)':'var(--accent)')+';color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif">▶ Start '+(isBreak?'Break':'Focus')+'</button>'
+    +'<button onclick="_pomoAlarmLater(\''+type+'\')" style="flex:1;padding:12px;border-radius:12px;border:1.5px solid var(--border2);background:var(--surface2);color:var(--muted);font-size:14px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif">⏱ Later</button>'
+    +'</div>'
+    +'<div style="font-size:11px;color:var(--muted2);margin-top:12px">Later = alarm again in 1 minute</div>'
+    +'</div></div>';
+  document.body.insertAdjacentHTML('beforeend',html);
+}
+function _closePomoAlarmModal(){
+  _pomoAlarmModalOpen=false;
+  var m=document.getElementById('pomo-alarm-modal');
+  if(m) m.remove();
+}
+function _pomoAlarmStart(type){
+  _closePomoAlarmModal();
+  if(_pomoAlarmInterval){clearInterval(_pomoAlarmInterval);_pomoAlarmInterval=null;}
+  var pomo=window._pomo;
+  if(!pomo) return;
+  // Now actually start the next phase
+  pomo.running=true;
+  pomo.interval=setInterval(_pomoTick,1000);
+  _pomoRefreshUI();
+}
+function _pomoAlarmLater(type){
+  // Stop sound loop while user is on break from the reminder
+  if(_pomoAlarmSoundLoop){clearInterval(_pomoAlarmSoundLoop);_pomoAlarmSoundLoop=null;}
+  _closePomoAlarmModal();
+  notify('⏱ Alarm in 1 minute...');
+  // Ring again in 1 minute
+  _pomoAlarmInterval=setTimeout(function(){
+    _pomoAlarm(type);
+    _showPomoAlarmModal(type);
+    _pomoAlarmSoundLoop=setInterval(function(){ if(_pomoAlarmModalOpen) _pomoAlarm(type); },4000);
+  },60000);
+}
+
+function pomoFloatToggle(){
+  var w=document.getElementById('pomo-float');
+  var launcher=document.getElementById('pomo-launcher');
+  if(!w) return;
+  w.classList.toggle('hidden');
+  if(!w.classList.contains('hidden')){
+    pomoPopulateSubjects();
+    pomoPopulateBreakInputs();
+    _pomoRefreshUI();
+  }
+}
+
+function pomoPopulateBreakInputs(){
+  var sIn=document.getElementById('pf-short-inp');
+  if(sIn) sIn.value=(DB.settings&&DB.settings.pomoShort)||5;
+  var fIn=document.getElementById('pf-focus-inp');
+  if(fIn) fIn.value=window._pomo.duration||25;
+  var tIn=document.getElementById('pf-topic-inp');
+  if(tIn) tIn.value=window._pomo.topic||'';
+}
+
+function pomoSetBreakDurations(){
+  if(!DB.settings) DB.settings={};
+  var s=parseInt(document.getElementById('pf-short-inp')?.value||5);
+  if(s>0) DB.settings.pomoShort=s;
+  save();
+  var pomo=window._pomo;
+  // Live-update the running/visible countdown if currently on break and not running
+  if(pomo&&!pomo.running&&pomo.phase==='short'){
+    pomo.remaining=_pomoPhaseSecs(pomo.phase);
+    _pomoRefreshUI();
+  }
+}
+
+function pomoFloatMinToggle(){
+  var w=document.getElementById('pomo-float');
+  if(w) w.classList.toggle('minimized');
+  _pomoRefreshUI();
+}
+
+function pomoPopulateSubjects(){
+  var pomo=window._pomo;
+  var sel=document.getElementById('pf-subj-sel');
+  var label=document.getElementById('pf-subj-label');
+  if(!sel) return;
+  var hasAcad6=((DB.academic&&DB.academic.subjects)||[]).length>0;
+  if(label) label.textContent=pomo.mode==='academic'?'Subject':'Skill';
+  var opts='<option value="">— Select —</option>';
+  if(pomo.mode==='academic'){
+    opts+=((DB.academic&&DB.academic.subjects)||[]).map(function(s){return '<option value="'+s.id+'"'+(pomo.acadId===s.id?' selected':'')+'>'+s.name+'</option>';}).join('');
+  } else {
+    opts+=(DB.skills||[]).map(function(s){return '<option value="'+s.id+'"'+(pomo.skillId===s.id?' selected':'')+'>'+s.name+'</option>';}).join('');
+  }
+  sel.innerHTML=opts;
+  sel.onchange=function(){
+    if(pomo.mode==='academic') pomo.acadId=this.value; else pomo.skillId=this.value;
+  };
+  // Show/hide academic mode button if no subjects
+  var acadBtn=document.getElementById('pf-mode-acad');
+  if(acadBtn) acadBtn.style.display=hasAcad6?'':'none';
+}
+
+function pomoSetMode(m){
+  var pomo=window._pomo;
+  pomo.mode=m;
+  var skillBtn=document.getElementById('pf-mode-skill');
+  var acadBtn=document.getElementById('pf-mode-acad');
+  if(skillBtn&&acadBtn){
+    if(m==='skill'){
+      skillBtn.style.border='1.5px solid var(--accent)';skillBtn.style.background='var(--accent-glow)';skillBtn.style.color='var(--accent)';
+      acadBtn.style.border='1.5px solid var(--border2)';acadBtn.style.background='var(--surface2)';acadBtn.style.color='var(--muted)';
+    } else {
+      acadBtn.style.border='1.5px solid var(--accent)';acadBtn.style.background='var(--accent-glow)';acadBtn.style.color='var(--accent)';
+      skillBtn.style.border='1.5px solid var(--border2)';skillBtn.style.background='var(--surface2)';skillBtn.style.color='var(--muted)';
+    }
+  }
+  pomoPopulateSubjects();
+}
+
+function pomoSetType(t){
+  var pomo=window._pomo;
+  pomo.type=t;
+  var learnBtn=document.getElementById('pf-type-learn');
+  var pracBtn=document.getElementById('pf-type-prac');
+  if(learnBtn&&pracBtn){
+    learnBtn.className=t==='learn'?'pf-learn-active':'';
+    pracBtn.className=t==='prac'?'pf-learn-active':'';
+  }
+}
+
+function pomoSetCustomFocus(mins,silent){
+  var pomo=window._pomo;
+  if(!mins||mins<1)return;
+  pomo.duration=mins;
+  if(pomo.phase==='focus'&&!pomo.running){
+    pomo.remaining=mins*60;
+    _pomoRefreshUI();
+  }
+  var inp=document.getElementById('pf-focus-inp');
+  if(inp&&document.activeElement!==inp) inp.value=mins;
+  if(!silent) notify('✓ Focus duration set to '+mins+' min');
+}
+
+function pomoSetPhase(ph){
+  var pomo=window._pomo;
+  pomo.running=false; clearInterval(pomo.interval); document.title='SkillPath';
+  pomo.phase=ph;
+  pomo.remaining=_pomoPhaseSecs(ph);
+  ['focus','short'].forEach(function(p){
+    var tab=document.getElementById('pf-tab-'+p);
+    if(tab) tab.className=p===ph?'active-'+p:'';
+  });
+  var label=document.getElementById('pf-phase-label');
+  if(label) label.textContent=ph==='focus'?'Focus':'Break';
+  _pomoRefreshUI();
+}
+
+function _pomoRefreshUI(){
+  var pomo=window._pomo;
+  if(!pomo) return;
+  var mins=Math.floor(pomo.remaining/60), secs=pomo.remaining%60;
+  var timeStr=String(mins).padStart(2,'0')+':'+String(secs).padStart(2,'0');
+  var el=document.getElementById('pf-time');
+  if(el) el.textContent=timeStr;
+  document.title=pomo.running?(timeStr+' — SkillPath'):'SkillPath';
+  var totalForPhase=_pomoPhaseSecs(pomo.phase);
+  var pct=Math.round((1-pomo.remaining/totalForPhase)*100);
+  var bar=document.getElementById('pf-progress');
+  if(bar) bar.style.width=pct+'%';
+  var btn=document.getElementById('pf-start-btn');
+  if(btn) btn.textContent=pomo.running?'⏸ Pause':'▶ Start';
+  var launcher=document.getElementById('pomo-launcher');
+  if(launcher) launcher.classList.toggle('running',pomo.running);
+  // Minimized state — show live countdown next to the phase label in the header bar
+  var mini=document.getElementById('pf-mini-time');
+  if(mini){
+    var icon=pomo.phase==='focus'?'🍅':'☕';
+    mini.textContent=icon+' '+timeStr;
+    mini.style.display=pomo.running||pomo.remaining<totalForPhase?'':'none';
+  }
+  // Launcher badge — countdown visible even when widget fully closed, if running
+  var lb=document.getElementById('pomo-launcher-time');
+  if(lb){
+    if(pomo.running){ lb.textContent=timeStr; lb.style.display='flex'; }
+    else { lb.style.display='none'; }
+  }
+}
+
+function _pomoTick(){
+  var pomo=window._pomo;
+  if(!pomo||!pomo.running) return;
+  if(pomo.remaining<=0){
+    pomo.running=false; clearInterval(pomo.interval); pomo.interval=null;
+    document.title='SkillPath';
+    if(pomo.phase==='focus'){
+      pomo.session++;
+      _pomoSaveSession(pomo.duration*60);
+      pomo.topic=''; // clear so the next focus session starts with a blank topic
+      var tIn=document.getElementById('pf-topic-inp');
+      if(tIn) tIn.value='';
+      // Switch to break phase UI (paused, waiting for user click)
+      pomo.phase='short';
+      pomo.remaining=_pomoPhaseSecs('short');
+      ['focus','short'].forEach(function(p){var tab=document.getElementById('pf-tab-'+p);if(tab)tab.className=p==='short'?'active-short':'';});
+      var lbl=document.getElementById('pf-phase-label');if(lbl)lbl.textContent='Break';
+      _pomoRefreshUI();
+      // Start repeating alarm — stops when user clicks Start for break
+      _pomoStartAlarmLoop('break');
+      notify('🍅 Pomodoro complete! Click Start to begin break. ('+pomo.session+' done)');
+    } else {
+      // Switch back to focus phase UI (paused, waiting for user click)
+      pomo.phase='focus';
+      pomo.remaining=_pomoPhaseSecs('focus');
+      ['focus','short'].forEach(function(p){var tab=document.getElementById('pf-tab-'+p);if(tab)tab.className=p==='focus'?'active-focus':'';});
+      var lbl2=document.getElementById('pf-phase-label');if(lbl2)lbl2.textContent='Focus';
+      _pomoRefreshUI();
+      // Start repeating alarm — stops when user clicks Start for focus
+      _pomoStartAlarmLoop('focus');
+      notify('☕ Break over! Click Start to begin focus session.');
+    }
+    if(currentPage==='dashboard') renders.dashboard();
+    return;
+  }
+  pomo.remaining--;
+  _pomoRefreshUI();
+}
+
+function _pomoSaveSession(secs){
+  var pomo=window._pomo;
+  if(!pomo) return;
+  var subjId=pomo.mode==='academic'?pomo.acadId:pomo.skillId;
+  if(!subjId) return;
+  var topic=(pomo.topic||'').trim()||'Pomodoro session';
+  var sessionEntry={
+    id:Date.now()+'',
+    date:today(),
+    skillId:subjId,
+    topic:topic,
+    note:'Pomodoro ('+Math.round(secs/60)+' min, '+pomo.mode+')',
+    difficulty:'medium',
+    learn: pomo.type==='learn'?secs:0,
+    prac:  pomo.type==='prac'?secs:0,
+    read:0
+  };
+  DB.sessions.push(sessionEntry);
+  if(!window._pomoLog) window._pomoLog=[];
+  window._pomoLog.push({phase:'focus',secs:secs,label:pomo.type==='learn'?'Learning':'Practice',topic:topic});
+  save();
+}
+
+function pomoStart(){
+  var pomo=window._pomo;
+  if(!pomo) return;
+  if(!pomo.running){
+    var subjId=pomo.mode==='academic'?pomo.acadId:pomo.skillId;
+    if(!subjId&&pomo.phase==='focus'){ notify('আগে একটা '+(pomo.mode==='academic'?'subject':'skill')+' select করুন!'); return; }
+  }
+  if(window.Notification&&Notification.permission==='default') Notification.requestPermission();
+  // Stop any repeating alarm when user manually starts/pauses
+  _pomoStopAlarmLoop();
+  if(pomo.running){
+    pomo.running=false; clearInterval(pomo.interval); pomo.interval=null; document.title='SkillPath';
+  } else {
+    pomo.running=true;
+    pomo.interval=setInterval(_pomoTick,1000);
+  }
+  _pomoRefreshUI();
+}
+
+function pomoReset(){
+  var pomo=window._pomo;
+  if(!pomo) return;
+  _pomoStopAlarmLoop();
+  pomo.running=false; clearInterval(pomo.interval); pomo.interval=null; document.title='SkillPath';
+  pomo.remaining=_pomoPhaseSecs(pomo.phase);
+  _pomoRefreshUI();
+}
+
+function pomoSkip(){
+  var pomo=window._pomo;
+  if(!pomo) return;
+  _pomoStopAlarmLoop();
+  pomo.running=false; clearInterval(pomo.interval); pomo.interval=null; document.title='SkillPath';
+  if(pomo.phase==='focus'){
+    pomo.session++;
+    pomoSetPhase('short');
+  } else {
+    pomoSetPhase('focus');
+  }
+}
+
+// Make pomo-float widget draggable
+(function(){
+  var dragging=false,offX=0,offY=0;
+  document.addEventListener('mousedown',function(e){
+    var header=e.target.closest('#pomo-float-header');
+    if(!header) return;
+    if(e.target.tagName==='BUTTON') return;
+    dragging=true;
+    var w=document.getElementById('pomo-float');
+    var rect=w.getBoundingClientRect();
+    offX=e.clientX-rect.left; offY=e.clientY-rect.top;
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove',function(e){
+    if(!dragging) return;
+    var w=document.getElementById('pomo-float');
+    if(!w) return;
+    var x=e.clientX-offX, y=e.clientY-offY;
+    x=Math.max(4,Math.min(window.innerWidth-w.offsetWidth-4,x));
+    y=Math.max(4,Math.min(window.innerHeight-40,y));
+    w.style.left=x+'px'; w.style.top=y+'px'; w.style.right='auto'; w.style.bottom='auto';
+  });
+  document.addEventListener('mouseup',function(){dragging=false;});
+  document.addEventListener('touchstart',function(e){
+    var header=e.target.closest('#pomo-float-header');
+    if(!header) return;
+    if(e.target.tagName==='BUTTON') return;
+    dragging=true;
+    var w=document.getElementById('pomo-float');
+    var rect=w.getBoundingClientRect();
+    var t=e.touches[0];
+    offX=t.clientX-rect.left; offY=t.clientY-rect.top;
+  });
+  document.addEventListener('touchmove',function(e){
+    if(!dragging) return;
+    var w=document.getElementById('pomo-float');
+    if(!w) return;
+    var t=e.touches[0];
+    var x=t.clientX-offX, y=t.clientY-offY;
+    x=Math.max(4,Math.min(window.innerWidth-w.offsetWidth-4,x));
+    y=Math.max(4,Math.min(window.innerHeight-40,y));
+    w.style.left=x+'px'; w.style.top=y+'px'; w.style.right='auto'; w.style.bottom='auto';
+  });
+  document.addEventListener('touchend',function(){dragging=false;});
+})();
+
+function _refreshTimerSaveMode(){
+  var mode=window._timerSaveMode||'skill';
+  var skillBtn=document.getElementById('tsave-mode-skill');
+  var acadBtn=document.getElementById('tsave-mode-acad');
+  var sel=document.getElementById('t-skill-sel');
+  var lbl=document.getElementById('tsave-subj-label');
+  if(skillBtn){skillBtn.style.borderColor=mode==='skill'?'var(--accent)':'var(--border2)';skillBtn.style.background=mode==='skill'?'var(--accent-glow)':'var(--surface2)';skillBtn.style.color=mode==='skill'?'var(--accent)':'var(--muted)';}
+  if(acadBtn){acadBtn.style.borderColor=mode==='academic'?'var(--accent)':'var(--border2)';acadBtn.style.background=mode==='academic'?'var(--accent-glow)':'var(--surface2)';acadBtn.style.color=mode==='academic'?'var(--accent)':'var(--muted)';}
+  if(lbl) lbl.textContent=mode==='academic'?'Which subject? (optional)':'Which skill? (optional)';
+  if(sel){
+    var opts='<option value="">— General session —</option>';
+    if(mode==='academic'){
+      opts+=((DB.academic&&DB.academic.subjects)||[]).map(function(s){return '<option value="'+s.id+'">'+s.name+'</option>';}).join('');
+    } else {
+      opts+=DB.skills.map(function(s){return '<option value="'+s.id+'">'+s.name+'</option>';}).join('');
+    }
+    sel.innerHTML=opts;
+  }
+}
 function saveTimerSession(){
   var skillId=document.getElementById('t-skill-sel')?.value||'';
   var topic=document.getElementById('t-topic')?.value.trim()||'';
   var note=document.getElementById('t-note')?.value.trim()||'';
-  if(!timers.learn.s&&!timers.prac.s&&!timers.read.s){notify('Start a timer first!');return;}
+  if(!timers.learn.s&&!timers.prac.s){notify('Start a timer first!');return;}
   var d=today();
-  if(!DB.sessions.find(s=>s.date===d&&!s.skillId)){
-    DB.sessions.push({id:Date.now()+'',date:d,skillId,topic,note,learn:timers.learn.s,prac:timers.prac.s,read:timers.read.s,difficulty:'medium'});
-  } else {
-    DB.sessions.push({id:Date.now()+'',date:d,skillId,topic,note,learn:timers.learn.s,prac:timers.prac.s,read:timers.read.s,difficulty:'medium'});
-  }
+  DB.sessions.push({id:Date.now()+'',date:d,skillId,topic,note,learn:timers.learn.s,prac:timers.prac.s,read:0,difficulty:'medium'});
   save();notify('✓ Session saved!');
   var msg=document.getElementById('save-msg');if(msg){msg.style.display='inline';setTimeout(()=>msg.style.display='none',2000);}
 }
@@ -2308,17 +3309,15 @@ function addLog(){
   var date=document.getElementById('log-date')?.value||today();
   var learn=parseInt(document.getElementById('log-learn')?.value||0)*60;
   var prac=parseInt(document.getElementById('log-prac')?.value||0)*60;
-  var read=parseInt(document.getElementById('log-read')?.value||0)*60;
   var note=document.getElementById('log-note')?.value.trim();
   var diff=document.getElementById('log-diff')?.value||'medium';
   if(!topic){notify('Please enter a topic!');return;}
-  if(!learn&&!prac&&!read){notify('Enter at least one time value!');return;}
-  DB.sessions.push({id:Date.now()+'',date,skillId:skillId||'',topic,note,learn,prac,read,difficulty:diff});
+  if(!learn&&!prac){notify('Enter at least one time value!');return;}
+  DB.sessions.push({id:Date.now()+'',date,skillId:skillId||'',topic,note,learn,prac,read:0,difficulty:diff});
   save();notify('✓ Session logged!');
   document.getElementById('log-topic').value='';
   document.getElementById('log-learn').value='';
   document.getElementById('log-prac').value='';
-  document.getElementById('log-read').value='';
   document.getElementById('log-note').value='';
 }
 
@@ -2329,7 +3328,14 @@ function openAddSkill(){
       <div class="field"><div class="label">Skill Name *</div><input type="text" id="sk-name" placeholder="e.g. Python, Machine Learning, Math..."></div>
       <div class="field"><div class="label">Description</div><input type="text" id="sk-desc" placeholder="What are you learning?"></div>
       <div class="field"><div class="label">Goal (hours to master)</div><input type="number" id="sk-goal" placeholder="100" value="100"></div>
-      <div class="field"><div class="label">Deadline (optional)</div><input type="date" id="sk-deadline"></div>
+      <div class="card-grid grid2">
+        <div class="field"><div class="label">Weekly target (hrs)</div><input type="number" id="sk-weekly-goal" placeholder="e.g. 5" min="0" step="0.5"></div>
+        <div class="field"><div class="label">Monthly target (hrs)</div><input type="number" id="sk-monthly-goal" placeholder="e.g. 20" min="0" step="0.5"></div>
+      </div>
+      <div class="card-grid grid2">
+        <div class="field"><div class="label">Start date</div><input type="date" id="sk-startdate" value="${today()}"></div>
+        <div class="field"><div class="label">Deadline (optional)</div><input type="date" id="sk-deadline"></div>
+      </div>
       <div class="field"><div class="label">Color</div>
         <div class="skill-color-pick">${COLORS.map((c,i)=>`<div class="color-swatch ${i===0?'selected':''}" style="background:${c}" onclick="selectColor('${c}',this)"></div>`).join('')}</div>
       </div>
@@ -2343,8 +3349,24 @@ function selectColor(c,el){window._pickedColor=c;document.querySelectorAll('.col
 function saveSkill(){
   var name=document.getElementById('sk-name')?.value.trim();
   if(!name){notify('Enter a skill name!');return;}
-  DB.skills.push({id:Date.now()+'',name,desc:document.getElementById('sk-desc')?.value.trim()||'',goalHours:parseInt(document.getElementById('sk-goal')?.value||100),deadline:document.getElementById('sk-deadline')?.value||'',color:window._pickedColor||COLORS[0]});
+  DB.skills.push({
+    id:Date.now()+'',name,
+    desc:document.getElementById('sk-desc')?.value.trim()||'',
+    goalHours:parseInt(document.getElementById('sk-goal')?.value||100),
+    weeklyGoalHours:parseFloat(document.getElementById('sk-weekly-goal')?.value||0)||0,
+    monthlyGoalHours:parseFloat(document.getElementById('sk-monthly-goal')?.value||0)||0,
+    startDate:document.getElementById('sk-startdate')?.value||today(),
+    deadline:document.getElementById('sk-deadline')?.value||'',
+    completionDate:'',
+    color:window._pickedColor||COLORS[0]
+  });
   save();document.getElementById('skill-modal')?.remove();notify('✓ Skill added!');renders.skills();
+}
+function toggleSkillComplete(id){
+  var sk=skill_by_id(id);
+  if(!sk) return;
+  sk.completionDate=sk.completionDate?'':today();
+  save();renders.skills();
 }
 function deleteSkill(id){if(!confirm('Delete this skill?'))return;snapshotAllPastDates();DB.skills=DB.skills.filter(s=>s.id!==id);DB.sessions=DB.sessions.filter(s=>s.skillId!==id);save();renders.skills();}
 function deleteSession(id){DB.sessions=DB.sessions.filter(s=>s.id!==id);save();renders.history();}
@@ -2395,16 +3417,18 @@ function renderDeadlines(list){
   return list.map(d=>{
     var diff=days_between(d.date,today());
     var urgent=!d.done&&diff<=3;
+    var startDiff=d.startDate?days_between(d.startDate,today()):null;
+    var notStartedYet=!d.done&&startDiff!==null&&startDiff>0;
     return `<div class="dl-item ${urgent?'dl-urgent':''}">
       <div class="dl-date-badge">
         <div class="dl-day">${new Date(d.date+'T12:00').getDate()}</div>
         <div class="dl-month">${MON_NAMES[new Date(d.date+'T12:00').getMonth()]}</div>
       </div>
       <div class="dl-info">
-        <div class="dl-title ${d.done?'done':''}">${d.text}</div>
+        <div class="dl-title ${d.done?'done':''}">${d.text}${notStartedYet?' <span style="font-size:10px;font-weight:800;color:var(--accent);border:1.5px solid var(--accent);padding:1px 6px;border-radius:5px;vertical-align:middle">UPCOMING</span>':''}</div>
         <div class="dl-sub" style="display:flex;gap:10px;flex-wrap:wrap">
           ${d.skillId?`<span>${DB.skills.find(s=>s.id===d.skillId)?.name||'General'}</span>`:'<span>General</span>'}
-          ${d.startDate?`<span style="color:var(--muted2)">Started: ${d.startDate}</span>`:''}
+          ${d.startDate?`<span style="color:var(--muted2)">${notStartedYet?'Starts':'Started'}: ${d.startDate}${notStartedYet?' (in '+startDiff+'d)':''}</span>`:''}
           ${d.completedDate?`<span style="color:var(--green)">✓ Completed: ${d.completedDate}</span>`:''}
         </div>
       </div>
@@ -2418,8 +3442,10 @@ function renderDeadlines(list){
 function addDeadline(){
   var text=document.getElementById('dl-inp')?.value.trim();
   var date=document.getElementById('dl-date')?.value;
-  if(!text||!date){notify('Fill title and date!');return;}
-  DB.deadlines.push({id:Date.now()+'',text,date,startDate:today(),completedDate:'',type:document.getElementById('dl-type')?.value||'week',skillId:document.getElementById('dl-skill')?.value||'',done:false});
+  var startDate=document.getElementById('dl-startdate')?.value||today();
+  if(!text||!date){notify('Fill title and deadline date!');return;}
+  if(startDate>date){notify('Start date can\'t be after the deadline date!');return;}
+  DB.deadlines.push({id:Date.now()+'',text,date,startDate,completedDate:'',type:document.getElementById('dl-type')?.value||'week',skillId:document.getElementById('dl-skill')?.value||'',done:false});
   document.getElementById('dl-inp').value='';
   save();notify('✓ Deadline added!');renders.deadlines();
 }
@@ -2530,49 +3556,73 @@ function routineSaveSnapshot(d){initDailySnapshot(d);}
 
 
 // Dashboard single row routine
-function renderRoutineDashRow(){
+function getTodayRoutineSummary(){
   routineInit();
   var d=today();
   var todayWday=new Date().getDay();
   var prog=DB.routine.dailyProgress[d]||{};
-  // Filter slots: only show slots assigned to today's weekday
   var slots=DB.routine.slots.filter(function(s){
     if(s.days&&s.days.length>0)return s.days.includes(todayWday);
-    return true; // old slots without days array show every day
+    return true;
   });
-  if(!slots.length)return '<div class="empty">No routine set for today — go to Routine page to add tasks.</div>';
   var done=slots.filter(function(s){return !!prog[s.id];}).length;
-  var pct=Math.round(done/slots.length*100);
+  var pct=slots.length?Math.round(done/slots.length*100):0;
   var pColor=pct===100?'var(--green)':pct>=60?'var(--accent)':'var(--coral)';
+  return {slots:slots,done:done,pct:pct,pColor:pColor};
+}
+function renderRoutineDashRow(){
+  var sum=getTodayRoutineSummary();
+  var slots=sum.slots,done=sum.done;
+  var d=today();
+  var prog=DB.routine.dailyProgress[d]||{};
+  if(!slots.length)return '<div class="empty">No routine set for today — go to Routine page to add tasks.</div>';
   var html='';
-  html+='<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">';
-  html+='<div style="flex:1"><div style="display:flex;justify-content:space-between;margin-bottom:5px">';
-  html+='<span style="font-size:12px;font-weight:600;color:var(--text)">'+done+' of '+slots.length+' completed</span>';
-  html+='<span style="font-size:12px;font-weight:700;color:'+pColor+'">'+pct+'%</span>';
-  html+='</div><div style="height:7px;background:var(--surface3);border-radius:4px;overflow:hidden">';
-  html+='<div style="height:100%;width:'+pct+'%;background:'+pColor+';border-radius:4px;transition:.4s"></div>';
-  html+='</div></div>';
-  if(pct===100)html+='<span style="font-size:22px" title="All done!">&#127919;</span>';
-  html+='</div>';
-  html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:8px">';
-  slots.forEach(function(s){
+
+  // Build one card's HTML, reused twice in sequence so the marquee loop is seamless
+  function cardHtml(s){
     var isDone=!!prog[s.id];
     var dayKey='day_'+new Date().getDay();
     var taskLabel=(s.dayNotes&&s.dayNotes[dayKey])||s.task;
-    var bg=isDone?'var(--green-bg)':'var(--surface2)';
-    var bdr=isDone?'rgba(61,214,140,0.35)':'var(--border2)';
     var ac=s.color||'var(--accent)';
-    html+='<div onclick="routineToggleDash(\''+s.id+'\')" style="display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:10px;cursor:pointer;background:'+bg+';border:1.5px solid '+bdr+';transition:all .2s;user-select:none;position:relative;overflow:hidden">';
-    html+='<div style="position:absolute;top:0;left:0;width:3px;height:100%;background:'+ac+'"></div>';
-    html+='<div style="display:flex;align-items:center;gap:6px;padding-left:6px">';
-    html+='<span style="flex:1;font-size:12px;font-weight:600;'+(isDone?'text-decoration:line-through;color:var(--muted)':'color:var(--text)')+'">'+taskLabel+'</span>';
-    if(isDone)html+='<span style="color:var(--green);font-size:14px">&#10003;</span>';
+    var bg=isDone?'linear-gradient(135deg,rgba(61,214,140,.13),rgba(61,214,140,.04))':'linear-gradient(135deg,'+ac+'14,'+ac+'05)';
+    var bdr=isDone?'rgba(61,214,140,0.4)':ac+'35';
+    var h='<div onclick="routineToggleDash(\''+s.id+'\')" class="routine-row-card" style="flex:0 0 200px;width:200px;height:100%;min-height:110px;display:flex;flex-direction:column;justify-content:space-between;padding:14px 14px 12px;border-radius:14px;cursor:pointer;background:'+bg+';border:1.5px solid '+bdr+';transition:transform .2s,box-shadow .2s,border-color .2s;user-select:none;position:relative;overflow:hidden;box-sizing:border-box">';
+    // Top: color bar accent + done checkmark
+    h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">';
+    h+='<div style="width:28px;height:4px;border-radius:3px;background:'+ac+';opacity:0.8"></div>';
+    h+='<div style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:'+(isDone?'var(--green)':'transparent')+';border:2px solid '+(isDone?'var(--green)':'var(--border2)')+';transition:.2s">'+(isDone?'<span style="color:#fff;font-size:12px;font-weight:900">✓</span>':'')+'</div>';
+    h+='</div>';
+    // Task name — main focus
+    h+='<div style="flex:1;display:flex;align-items:center">';
+    h+='<span style="font-size:15px;font-weight:700;line-height:1.3;'+(isDone?'text-decoration:line-through;color:var(--muted)':'color:var(--text)')+';overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;word-break:break-word">'+taskLabel+'</span>';
+    h+='</div>';
+    // Bottom: time only
+    h+='<div style="margin-top:8px">';
+    if(s.time)h+='<span style="font-size:12px;font-weight:700;color:'+ac+'">🕐 '+s.time+'</span>';
+    h+='</div>';
+    h+='</div>';
+    return h;
+  }
+
+  // Only marquee-loop when there are enough cards to fill the row twice over;
+  // otherwise just show them statically (looping 2-3 tiny cards looks jittery, not smooth).
+  var enoughForLoop=slots.length>=4;
+  var oneSet=slots.map(cardHtml).join('');
+  // Rough duration so the scroll speed feels consistent regardless of how many cards there are
+  var pxPerCard=212; // 200px card + 12px gap
+  var totalPx=pxPerCard*slots.length;
+  var duration=Math.max(14,Math.round(totalPx/40)); // ~40px/sec
+
+  if(enoughForLoop){
+    html+='<div class="routine-row-scroll" style="flex:1;min-width:0;min-height:0;height:100%">';
+    html+='<div class="routine-row-track" id="routine-marquee-track" style="animation-duration:'+duration+'s;height:100%" onmouseenter="this.classList.add(\'paused\')" onmouseleave="this.classList.remove(\'paused\')">';
+    html+=oneSet+oneSet; // duplicate for seamless wraparound
+    html+='</div></div>';
+  } else {
+    html+='<div class="routine-row-scroll no-scroll-fx" style="display:flex;gap:12px;flex:1;min-width:0;min-height:0;height:100%;overflow-x:auto">';
+    html+=oneSet;
     html+='</div>';
-    if(s.time)html+='<div style="padding-left:6px"><span style="font-size:11px;font-weight:700;color:var(--accent);background:var(--accent)18;padding:1px 7px;border-radius:6px;letter-spacing:.3px">'+s.time+'</span></div>';
-    if(s.category)html+='<div style="padding-left:6px"><span style="font-size:10px;padding:2px 8px;border-radius:10px;background:'+ac+'22;color:'+ac+';font-weight:600">'+s.category+'</span></div>';
-    html+='</div>';
-  });
-  html+='</div>';
+  }
   return html;
 }
 function routineToggleDash(slotId){
@@ -2583,6 +3633,604 @@ function routineToggleDash(slotId){
   save();renders.dashboard();
 }
 
+
+
+// ════════════════════════════════════════════════
+// ANALYTICS PAGE
+// ════════════════════════════════════════════════
+renders.analytics=function(){
+  if(!window._analyticsTab) window._analyticsTab='skill';
+  var tab=window._analyticsTab;
+  var hasAcad3=((DB.academic&&DB.academic.subjects)||[]).length>0;
+
+  document.getElementById('topbar-actions').innerHTML=
+    '<div style="display:flex;background:var(--surface2);border-radius:10px;padding:3px;gap:3px">'
+    +'<button onclick="window._analyticsTab=\'skill\';renders.analytics()" style="padding:7px 16px;border-radius:7px;border:none;background:'+(tab==='skill'?'var(--accent)':'transparent')+';color:'+(tab==='skill'?'#fff':'var(--muted)')+';font-size:12px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif">🧠 Skill</button>'
+    +(hasAcad3?'<button onclick="window._analyticsTab=\'academic\';renders.analytics()" style="padding:7px 16px;border-radius:7px;border:none;background:'+(tab==='academic'?'var(--accent)':'transparent')+';color:'+(tab==='academic'?'#fff':'var(--muted)')+';font-size:12px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif">🎓 Academic</button>':'')
+    +'</div>';
+
+  var isAcad=tab==='academic';
+  var subjList=isAcad?((DB.academic&&DB.academic.subjects)||[]):(DB.skills||[]);
+  var subjIds=subjList.map(function(s){return s.id;});
+  var sessions=(DB.sessions||[]).filter(function(s){return subjIds.indexOf(s.skillId)!==-1;});
+
+  // Total hours per subject
+  var subjHours={};
+  subjList.forEach(function(sk){ subjHours[sk.id]={name:sk.name,color:sk.color,learn:0,prac:0}; });
+  sessions.forEach(function(s){
+    if(subjHours[s.skillId]){
+      subjHours[s.skillId].learn+=(s.learn||0);
+      subjHours[s.skillId].prac+=(s.prac||0);
+    }
+  });
+
+  // Streak (within this category only)
+  var streakDays=0,maxStreak=0,cur=0;
+  var today30=[];
+  for(var i=29;i>=0;i--){var d=new Date();d.setDate(d.getDate()-i);today30.push(d.toISOString().slice(0,10));}
+  today30.forEach(function(d){
+    var has=sessions.some(function(s){return s.date===d;});
+    if(has){cur++;if(cur>maxStreak)maxStreak=cur;}else{cur=0;}
+  });
+  var checkD=new Date();
+  while(true){
+    var ds=checkD.toISOString().slice(0,10);
+    if(sessions.some(function(s){return s.date===ds;})){streakDays++;checkD.setDate(checkD.getDate()-1);}
+    else break;
+  }
+
+  // Weekly study time last 8 weeks
+  var weekBars='';
+  for(var w=7;w>=0;w--){
+    var wStart=new Date();wStart.setDate(wStart.getDate()-wStart.getDay()-w*7);
+    var wDays=[];for(var dd=0;dd<7;dd++){var wd=new Date(wStart);wd.setDate(wd.getDate()+dd);wDays.push(wd.toISOString().slice(0,10));}
+    var wSecs=0;sessions.filter(function(s){return wDays.indexOf(s.date)!==-1;}).forEach(function(s){wSecs+=(s.learn||0)+(s.prac||0);});
+    var wH=(wSecs/3600).toFixed(1);
+    var maxH=40;var pct=Math.min(100,wSecs/3600/maxH*100);
+    var label=w===0?'This week':'W-'+w;
+    weekBars+='<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">'
+      +'<div style="font-size:10px;color:var(--muted)">'+wH+'h</div>'
+      +'<div style="width:100%;background:var(--surface2);border-radius:6px;height:80px;display:flex;align-items:flex-end">'
+      +'<div style="width:100%;border-radius:6px;background:var(--accent);opacity:.8;height:'+pct+'%;min-height:'+(wSecs>0?4:0)+'px;transition:height .3s"></div></div>'
+      +'<div style="font-size:9px;color:var(--muted2)">'+label+'</div></div>';
+  }
+
+  // Subject breakdown bars
+  var subjBars=Object.values(subjHours).map(function(sk){
+    var total=(sk.learn+sk.prac)/3600;
+    var maxTotal=Math.max.apply(null,Object.values(subjHours).map(function(x){return x.learn+x.prac;}))/3600||1;
+    var pct=Math.min(100,total/maxTotal*100);
+    return '<div style="margin-bottom:10px">'
+      +'<div style="display:flex;justify-content:space-between;margin-bottom:4px">'
+      +'<span style="font-size:12px;font-weight:600">'+sk.name+'</span>'
+      +'<span style="font-size:11px;color:var(--muted)">'+total.toFixed(1)+'h</span></div>'
+      +'<div style="background:var(--surface2);border-radius:20px;height:8px">'
+      +'<div style="background:'+(sk.color||'var(--accent)')+';border-radius:20px;height:8px;width:'+pct+'%;transition:width .4s"></div>'
+      +'</div></div>';
+  }).join('');
+
+  // Learning vs Practice split
+  var totLearn2=0,totPrac2=0;
+  sessions.forEach(function(s){totLearn2+=s.learn||0;totPrac2+=s.prac||0;});
+
+  // Daily avg
+  var uniqueDays=new Set(sessions.map(function(s){return s.date;})).size||1;
+  var totalSecs=totLearn2+totPrac2;
+  var dailyAvg=totalSecs/uniqueDays/3600;
+
+  // Monthly heatmap
+  var heatHtml='';
+  for(var m=2;m>=0;m--){
+    var mDate=new Date();mDate.setMonth(mDate.getMonth()-m);
+    var mY=mDate.getFullYear(),mM=mDate.getMonth();
+    var mDays=new Date(mY,mM+1,0).getDate();
+    var mName=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][mM];
+    heatHtml+='<div style="margin-bottom:12px"><div style="font-size:11px;color:var(--muted);margin-bottom:6px">'+mName+' '+mY+'</div>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:3px">';
+    for(var d2=1;d2<=mDays;d2++){
+      var ds2=mY+'-'+String(mM+1).padStart(2,'0')+'-'+String(d2).padStart(2,'0');
+      var daySecs=0;sessions.filter(function(s){return s.date===ds2;}).forEach(function(s){daySecs+=(s.learn||0)+(s.prac||0);});
+      var lvl=daySecs>7200?'var(--accent)':daySecs>3600?'rgba(124,106,255,.6)':daySecs>0?'rgba(124,106,255,.3)':'var(--surface2)';
+      heatHtml+='<div title="'+ds2+': '+hm(daySecs)+'" style="width:14px;height:14px;border-radius:3px;background:'+lvl+'"></div>';
+    }
+    heatHtml+='</div></div>';
+  }
+
+  document.getElementById('main-content').innerHTML=
+    '<div class="card-grid grid4" style="margin-bottom:14px">'
+    +'<div class="stat"><div class="stat-label">Current Streak</div><div class="stat-val" style="color:var(--amber)">'+streakDays+'🔥</div><div class="stat-sub">days</div></div>'
+    +'<div class="stat"><div class="stat-label">Best Streak</div><div class="stat-val" style="color:var(--accent)">'+maxStreak+'</div><div class="stat-sub">days (30d)</div></div>'
+    +'<div class="stat"><div class="stat-label">📖 Learning</div><div class="stat-val" style="color:var(--accent)">'+(totLearn2/3600).toFixed(1)+'h</div><div class="stat-sub">all time</div></div>'
+    +'<div class="stat"><div class="stat-label">💻 Practice</div><div class="stat-val" style="color:var(--green)">'+(totPrac2/3600).toFixed(1)+'h</div><div class="stat-sub">all time</div></div>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">'
+    +'<div class="card"><div class="card-title">Weekly '+(isAcad?'Academic':'Skill')+' Hours</div>'
+    +'<div style="display:flex;align-items:flex-end;gap:6px;height:120px;padding-top:20px">'+weekBars+'</div></div>'
+    +'<div class="card"><div class="card-title">'+(isAcad?'Subject':'Skill')+' Breakdown</div>'+(subjBars||'<div class="empty">No sessions yet</div>')+'</div>'
+    +'</div>'
+    +'<div class="card"><div class="card-title">Study Heatmap</div>'+heatHtml+'</div>';
+};
+
+// ════════════════════════════════════════════════
+// XP / ACHIEVEMENTS PAGE
+// ════════════════════════════════════════════════
+function calcXP(){
+  var sessions=DB.sessions||[];
+  var points=0;
+  sessions.forEach(function(s){
+    var secs=(s.learn||0)+(s.prac||0);
+    points+=Math.floor(secs/60); // 1 XP per minute
+  });
+  (DB.habits&&DB.habits.length?DB.habits:[]).forEach(function(h){
+    // 10 XP per habit check
+    points+=Object.values(DB.habitLogs||{}).filter(function(d){return d[h.id];}).length*10;
+  });
+  getTodayTodos().filter(function(t){return t.done;}).forEach(function(){points+=5;});
+  return points;
+}
+function getLevel(xp){ return Math.floor(Math.sqrt(xp/100))+1; }
+function xpForLevel(lvl){ return (lvl-1)*(lvl-1)*100; }
+
+renders.xp=function(){
+  document.getElementById('topbar-actions').innerHTML='';
+  var xp=calcXP();
+  var level=getLevel(xp);
+  var thisLvlXP=xpForLevel(level);
+  var nextLvlXP=xpForLevel(level+1);
+  var pct=Math.min(100,Math.round((xp-thisLvlXP)/(nextLvlXP-thisLvlXP)*100));
+  var sessions=DB.sessions||[];
+  var totalHours=(sessions.reduce(function(a,s){return a+(s.learn||0)+(s.prac||0);},0)/3600).toFixed(1);
+
+  // Badges
+  var badgeDefs=[
+    {id:'first_session',icon:'🎯',name:'First Step',desc:'Log your first session',check:function(){return sessions.length>=1;}},
+    {id:'ten_sessions',icon:'💪',name:'On a Roll',desc:'Log 10 sessions',check:function(){return sessions.length>=10;}},
+    {id:'fifty_sessions',icon:'🚀',name:'Momentum',desc:'Log 50 sessions',check:function(){return sessions.length>=50;}},
+    {id:'ten_hours',icon:'⏰',name:'10 Hours',desc:'Study 10 total hours',check:function(){return parseFloat(totalHours)>=10;}},
+    {id:'fifty_hours',icon:'🏆',name:'50 Hours',desc:'Study 50 total hours',check:function(){return parseFloat(totalHours)>=50;}},
+    {id:'hundred_hours',icon:'💎',name:'Century',desc:'Study 100 total hours',check:function(){return parseFloat(totalHours)>=100;}},
+    {id:'streak3',icon:'🔥',name:'3-Day Streak',desc:'Study 3 days in a row',check:function(){
+      var cur=0;var d=new Date();
+      while(true){var ds=d.toISOString().slice(0,10);if(sessions.some(function(s){return s.date===ds;})){cur++;d.setDate(d.getDate()-1);}else break;}
+      return cur>=3;
+    }},
+    {id:'streak7',icon:'⚡',name:'Week Warrior',desc:'Study 7 days in a row',check:function(){
+      var cur=0;var d=new Date();
+      while(true){var ds=d.toISOString().slice(0,10);if(sessions.some(function(s){return s.date===ds;})){cur++;d.setDate(d.getDate()-1);}else break;}
+      return cur>=7;
+    }},
+    {id:'five_skills',icon:'🌟',name:'Multi-Skill',desc:'Track 5 skills',check:function(){return (DB.skills||[]).length>=5;}},
+    {id:'academic',icon:'🎓',name:'Scholar',desc:'Add an academic subject',check:function(){return (DB.academic&&DB.academic.subjects&&DB.academic.subjects.length>0);}},
+  ];
+
+  var earnedIds=(DB.xp&&DB.xp.badges)||[];
+  // Auto-earn badges
+  var newBadges=false;
+  badgeDefs.forEach(function(b){
+    if(b.check()&&earnedIds.indexOf(b.id)===-1){
+      earnedIds.push(b.id);newBadges=true;
+    }
+  });
+  if(newBadges){if(!DB.xp)DB.xp={};DB.xp.badges=earnedIds;save();}
+
+  var badgeHtml=badgeDefs.map(function(b){
+    var earned=earnedIds.indexOf(b.id)!==-1;
+    return '<div style="text-align:center;padding:14px 8px;border-radius:14px;border:1.5px solid '+(earned?'var(--accent)':'var(--border)')+';background:'+(earned?'var(--accent-glow)':'var(--surface2)')+';opacity:'+(earned?1:.45)+';transition:all .2s">'
+      +'<div style="font-size:28px;margin-bottom:6px">'+b.icon+'</div>'
+      +'<div style="font-size:11px;font-weight:700;color:'+(earned?'var(--accent)':'var(--muted)')+'">'+b.name+'</div>'
+      +'<div style="font-size:10px;color:var(--muted2);margin-top:3px">'+b.desc+'</div>'
+      +(earned?'<div style="font-size:9px;color:var(--green);margin-top:4px">✓ Earned</div>':'')
+      +'</div>';
+  }).join('');
+
+  document.getElementById('main-content').innerHTML=
+    '<div class="card" style="margin-bottom:14px">'
+    +'<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">'
+    +'<div style="width:72px;height:72px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#fff;flex-shrink:0">'+level+'</div>'
+    +'<div style="flex:1;min-width:200px">'
+    +'<div style="font-size:18px;font-weight:800">Level '+level+'</div>'
+    +'<div style="font-size:12px;color:var(--muted);margin-bottom:8px">'+xp.toLocaleString()+' XP total</div>'
+    +'<div style="background:var(--surface2);border-radius:20px;height:10px;margin-bottom:4px">'
+    +'<div style="background:var(--accent);border-radius:20px;height:10px;width:'+pct+'%;transition:width .5s"></div></div>'
+    +'<div style="font-size:10px;color:var(--muted)">'+pct+'% to Level '+(level+1)+' — '+(nextLvlXP-xp)+' XP needed</div>'
+    +'</div>'
+    +'<div style="text-align:center">'
+    +'<div style="font-size:11px;color:var(--muted);margin-bottom:4px">Badges Earned</div>'
+    +'<div style="font-size:28px;font-weight:900;color:var(--amber)">'+earnedIds.length+'/'+badgeDefs.length+'</div>'
+    +'</div></div></div>'
+    +'<div class="card"><div class="card-title">Badges</div>'
+    +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px">'+badgeHtml+'</div></div>';
+};
+
+// ════════════════════════════════════════════════
+// ACADEMIC PAGE
+// ════════════════════════════════════════════════
+renders.academic=function(){
+  if(!DB.academic)DB.academic={subjects:[],exams:[],grades:[]};
+  var mode=(DB.settings&&DB.settings.appMode)||'skill';
+  var subjs=DB.academic.subjects||[];
+  var exams=DB.academic.exams||[];
+  var grades=DB.academic.grades||[];
+
+  document.getElementById('topbar-actions').innerHTML=
+    '<button class="btn btn-accent" onclick="addAcademicSubject()">+ Add Subject</button>'
+    +'<button class="btn" style="margin-left:6px" onclick="addExam()">+ Add Exam</button>';
+
+  // GPA calc
+  var gpaMap={
+    'A+':4.0,'A':4.0,'A-':3.7,
+    'B+':3.3,'B':3.0,'B-':2.7,
+    'C+':2.3,'C':2.0,'C-':1.7,
+    'D':1.0,'F':0
+  };
+  var gpaTotal=0,gpaCount=0;
+  grades.forEach(function(g){
+    if(gpaMap[g.grade]!==undefined){gpaTotal+=gpaMap[g.grade];gpaCount++;}
+  });
+  var gpa=gpaCount>0?(gpaTotal/gpaCount).toFixed(2):'—';
+
+  // Upcoming exams
+  var today_s=today();
+  var upcomingExams=exams.filter(function(e){return e.date>=today_s;}).sort(function(a,b){return a.date>b.date?1:-1;});
+
+  var subjHtml=subjs.length?subjs.map(function(s){
+    var subjGrades=grades.filter(function(g){return g.subjectId===s.id;});
+    var avg=subjGrades.length?
+      (subjGrades.reduce(function(a,g){return a+(parseFloat(g.marks)||0);},0)/subjGrades.length).toFixed(1):'—';
+    var subjExams=exams.filter(function(e){return e.subjectId===s.id&&e.date>=today_s;});
+    return '<div style="padding:12px;border-radius:12px;border:1.5px solid var(--border2);background:var(--surface2);margin-bottom:8px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">'
+      +'<div style="display:flex;align-items:center;gap:10px">'
+      +'<div style="width:10px;height:10px;border-radius:50%;background:'+(s.color||'var(--accent)')+'"></div>'
+      +'<div><div style="font-size:13px;font-weight:700">'+s.name+'</div>'
+      +'<div style="font-size:11px;color:var(--muted)">'+s.code+(s.teacher?' • '+s.teacher:'')+'</div></div></div>'
+      +'<div style="display:flex;gap:12px">'
+      +'<div style="text-align:center"><div style="font-size:16px;font-weight:800;color:var(--accent)">'+avg+'</div><div style="font-size:10px;color:var(--muted)">Avg marks</div></div>'
+      +'<div style="text-align:center"><div style="font-size:16px;font-weight:800;color:var(--amber)">'+subjExams.length+'</div><div style="font-size:10px;color:var(--muted)">Exams ahead</div></div>'
+      +'<div style="display:flex;gap:6px;align-items:center">'
+      +'<button class="btn" style="font-size:11px;padding:4px 10px" onclick="addGrade(this.dataset.id)" data-id="'+s.id+'">+ Grade</button>'
+      +'<button class="btn" style="font-size:11px;padding:4px 10px;color:var(--coral)" onclick="deleteSubject(this.dataset.id)" data-id="'+s.id+'">✕</button>'
+      +'</div></div></div>'
+      // Grade history
+      +(subjGrades.length?'<div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px">'
+        +subjGrades.map(function(g){
+          return '<div style="font-size:11px;padding:3px 8px;border-radius:6px;background:var(--surface3);color:var(--text)">'
+            +g.exam+': <strong>'+g.marks+'</strong>'+(g.grade?' ('+g.grade+')':'')+'</div>';
+        }).join('')+'</div>':'')
+      +'</div>';
+  }).join(''):'<div class="empty">No subjects yet — click "+ Add Subject" to start.</div>';
+
+  var examHtml=upcomingExams.length?upcomingExams.map(function(e){
+    var subj=subjs.find(function(s){return s.id===e.subjectId;})||{name:'Unknown',color:'var(--accent)'};
+    var daysLeft=Math.ceil((new Date(e.date)-new Date())/86400000);
+    var urgency=daysLeft<=3?'var(--coral)':daysLeft<=7?'var(--amber)':'var(--green)';
+    return '<div style="display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">'
+      +'<div style="width:8px;height:8px;border-radius:50%;background:'+(subj.color||'var(--accent)')+'"></div>'
+      +'<div style="flex:1">'
+      +'<div style="font-size:13px;font-weight:600">'+e.title+'</div>'
+      +'<div style="font-size:11px;color:var(--muted)">'+subj.name+' • '+e.date+'</div>'
+      +'</div>'
+      +'<div style="font-size:12px;font-weight:700;color:'+urgency+'">'+daysLeft+'d</div>'
+      +'<button class="btn" style="font-size:11px;padding:3px 8px;color:var(--coral)" onclick="deleteExam(this.dataset.id)" data-id="'+e.id+'">✕</button>'
+      +'</div>';
+  }).join(''):'<div class="empty">No upcoming exams</div>';
+
+  document.getElementById('main-content').innerHTML=
+    '<div class="card-grid grid4" style="margin-bottom:14px">'
+    +'<div class="stat"><div class="stat-label">Subjects</div><div class="stat-val" style="color:var(--accent)">'+subjs.length+'</div></div>'
+    +'<div class="stat"><div class="stat-label">GPA (est.)</div><div class="stat-val" style="color:var(--green)">'+gpa+'</div></div>'
+    +'<div class="stat"><div class="stat-label">Upcoming Exams</div><div class="stat-val" style="color:var(--amber)">'+upcomingExams.length+'</div></div>'
+    +'<div class="stat"><div class="stat-label">Grades Logged</div><div class="stat-val" style="color:var(--coral)">'+grades.length+'</div></div>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:2fr 1fr;gap:14px">'
+    +'<div class="card"><div class="card-title">My Subjects</div>'+subjHtml+'</div>'
+    +'<div class="card"><div class="card-title">Upcoming Exams</div>'+examHtml+'</div>'
+    +'</div>';
+};
+
+// Academic helper functions
+function addAcademicSubject(){
+  var COLORS2=['#7c6aff','#3dd68c','#f5c842','#ff6b6b','#00d4ff','#ff6eb0','#4ddb7c'];
+  var html='<div class="modal-overlay" id="acad-modal" onclick="if(event.target.id===this.id)this.remove()">'
+    +'<div class="modal"><div class="modal-title">Add Subject <button class="close-btn" onclick="document.getElementById(&quot;acad-modal&quot;).remove()">✕</button></div>'
+    +'<div class="field"><div class="label">Subject Name *</div><input type="text" id="acad-name" placeholder="e.g. Mathematics"></div>'
+    +'<div class="field"><div class="label">Subject Code</div><input type="text" id="acad-code" placeholder="e.g. MATH101"></div>'
+    +'<div class="field"><div class="label">Teacher</div><input type="text" id="acad-teacher" placeholder="Teacher name"></div>'
+    +'<div class="field"><div class="label">Goal (hours to master)</div><input type="number" id="acad-goal" placeholder="100" value="100"></div>'
+    +'<div class="card-grid grid2">'
+    +'<div class="field"><div class="label">Weekly target (hrs)</div><input type="number" id="acad-weekly-goal" placeholder="e.g. 5" min="0" step="0.5"></div>'
+    +'<div class="field"><div class="label">Monthly target (hrs)</div><input type="number" id="acad-monthly-goal" placeholder="e.g. 20" min="0" step="0.5"></div>'
+    +'</div>'
+    +'<div class="card-grid grid2">'
+    +'<div class="field"><div class="label">Start date</div><input type="date" id="acad-startdate" value="'+today()+'"></div>'
+    +'<div class="field"><div class="label">Deadline (optional)</div><input type="date" id="acad-deadline"></div>'
+    +'</div>'
+    +'<div class="field"><div class="label">Color</div>'
+    +'<div class="skill-color-pick">'+COLORS2.map(function(c,i){return '<div class="color-swatch '+(i===0?'selected':'')+'" style="background:'+c+'" onclick="selectColor(\"'+c+'\",this)"></div>';}).join('')+'</div></div>'
+    +'<button class="btn btn-accent" style="width:100%;margin-top:8px" onclick="saveAcademicSubject()">Add Subject</button>'
+    +'</div></div>';
+  document.body.insertAdjacentHTML('beforeend',html);
+  window._pickedColor='#7c6aff';
+}
+function saveAcademicSubject(){
+  var name=(document.getElementById('acad-name')||{}).value||'';
+  if(!name.trim()){notify('Subject name required!');return;}
+  if(!DB.academic)DB.academic={subjects:[],exams:[],grades:[]};
+  DB.academic.subjects.push({
+    id:Date.now()+'',name:name.trim(),
+    code:(document.getElementById('acad-code')||{}).value||'',
+    teacher:(document.getElementById('acad-teacher')||{}).value||'',
+    goalHours:parseInt((document.getElementById('acad-goal')||{}).value||100),
+    weeklyGoalHours:parseFloat((document.getElementById('acad-weekly-goal')||{}).value||0)||0,
+    monthlyGoalHours:parseFloat((document.getElementById('acad-monthly-goal')||{}).value||0)||0,
+    startDate:(document.getElementById('acad-startdate')||{}).value||today(),
+    deadline:(document.getElementById('acad-deadline')||{}).value||'',
+    completionDate:'',
+    color:window._pickedColor||'#7c6aff'
+  });
+  save();document.getElementById('acad-modal').remove();notify('✓ Subject added!');renders.academic();
+}
+function toggleSubjectComplete(id){
+  var subj=((DB.academic&&DB.academic.subjects)||[]).find(function(s){return s.id===id;});
+  if(!subj) return;
+  subj.completionDate=subj.completionDate?'':today();
+  save();renders.mysubjects();
+}
+function deleteSubject(id){
+  if(!confirm('Delete this subject and all its grades?'))return;
+  DB.academic.subjects=DB.academic.subjects.filter(function(s){return s.id!==id;});
+  DB.academic.grades=DB.academic.grades.filter(function(g){return g.subjectId!==id;});
+  DB.academic.exams=DB.academic.exams.filter(function(e){return e.subjectId!==id;});
+  save();
+  if(currentPage==='mysubjects') renders.mysubjects(); else renders.academic();
+}
+function addGrade(subjectId){
+  var html='<div class="modal-overlay" id="grade-modal" onclick="if(event.target.id===this.id)this.remove()">'
+    +'<div class="modal"><div class="modal-title">Add Grade <button class="close-btn" onclick="document.getElementById(&quot;grade-modal&quot;).remove()">✕</button></div>'
+    +'<div class="field"><div class="label">Exam / Assignment Name *</div><input type="text" id="grade-exam" placeholder="e.g. Midterm Exam"></div>'
+    +'<div class="field"><div class="label">Marks / Score</div><input type="number" id="grade-marks" placeholder="e.g. 85"></div>'
+    +'<div class="field"><div class="label">Grade (optional)</div>'
+    +'<select id="grade-letter"><option value="">— Select —</option>'
+    +['A+','A','A-','B+','B','B-','C+','C','C-','D','F'].map(function(g){return '<option>'+g+'</option>';}).join('')
+    +'</select></div>'
+    +'<div class="field"><div class="label">Note</div><input type="text" id="grade-note" placeholder="Optional note"></div>'
+    +'<button class="btn btn-accent" style="width:100%;margin-top:8px" onclick="saveGrade(\"'+subjectId+'\")">Save Grade</button>'
+    +'</div></div>';
+  document.body.insertAdjacentHTML('beforeend',html);
+}
+function saveGrade(subjectId){
+  var exam=(document.getElementById('grade-exam')||{}).value||'';
+  if(!exam.trim()){notify('Exam name required!');return;}
+  DB.academic.grades.push({
+    id:Date.now()+'',subjectId:subjectId,
+    exam:exam.trim(),
+    marks:(document.getElementById('grade-marks')||{}).value||'',
+    grade:(document.getElementById('grade-letter')||{}).value||'',
+    note:(document.getElementById('grade-note')||{}).value||'',
+    date:today()
+  });
+  save();document.getElementById('grade-modal').remove();notify('✓ Grade saved!');renders.academic();
+}
+function addExam(){
+  if(!(DB.academic&&DB.academic.subjects&&DB.academic.subjects.length)){notify('আগে একটা subject যোগ করুন!');return;}
+  var subjOpts=DB.academic.subjects.map(function(s){return '<option value="'+s.id+'">'+s.name+'</option>';}).join('');
+  var html='<div class="modal-overlay" id="exam-modal" onclick="if(event.target.id===this.id)this.remove()">'
+    +'<div class="modal"><div class="modal-title">Add Exam <button class="close-btn" onclick="document.getElementById(&quot;exam-modal&quot;).remove()">✕</button></div>'
+    +'<div class="field"><div class="label">Exam Title *</div><input type="text" id="exam-title" placeholder="e.g. Final Exam"></div>'
+    +'<div class="field"><div class="label">Subject *</div><select id="exam-subj">'+subjOpts+'</select></div>'
+    +'<div class="field"><div class="label">Date *</div><input type="date" id="exam-date"></div>'
+    +'<div class="field"><div class="label">Note</div><input type="text" id="exam-note" placeholder="Syllabus, venue, etc."></div>'
+    +'<button class="btn btn-accent" style="width:100%;margin-top:8px" onclick="saveExam()">Add Exam</button>'
+    +'</div></div>';
+  document.body.insertAdjacentHTML('beforeend',html);
+}
+function saveExam(){
+  var title=(document.getElementById('exam-title')||{}).value||'';
+  var date=(document.getElementById('exam-date')||{}).value||'';
+  if(!title.trim()||!date){notify('Title ও date দিন!');return;}
+  DB.academic.exams.push({
+    id:Date.now()+'',title:title.trim(),
+    subjectId:(document.getElementById('exam-subj')||{}).value||'',
+    date:date,note:(document.getElementById('exam-note')||{}).value||''
+  });
+  save();document.getElementById('exam-modal').remove();notify('✓ Exam added!');renders.academic();
+}
+function deleteExam(id){
+  DB.academic.exams=DB.academic.exams.filter(function(e){return e.id!==id;});
+  save();renders.academic();
+}
+
+// ════════════════════════════════════════════════
+// WEEKLY PLANNER PAGE
+// ════════════════════════════════════════════════
+renders.planner=function(){
+  if(!DB.planner)DB.planner={weeks:{}};
+  // Get current week start (Monday)
+  var now=new Date();
+  var dow=now.getDay();
+  var monday=new Date(now);monday.setDate(now.getDate()-(dow===0?6:dow-1));
+  if(!window._plannerWeekOffset)window._plannerWeekOffset=0;
+  monday.setDate(monday.getDate()+window._plannerWeekOffset*7);
+  var weekKey=monday.toISOString().slice(0,10);
+  var days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  var weekDates=days.map(function(_,i){var d=new Date(monday);d.setDate(monday.getDate()+i);return d.toISOString().slice(0,10);});
+  var weekLabel=monday.toLocaleDateString('en',{month:'short',day:'numeric'})+' – ';
+  var sunday=new Date(monday);sunday.setDate(monday.getDate()+6);
+  weekLabel+=sunday.toLocaleDateString('en',{month:'short',day:'numeric',year:'numeric'});
+
+  if(!DB.planner.weeks[weekKey])DB.planner.weeks[weekKey]={};
+  var wPlan=DB.planner.weeks[weekKey];
+
+  document.getElementById('topbar-actions').innerHTML=
+    '<button class="btn" onclick="window._plannerWeekOffset=(window._plannerWeekOffset||0)-1;renders.planner()">← Prev</button>'
+    +'<button class="btn" style="margin-left:6px" onclick="window._plannerWeekOffset=0;renders.planner()">Today</button>'
+    +'<button class="btn" style="margin-left:6px" onclick="window._plannerWeekOffset=(window._plannerWeekOffset||0)+1;renders.planner()">Next →</button>';
+
+  var sessions=DB.sessions||[];
+  var skills=DB.skills||[];
+
+  var cols=weekDates.map(function(d,i){
+    var dayName=days[i];
+    var isToday=d===today();
+    var dayTodos=(DB.dailyTodos&&DB.dailyTodos[d])||[];
+    var dayPlan=wPlan[d]||{note:'',goals:[]};
+    var daySessions=sessions.filter(function(s){return s.date===d;});
+    var daySecs=daySessions.reduce(function(a,s){return a+(s.learn||0)+(s.prac||0);},0);
+
+    return '<div style="min-width:120px;flex:1;border-radius:12px;border:1.5px solid '+(isToday?'var(--accent)':'var(--border2)')+';background:'+(isToday?'var(--accent-glow)':'var(--surface2)')+';padding:10px">'
+      +'<div style="font-size:11px;font-weight:800;color:'+(isToday?'var(--accent)':'var(--muted)')+';margin-bottom:2px">'+dayName.toUpperCase()+'</div>'
+      +'<div style="font-size:10px;color:var(--muted2);margin-bottom:8px">'+d.slice(5)+'</div>'
+      // Actual study time
+      +(daySecs>0?'<div style="font-size:11px;color:var(--green);margin-bottom:6px">⏱ '+hm(daySecs)+' studied</div>':'')
+      // Todos for this day
+      +(dayTodos.length?'<div style="margin-bottom:6px">'+dayTodos.slice(0,3).map(function(t){return '<div style="font-size:10px;color:'+(t.done?'var(--muted)':'var(--text)')+';text-decoration:'+(t.done?'line-through':'none')+';padding:2px 0">'+( t.done?'✓ ':' ')+t.text.slice(0,20)+'</div>';}).join('')+(dayTodos.length>3?'<div style="font-size:10px;color:var(--accent);cursor:pointer;font-weight:600" onclick="switchTodoDate(\"'+d+'\");nav(\"todo\");">+'+( dayTodos.length-3)+' more</div>':'')+'</div>':'')
+      // Plan note
+      +'<textarea placeholder="Plan for '+dayName+'..." data-wk="'+weekKey+'" data-d="'+d+'" style="width:100%;font-size:11px;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:5px;color:var(--text);resize:none;font-family:DM Sans,sans-serif;min-height:60px;box-sizing:border-box" oninput="savePlanNote(this.dataset.wk,this.dataset.d,this.value)">'+((dayPlan&&dayPlan.note)||'')+'</textarea>'
+      +'</div>';
+  }).join('');
+
+  // Weekly goal setting
+  var weekGoal=wPlan._goal||'';
+  var weekNote=wPlan._note||'';
+  // Progress for week
+  var weekSecs=0;weekDates.forEach(function(d){sessions.filter(function(s){return s.date===d;}).forEach(function(s){weekSecs+=(s.learn||0)+(s.prac||0);});});
+
+  document.getElementById('main-content').innerHTML=
+    '<div class="card" style="margin-bottom:14px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">'
+    +'<div><div class="card-title" style="margin:0">Week of '+weekLabel+'</div>'
+    +'<div style="font-size:12px;color:var(--muted);margin-top:2px">Total study: <strong style="color:var(--accent)">'+hm(weekSecs)+'</strong></div></div>'
+    +'<div style="display:flex;gap:8px">'
+    +'<input type="text" placeholder="Weekly goal..." value="'+weekGoal+'" data-wk="'+weekKey+'" style="font-size:12px;min-width:200px" oninput="savePlanGoal(this.dataset.wk,this.value)">'
+    +'</div></div></div>'
+    +'<div style="overflow-x:auto"><div style="display:flex;gap:8px;min-width:600px;padding-bottom:4px">'+cols+'</div></div>';
+};
+
+function savePlanNote(weekKey,date,val){
+  if(!DB.planner)DB.planner={weeks:{}};
+  if(!DB.planner.weeks[weekKey])DB.planner.weeks[weekKey]={};
+  if(!DB.planner.weeks[weekKey][date])DB.planner.weeks[weekKey][date]={note:'',goals:[]};
+  DB.planner.weeks[weekKey][date].note=val;
+  save();
+}
+function savePlanGoal(weekKey,val){
+  if(!DB.planner)DB.planner={weeks:{}};
+  if(!DB.planner.weeks[weekKey])DB.planner.weeks[weekKey]={};
+  DB.planner.weeks[weekKey]._goal=val;
+  save();
+}
+
+// ════════════════════════════════════════════════
+// LEADERBOARD PAGE
+// ════════════════════════════════════════════════
+renders.leaderboard=function(){
+  if(!window._lbTab) window._lbTab='skill';
+  var tab=window._lbTab;
+  var hasAcad4=((DB.academic&&DB.academic.subjects)||[]).length>0;
+
+  document.getElementById('topbar-actions').innerHTML=
+    '<div style="display:flex;background:var(--surface2);border-radius:10px;padding:3px;gap:3px;margin-right:8px">'
+    +'<button onclick="window._lbTab=\'skill\';renders.leaderboard()" style="padding:7px 14px;border-radius:7px;border:none;background:'+(tab==='skill'?'var(--accent)':'transparent')+';color:'+(tab==='skill'?'#fff':'var(--muted)')+';font-size:12px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif">🧠 Skill</button>'
+    +(hasAcad4?'<button onclick="window._lbTab=\'academic\';renders.leaderboard()" style="padding:7px 14px;border-radius:7px;border:none;background:'+(tab==='academic'?'var(--accent)':'transparent')+';color:'+(tab==='academic'?'#fff':'var(--muted)')+';font-size:12px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif">🎓 Academic</button>':'')
+    +'</div>'
+    +'<button class="btn btn-accent" onclick="leaderboardShare()">📤 Share</button>'
+    +'<button class="btn" style="margin-left:6px" onclick="leaderboardRefresh()">↻ Refresh</button>';
+
+  var isAcad=tab==='academic';
+  var subjList=isAcad?((DB.academic&&DB.academic.subjects)||[]):(DB.skills||[]);
+  var subjIds=subjList.map(function(s){return s.id;});
+  var mySessions=(DB.sessions||[]).filter(function(s){return subjIds.indexOf(s.skillId)!==-1;});
+
+  var myXP=0; mySessions.forEach(function(s){myXP+=Math.floor(((s.learn||0)+(s.prac||0))/60);});
+  var myLevel=getLevel(myXP);
+  var myTotalSecs=mySessions.reduce(function(a,s){return a+(s.learn||0)+(s.prac||0);},0);
+  var myStreak=0;var checkD2=new Date();
+  while(true){var ds2=checkD2.toISOString().slice(0,10);if(mySessions.some(function(s){return s.date===ds2;})){myStreak++;checkD2.setDate(checkD2.getDate()-1);}else break;}
+
+  var lbHtml='<div id="lb-list"><div style="text-align:center;padding:32px;color:var(--muted)">Loading...</div></div>';
+
+  document.getElementById('main-content').innerHTML=
+    '<div class="card" style="margin-bottom:14px">'
+    +'<div class="card-title">📊 My '+(isAcad?'Academic':'Skill')+' Stats (Shared)</div>'
+    +'<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">'
+    +'<div style="width:56px;height:56px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff">'+myLevel+'</div>'
+    +'<div style="flex:1">'
+    +'<div style="font-size:16px;font-weight:800">Level '+myLevel+'</div>'
+    +'<div style="font-size:12px;color:var(--muted)">'+myXP.toLocaleString()+' XP • '+(myTotalSecs/3600).toFixed(1)+'h • '+myStreak+' day streak</div>'
+    +'</div>'
+    +'<div style="font-size:11px;color:var(--muted);background:var(--surface2);border-radius:8px;padding:8px 12px">'
+    +'<label style="display:flex;align-items:center;gap:6px;cursor:pointer">'
+    +'<input type="checkbox" id="lb-opt-in" '+(DB.settings&&DB.settings.lbOptIn?'checked':'')+' onchange="lbToggleOptIn(this.checked)" style="accent-color:var(--accent)">'
+    +'<span>Leaderboard এ দেখাও (opt-in)</span></label>'
+    +'</div></div></div>'
+    +'<div class="card">'
+    +'<div class="card-title">🏆 Top '+(isAcad?'Academic':'Skill')+' Studiers</div>'
+    +lbHtml
+    +'</div>';
+
+  _lbLoad(isAcad);
+};
+
+async function _lbLoad(isAcad){
+  var listEl=document.getElementById('lb-list');
+  if(!listEl) return;
+  if(!_sb){listEl.innerHTML='<div class="empty">Sign in to see leaderboard</div>';return;}
+  try {
+    var res=await _sb.from('skillpath_data').select('data').order('updated_at',{ascending:false}).limit(50);
+    if(res.error||!res.data){listEl.innerHTML='<div class="empty">Could not load — try again</div>';return;}
+    var entries=[];
+    res.data.forEach(function(row){
+      var d=row.data;
+      if(!d||!d.settings||!d.settings.lbOptIn) return;
+      var name=(d.settings&&d.settings.displayName)||'Anonymous';
+      // Filter sessions to only this category (skill vs academic) using THEIR data
+      var theirSubjIds=isAcad?((d.academic&&d.academic.subjects)||[]).map(function(s){return s.id;})
+                              :((d.skills)||[]).map(function(s){return s.id;});
+      var catSessions=(d.sessions||[]).filter(function(s){return theirSubjIds.indexOf(s.skillId)!==-1;});
+      if(!catSessions.length) return; // skip users with no activity in this category
+      var xp=0;
+      catSessions.forEach(function(s){xp+=Math.floor(((s.learn||0)+(s.prac||0))/60);});
+      var totalH=catSessions.reduce(function(a,s){return a+(s.learn||0)+(s.prac||0);},0)/3600;
+      entries.push({name:name,xp:xp,totalH:totalH,sessions:catSessions.length,level:getLevel(xp)});
+    });
+    entries.sort(function(a,b){return b.xp-a.xp;});
+    if(!entries.length){listEl.innerHTML='<div class="empty">এই category তে কেউ এখনো leaderboard এ নেই — opt-in করুন!</div>';return;}
+    listEl.innerHTML=entries.map(function(e,i){
+      var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1);
+      return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">'
+        +'<div style="font-size:18px;min-width:28px;text-align:center">'+medal+'</div>'
+        +'<div style="width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:13px">'+e.level+'</div>'
+        +'<div style="flex:1">'
+        +'<div style="font-size:13px;font-weight:700">'+e.name+'</div>'
+        +'<div style="font-size:11px;color:var(--muted)">'+e.xp.toLocaleString()+' XP • '+e.totalH.toFixed(1)+'h • '+e.sessions+' sessions</div>'
+        +'</div></div>';
+    }).join('');
+  } catch(err){
+    listEl.innerHTML='<div class="empty">Error loading — check connection</div>';
+  }
+}
+
+function lbToggleOptIn(val){
+  if(!DB.settings)DB.settings={};
+  DB.settings.lbOptIn=val;
+  if(val&&!DB.settings.displayName){
+    var name=prompt('Leaderboard এ কী নামে দেখাবে?','StudyBuddy');
+    if(name) DB.settings.displayName=name.slice(0,30);
+    else{DB.settings.lbOptIn=false;document.getElementById('lb-opt-in').checked=false;return;}
+  }
+  save();
+  notify(val?'✓ Leaderboard এ যোগ হয়েছেন!':'Leaderboard থেকে সরে গেছেন');
+}
+
+function leaderboardRefresh(){ if(currentPage==='leaderboard') renders.leaderboard(); }
+
+function leaderboardShare(){
+  var myXP=calcXP();var myLevel=getLevel(myXP);
+  var totalH=((DB.sessions||[]).reduce(function(a,s){return a+(s.learn||0)+(s.prac||0);},0)/3600).toFixed(1);
+  var text='SkillPath এ আমার progress 🚀\nLevel '+myLevel+' | '+myXP.toLocaleString()+' XP | '+totalH+'h study';
+  if(navigator.share){navigator.share({text:text});}
+  else{navigator.clipboard.writeText(text).then(function(){notify('✓ Stats copied!');});}
+}
 
 renders.settings=function(){renderSettings();};
 
@@ -2884,28 +4532,52 @@ function renderSkillSlider(){
     if(sk.deadline){
       var badgeDiff=days_between(sk.deadline,today());
       var badgeCl=badgeDiff<=3?'var(--coral)':badgeDiff<=7?'var(--amber)':'var(--green)';
-      skNameBadge='<span style="font-size:10px;font-weight:800;color:'+badgeCl+';border:1.5px solid '+badgeCl+';padding:1px 7px;border-radius:5px;white-space:nowrap;flex-shrink:0">'+(badgeDiff===0?'⚡TODAY':badgeDiff<0?'⚠OVERDUE':'📅 '+badgeDiff+'d')+'</span>';
+      skNameBadge='<span style="font-size:10px;font-weight:800;color:'+badgeCl+';border:1.5px solid '+badgeCl+';padding:1px 7px;border-radius:5px;white-space:nowrap;flex-shrink:0">'+(badgeDiff===0?'⚡TODAY':badgeDiff<0?'⚠OVERDUE '+Math.abs(badgeDiff)+'d':'📅 '+badgeDiff+'d')+'</span>';
     }
 
     // Below progress bar: show task deadlines linked to this skill (DB.deadlines)
     var taskDls=(DB.deadlines||[]).filter(function(dl){return dl.skillId===sk.id&&!dl.done;}).sort(function(a,b){return a.date.localeCompare(b.date);});
     var dlHtml='';
     if(taskDls.length){
-      dlHtml='<div style="margin-top:8px;max-height:80px;overflow-y:auto;padding-right:4px">'
-        +taskDls.map(function(dl){
+      dlHtml='<div style="margin-top:6px;max-height:46px;overflow-y:auto;padding-right:4px">'
+        +taskDls.slice(0,2).map(function(dl){
           var diff=days_between(dl.date,today());
           var urgent=diff<=3;var warn=diff<=7&&diff>3;
           var cl=urgent?'var(--coral)':warn?'var(--amber)':'var(--green)';
           var bg=urgent?'var(--coral-bg)':warn?'var(--amber-bg)':'var(--green-bg)';
           var bdr=urgent?'rgba(255,107,107,0.25)':warn?'rgba(245,200,66,0.2)':'rgba(61,214,140,0.15)';
-          return '<div style="display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:7px;margin-bottom:3px;background:'+bg+';border:1px solid '+bdr+'">'
-            +'<span style="font-size:11px;flex:1;color:var(--text);font-weight:'+(urgent?700:500)+'">'+dl.text+'</span>'
-            +'<span style="font-size:10px;font-weight:800;color:'+cl+';white-space:nowrap;border:1.5px solid '+cl+';padding:1px 6px;border-radius:5px">'+(diff===0?'TODAY':diff<0?'OVERDUE':diff+'d')+'</span>'
+          return '<div style="display:flex;align-items:center;gap:6px;padding:3px 7px;border-radius:7px;margin-bottom:3px;background:'+bg+';border:1px solid '+bdr+'">'
+            +'<span style="font-size:10px;flex:1;color:var(--text);font-weight:'+(urgent?700:500)+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+dl.text+'</span>'
+            +'<span style="font-size:9px;font-weight:800;color:'+cl+';white-space:nowrap;border:1.5px solid '+cl+';padding:1px 5px;border-radius:5px">'+(diff===0?'TODAY':diff<0?'OVERDUE':diff+'d')+'</span>'
             +'</div>';
         }).join('')+'</div>';
-    } else {
-      dlHtml='<div style="font-size:10px;color:var(--muted2);margin-top:6px;font-style:italic">No deadlines</div>';
     }
+
+    // Goal progress mini-bars: weekly/monthly target vs actual + ETA
+    var gp=goal_progress_for_skill(sk);
+    var goalHtml='';
+    if(gp.weekly.target||gp.monthly.target){
+      goalHtml='<div style="margin-top:7px;display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+        +['weekly','monthly'].map(function(period){
+          var g=gp[period];
+          if(!g.target) return '<div></div>';
+          var barPct=Math.min(100,g.pct);
+          var over=g.actual>=g.target;
+          return '<div>'
+            +'<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:2px">'
+            +'<span style="text-transform:uppercase;font-weight:700;letter-spacing:.3px">'+(period==='weekly'?'Week':'Month')+'</span>'
+            +'<span>'+g.actual+'/'+g.target+'h</span>'
+            +'</div>'
+            +'<div style="height:4px;background:var(--surface3);border-radius:3px;overflow:hidden">'
+            +'<div style="height:100%;width:'+barPct+'%;background:'+(over?'var(--green)':sk.color)+';border-radius:3px;transition:width .4s"></div></div>'
+            +'<div style="font-size:9px;margin-top:2px">'+goalEtaLabel(g.eta)+'</div>'
+            +'</div>';
+        }).join('')
+        +'</div>';
+    } else {
+      goalHtml='<div style="font-size:10px;color:var(--muted2);margin-top:6px;font-style:italic">No weekly/monthly target set</div>';
+    }
+    if(!dlHtml) dlHtml='<div style="font-size:10px;color:var(--muted2);margin-top:6px;font-style:italic">No task deadlines</div>';
 
     return '<div class="skill-slide'+(i===0?' active':'')+'" id="skill-slide-'+i+'">'
       +'<div style="display:flex;align-items:flex-start;gap:12px">'
@@ -2916,9 +4588,10 @@ function renderSkillSlider(){
       +'<div style="font-size:14px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:130px">'+sk.name+'</div>'
       +skNameBadge
       +'</div>'
-      +'<div style="font-size:10px;color:var(--muted);margin-bottom:6px">'+totalH+'h / '+maxH+'h goal &nbsp;·&nbsp; L:'+learnH+'h P:'+pracH+'h</div>'
+      +'<div style="font-size:11px;color:var(--muted);margin-bottom:6px">'+totalH+'h / '+maxH+'h goal &nbsp;·&nbsp; <span style="font-weight:800;color:var(--accent)">📖 L:'+learnH+'h</span>&nbsp; <span style="font-weight:800;color:var(--green)">🔧 P:'+pracH+'h</span></div>'
       +'<div style="height:5px;background:var(--surface3);border-radius:3px;overflow:hidden;margin-bottom:2px">'
       +'<div style="height:100%;width:'+pct+'%;background:'+sk.color+';border-radius:3px;transition:width .4s"></div></div>'
+      +goalHtml
       +dlHtml
       +'</div></div></div>';
   }).join('');
@@ -2945,6 +4618,10 @@ function goSkillSlide(idx){
 }
 function nextSkillSlide(){goSkillSlide(_sliderIdx+1);}
 function prevSkillSlide(){goSkillSlide(_sliderIdx-1);}
+function updateRoutineRowFade(){
+  // No-op: the routine row is now a CSS-driven marquee (or a small static row when
+  // there are too few items to loop), so there's no scroll position to track here.
+}
 function startSliderAuto(){
   if(_sliderTimer)clearInterval(_sliderTimer);
   if(DB.skills&&DB.skills.length>1){
