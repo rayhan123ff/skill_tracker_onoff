@@ -1,5 +1,5 @@
 
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -124,11 +124,11 @@ body[data-page="dashboard"] .topbar{padding:12px 20px 0;flex-shrink:0}
 body[data-page="dashboard"] #main-content{flex:1;display:flex;flex-direction:column;min-height:0;gap:8px}
 body[data-page="dashboard"] .card{padding:11px 14px;margin-bottom:0}
 body[data-page="dashboard"] .card-title{margin-bottom:5px;font-size:12px}
-body[data-page="dashboard"] .stat{padding:11px 14px}
-body[data-page="dashboard"] .stat-val{font-size:23px;font-weight:800}
+body[data-page="dashboard"] .stat{padding:9px 12px}
+body[data-page="dashboard"] .stat-val{font-size:26px;font-weight:800}
 body[data-page="dashboard"] .stat-label{margin-bottom:4px;font-size:11px;font-weight:700}
 body[data-page="dashboard"] .stat-sub{margin-top:2px;font-size:10px}
-body[data-page="dashboard"] .card-grid.grid4{gap:8px}
+body[data-page="dashboard"] .card-grid.grid4,body[data-page="dashboard"] .card-grid.grid5{gap:8px}
 
 /* ── CARDS ───────────────────────────────────────────────────────────────── */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:14px}
@@ -137,6 +137,7 @@ body[data-page="dashboard"] .card-grid.grid4{gap:8px}
 .grid2{grid-template-columns:1fr 1fr}
 .grid3{grid-template-columns:1fr 1fr 1fr}
 .grid4{grid-template-columns:repeat(4,1fr)}
+.grid5{grid-template-columns:repeat(5,1fr)}
 .stat{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
 .stat-label{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:6px;font-weight:600}
 .stat-val{font-size:22px;font-weight:600;line-height:1}
@@ -182,14 +183,14 @@ textarea{resize:vertical;min-height:70px}
 .skill-bar-label{font-size:15px;font-weight:700;color:var(--muted);min-width:96px}
 .skill-bar{flex:1;height:14px;background:var(--surface3);border-radius:7px;overflow:hidden}
 .skill-bar-fill{height:100%;border-radius:5px}
-/* Today's Routine — continuous right-to-left auto-scrolling row */
-@keyframes routineMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.routine-row-track{display:flex;gap:12px;align-items:stretch;animation:routineMarquee linear infinite;will-change:transform}
-.routine-row-track.paused{animation-play-state:paused}
-.routine-row-card{flex-shrink:0}
-.routine-row-card:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.25)}
-.routine-row-scroll{overflow:hidden;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%);mask-image:linear-gradient(to right,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%)}
-.routine-row-scroll.no-scroll-fx{-webkit-mask-image:none;mask-image:none}
+.day-detail-sessions .detail-view{display:none}
+.day-detail-sessions.expanded .summary-view{display:none}
+.day-detail-sessions.expanded .detail-view{display:block}
+@keyframes routineMarquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.routine-row-wrap{overflow:hidden;flex:1;min-width:0;min-height:0;cursor:grab;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%);mask-image:linear-gradient(to right,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%)}
+.routine-row-wrap:hover .routine-row-track{animation-play-state:paused}
+.routine-row-track{display:flex;gap:12px;align-items:stretch;width:max-content;will-change:transform;animation:routineMarquee linear infinite}
+.routine-row-card{flex-shrink:0;transition:transform .2s,box-shadow .2s}
 .skill-topics{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .topic-chip{font-size:10px;padding:3px 10px;border-radius:20px;background:var(--surface3);color:var(--muted);font-weight:500;cursor:default}
 .skill-actions{display:flex;gap:6px;margin-top:10px;border-top:1px solid var(--border);padding-top:10px}
@@ -307,8 +308,9 @@ textarea{resize:vertical;min-height:70px}
 
 /* ── SKILL SLIDER ────────────────────────────────────────────────────────── */
 .skill-slider{position:relative;background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:18px 20px;overflow:hidden;min-height:160px}
-.skill-slide{display:none;animation:fadeSlide .4s ease}
-.skill-slide.active{display:block}
+@keyframes fadeSlide{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
+.skill-slide,.acad-slide{display:none}
+.skill-slide.active,.acad-slide.active{display:block;animation:fadeSlide .35s ease}
 @keyframes fadeSlide{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
 .slider-nav{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
 .slider-dots{display:flex;gap:5px;justify-content:center}
@@ -483,24 +485,44 @@ textarea{resize:vertical;min-height:70px}
 /* ════════════════════════════════════
    ⚡ NEON — Electric glow, intense dark
 ════════════════════════════════════ */
+/* Neon surface variables — auto-adapt: dark on dark themes, light-tinted on light theme */
+[data-body-dash="neon"]{
+  --neon-card-bg:rgba(14,12,22,1);
+  --neon-card-bg2:rgba(10,9,18,1);
+  --neon-stat-bg:rgba(18,14,30,1);
+  --neon-stat-bg2:rgba(12,10,20,1);
+  --neon-skill-bg:rgba(14,12,22,.95);
+  --neon-sidebar-bg:rgba(8,8,14,.97);
+  --neon-bar-bg:rgba(255,255,255,.04);
+}
+/* On light theme, neon surfaces should use light-tinted values instead of pitch black */
+[data-theme="light"][data-body-dash="neon"]{
+  --neon-card-bg:rgba(245,243,255,1);
+  --neon-card-bg2:rgba(238,234,255,1);
+  --neon-stat-bg:rgba(240,236,255,1);
+  --neon-stat-bg2:rgba(234,229,255,1);
+  --neon-skill-bg:rgba(245,243,255,.98);
+  --neon-sidebar-bg:rgba(248,246,255,.97);
+  --neon-bar-bg:rgba(0,0,0,.05);
+}
 [data-body-dash="neon"] .main{background:radial-gradient(ellipse 70% 55% at 12% 18%,rgba(124,106,255,.08),transparent 52%),radial-gradient(ellipse 55% 45% at 90% 78%,rgba(61,214,140,.05),transparent 50%),var(--bg)}
-[data-body-dash="neon"] .sidebar{background:rgba(8,8,14,.97);border-right:1px solid rgba(124,106,255,.3);box-shadow:4px 0 30px rgba(124,106,255,.08)}
+[data-body-dash="neon"] .sidebar{background:var(--neon-sidebar-bg);border-right:1px solid rgba(124,106,255,.3);box-shadow:4px 0 30px rgba(124,106,255,.08)}
 [data-body-dash="neon"] .logo-title{text-shadow:0 0 20px rgba(124,106,255,.7),0 0 6px rgba(124,106,255,.4);color:var(--accent);letter-spacing:.5px}
 [data-body-dash="neon"] .nav-item.active{box-shadow:inset 5px 0 20px rgba(124,106,255,.25);text-shadow:0 0 14px var(--accent)}
 [data-body-dash="neon"] .nav-item.active .nav-icon{filter:drop-shadow(0 0 7px var(--accent))}
 [data-body-dash="neon"] .streak-badge{border-color:rgba(245,200,66,.5);box-shadow:0 0 24px rgba(245,200,66,.22),inset 0 0 20px rgba(245,200,66,.05)}
 [data-body-dash="neon"] .streak-num{text-shadow:0 0 18px var(--amber),0 0 6px var(--amber);filter:brightness(1.35);font-size:28px;font-weight:900}
-[data-body-dash="neon"] .card{border-color:rgba(124,106,255,.22);background:linear-gradient(145deg,rgba(14,12,22,1),rgba(10,9,18,1));box-shadow:0 0 0 1px rgba(124,106,255,.09),0 8px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(124,106,255,.08);border-radius:16px}
+[data-body-dash="neon"] .card{border-color:rgba(124,106,255,.22);background:linear-gradient(145deg,var(--neon-card-bg),var(--neon-card-bg2));box-shadow:0 0 0 1px rgba(124,106,255,.09),0 8px 40px rgba(0,0,0,.15),inset 0 1px 0 rgba(124,106,255,.08);border-radius:16px}
 [data-body-dash="neon"] .card-title{font-size:11px;letter-spacing:2px;font-weight:900;text-transform:uppercase;color:var(--accent);text-shadow:0 0 14px rgba(124,106,255,.5);border-bottom:1px solid rgba(124,106,255,.15);padding-bottom:10px;margin-bottom:14px}
-[data-body-dash="neon"] .stat{border-color:rgba(124,106,255,.25);background:linear-gradient(145deg,rgba(18,14,30,1),rgba(12,10,20,1));box-shadow:inset 0 0 30px rgba(124,106,255,.05),0 4px 20px rgba(0,0,0,.4);border-radius:14px}
+[data-body-dash="neon"] .stat{border-color:rgba(124,106,255,.25);background:linear-gradient(145deg,var(--neon-stat-bg),var(--neon-stat-bg2));box-shadow:inset 0 0 30px rgba(124,106,255,.05),0 4px 20px rgba(0,0,0,.15);border-radius:14px}
 [data-body-dash="neon"] .stat-val{font-size:30px;font-weight:900;text-shadow:0 0 22px currentColor;filter:brightness(1.28)}
 [data-body-dash="neon"] .stat-label{font-size:10px;letter-spacing:2px;font-weight:800;text-transform:uppercase;color:rgba(124,106,255,.85)}
-[data-body-dash="neon"] .progress-track{height:7px;background:rgba(255,255,255,.04);border-radius:7px}
+[data-body-dash="neon"] .progress-track{height:7px;background:var(--neon-bar-bg);border-radius:7px}
 [data-body-dash="neon"] .progress-fill{box-shadow:0 0 14px currentColor,0 0 5px currentColor;filter:brightness(1.32);border-radius:7px}
-[data-body-dash="neon"] .skill-bar{background:rgba(255,255,255,.04);height:8px;border-radius:8px}
+[data-body-dash="neon"] .skill-bar{background:var(--neon-bar-bg);height:8px;border-radius:8px}
 [data-body-dash="neon"] .skill-bar-fill{box-shadow:0 0 12px currentColor;filter:brightness(1.2)}
 [data-body-dash="neon"] .skill-slider{border-color:rgba(124,106,255,.2);box-shadow:0 0 18px rgba(124,106,255,.08)}
-[data-body-dash="neon"] .skill-card{border-color:rgba(124,106,255,.18);border-radius:14px;background:rgba(14,12,22,.95)}
+[data-body-dash="neon"] .skill-card{border-color:rgba(124,106,255,.18);border-radius:14px;background:var(--neon-skill-bg)}
 [data-body-dash="neon"] .skill-card:hover{border-color:rgba(124,106,255,.44);box-shadow:0 0 24px rgba(124,106,255,.18)}
 [data-body-dash="neon"] .btn-accent{box-shadow:0 0 18px rgba(124,106,255,.55),0 0 7px rgba(124,106,255,.3);border-color:rgba(124,106,255,.78);font-weight:700;text-shadow:0 0 8px rgba(124,106,255,.55)}
 [data-body-dash="neon"] .btn-accent:hover{box-shadow:0 0 32px rgba(124,106,255,.8),0 0 14px rgba(124,106,255,.55)}
@@ -616,6 +638,76 @@ textarea{resize:vertical;min-height:70px}
 [data-body-dash="midnight"] .notification{border-color:#d4af5a;box-shadow:0 6px 28px rgba(200,170,80,.25)}
 [data-body-dash="midnight"] table tr:hover td{background:rgba(200,170,80,.04)}
 [data-body-dash="midnight"] .icon-btn:hover{background:rgba(200,170,80,.12);color:#d4af5a}
+
+/* ════════════════════════════════════
+   ☀️ LIGHT THEME + DARK DASH FIX
+   Override dark hardcoded colors when light theme is active
+════════════════════════════════════ */
+[data-theme="light"][data-body-dash="vibrant"] .card,
+[data-theme="light"][data-body-dash="vibrant"] .skill-card,
+[data-theme="light"][data-body-dash="vibrant"] .log-entry{
+  background:var(--surface) !important;
+  color:var(--text);
+}
+[data-theme="light"][data-body-dash="vibrant"] .progress-track,
+[data-theme="light"][data-body-dash="vibrant"] .skill-bar,
+[data-theme="light"][data-body-dash="vibrant"] .week-day-bar{
+  background:var(--surface3) !important;
+}
+[data-theme="light"][data-body-dash="aurora"] .sidebar{
+  background:var(--surface) !important;
+  border-right:1px solid var(--border2);
+  box-shadow:none;
+}
+[data-theme="light"][data-body-dash="aurora"] .card,
+[data-theme="light"][data-body-dash="aurora"] .skill-card,
+[data-theme="light"][data-body-dash="aurora"] .log-entry,
+[data-theme="light"][data-body-dash="aurora"] .stat,
+[data-theme="light"][data-body-dash="aurora"] .modal{
+  background:var(--surface) !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  color:var(--text);
+}
+[data-theme="light"][data-body-dash="aurora"] .progress-track,
+[data-theme="light"][data-body-dash="aurora"] .skill-bar{
+  background:var(--surface3) !important;
+}
+[data-theme="light"][data-body-dash="aurora"] .card-title{color:var(--accent) !important;}
+[data-theme="light"][data-body-dash="aurora"] .stat-label{color:var(--muted) !important;}
+[data-theme="light"][data-body-dash="midnight"] .main{
+  background:var(--bg) !important;
+}
+[data-theme="light"][data-body-dash="midnight"] .sidebar{
+  background:var(--surface) !important;
+  border-right:1px solid var(--border2);
+}
+[data-theme="light"][data-body-dash="midnight"] .card,
+[data-theme="light"][data-body-dash="midnight"] .skill-card,
+[data-theme="light"][data-body-dash="midnight"] .log-entry,
+[data-theme="light"][data-body-dash="midnight"] .stat,
+[data-theme="light"][data-body-dash="midnight"] .modal{
+  background:var(--surface) !important;
+  color:var(--text);
+}
+[data-theme="light"][data-body-dash="midnight"] .progress-track,
+[data-theme="light"][data-body-dash="midnight"] .skill-bar{
+  background:var(--surface3) !important;
+}
+[data-theme="light"][data-body-dash="midnight"] .stat-val{color:var(--text) !important;}
+[data-theme="light"][data-body-dash="midnight"] .stat-label{color:var(--muted) !important;}
+[data-theme="light"][data-body-dash="midnight"] .stat-sub{color:var(--muted) !important;}
+[data-theme="light"][data-body-dash="midnight"] .log-skill{color:var(--accent) !important;}
+[data-theme="light"][data-body-dash="midnight"] .card-title{color:var(--accent) !important;}
+[data-theme="light"][data-body-dash="midnight"] .nav-item.active{color:var(--accent) !important;}
+[data-theme="light"][data-body-dash="midnight"] .logo-title{color:var(--accent) !important;text-shadow:none;}
+[data-theme="light"][data-body-dash="midnight"] .streak-num{color:var(--amber) !important;text-shadow:none;}
+[data-theme="light"][data-body-dash="midnight"] .btn-accent{color:#fff !important;}
+/* Neon on light — card/stat surfaces already handled via CSS vars in neon block above */
+[data-theme="light"][data-body-dash="neon"] .sidebar{
+  background:var(--surface) !important;
+  border-right:1px solid rgba(124,106,255,.3);
+}
 
 /* ── SIDEBAR TOOLTIP on collapsed ────────────────────────────────────────── */
 .sidebar.collapsed .nav-item{position:relative}
@@ -869,8 +961,14 @@ textarea{resize:vertical;min-height:70px}
       </div>
       <div class="pf-row" id="pf-subj-row">
         <div class="pf-label" id="pf-subj-label">Skill</div>
-        <select id="pf-subj-sel" onchange="if(window._pomo)window._pomo.skillId=this.value" style="width:100%">
+        <select id="pf-subj-sel" onchange="pomoSkillChanged(this.value)" style="width:100%">
           <option value="">— Select —</option>
+        </select>
+      </div>
+      <div class="pf-row" id="pf-subskill-row" style="display:none">
+        <div class="pf-label">Unit <span style="font-weight:400;text-transform:none;color:var(--muted2)">(optional)</span></div>
+        <select id="pf-subskill-sel" onchange="if(window._pomo)window._pomo.subSkillId=this.value" style="width:100%">
+          <option value="">— None / General —</option>
         </select>
       </div>
       <div class="pf-row">
@@ -1137,6 +1235,23 @@ function _ensureDBFields(){
   if(!DB.xp)DB.xp={points:0,level:1,badges:[],history:[]};
   if(!DB.academic)DB.academic={subjects:[],exams:[],grades:[]};
   if(!DB.planner)DB.planner={weeks:{}};
+  // Ensure subSkills array on all skills/subjects
+  DB.skills.forEach(function(sk){if(!sk.subSkills)sk.subSkills=[];});
+  (DB.academic.subjects||[]).forEach(function(sk){if(!sk.subSkills)sk.subSkills=[];});
+  // Auto-migrate: if a main-skill session's topic first word matches a sub-skill name,
+  // assign that sub-skill's id to the session (moves it out of main skill into sub-skill)
+  var allSkills=DB.skills.concat(DB.academic.subjects||[]);
+  allSkills.forEach(function(sk){
+    (sk.subSkills||[]).forEach(function(ss){
+      var ssNameLower=ss.name.toLowerCase();
+      DB.sessions.forEach(function(s){
+        if(s.skillId!==sk.id)return;
+        if(s.subSkillId&&s.subSkillId!=='')return; // already assigned
+        var firstWord=(s.topic||'').trim().split(/\s+/)[0].toLowerCase();
+        if(firstWord===ssNameLower)s.subSkillId=ss.id;
+      });
+    });
+  });
   initDailySnapshot(today());
 }
 
@@ -1191,6 +1306,7 @@ function appStart(){
   document.getElementById('sidebar-streak').textContent=calc_streak();
 
   window.addEventListener('beforeunload',function(){
+    try{_pomoSavePartialOnExit();}catch(e){}
     try{localStorage.setItem('skillpath_v3',JSON.stringify(DB));}catch(e){}
   });
   document.addEventListener('visibilitychange',function(){
@@ -1718,55 +1834,66 @@ var renders={
       <circle cx="50" cy="50" r="40" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${dash.toFixed(1)} ${(circ-dash).toFixed(1)}" transform="rotate(-90 50 50)"/>
     </svg>`;
     
-    // recent sessions
-    var recent=DB.sessions.slice(-3).reverse();
+    // recent sessions — show all, scrollable
+    var recent=DB.sessions.slice().reverse();
     var recentHtml=recent.length?recent.map(s=>{
       var sk=skill_by_id(s.skillId);
+      var totalSecs=(s.learn||0)+(s.prac||0)+(s.read||0);
+      var typeLabel=s.learn>0&&s.prac>0?'Learn+Prac':s.learn>0?'Learn':s.prac>0?'Prac':s.read>0?'Read':'';
       return `<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)">
-        <div style="width:8px;height:8px;border-radius:2px;background:${sk?sk.color:'var(--muted)'}"></div>
-        <div style="flex:1">
-          <div style="font-size:12px;font-weight:500">${sk?sk.name:'—'} ${s.topic?'· '+s.topic:''}</div>
-          <div style="font-size:11px;color:var(--muted)">${s.date}</div>
+        <div style="width:8px;height:8px;border-radius:2px;flex-shrink:0;background:${sk?sk.color:'var(--muted)'}"></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sk?sk.name:'—'}${s.topic?' · <span style="color:var(--muted);font-weight:400">'+s.topic+'</span>':''}</div>
+          <div style="font-size:10px;color:var(--muted)">${s.date}${typeLabel?' · '+typeLabel:''}${(s.startTime||s.endTime)?` · <span style="color:var(--accent);font-weight:600">🕐 ${s.startTime||'?'}${s.endTime?' – '+s.endTime:''}</span>`:''}</div>
         </div>
-        <div style="font-size:11px;color:var(--muted)">${hm((s.learn||0)+(s.prac||0)+(s.read||0))}</div>
+        <div style="font-size:12px;font-weight:700;color:var(--accent);flex-shrink:0">${hm(totalSecs)}</div>
       </div>`;
     }).join(''):'<div class="empty">No sessions yet</div>';
     
     document.getElementById('main-content').innerHTML=`
-    <div class="card-grid grid4" style="margin-bottom:0;flex-shrink:0">
-      <div class="stat" style="grid-column:span 1">
-        <div class="stat-label"><span style="font-size:18px">🧠</span><br>Skill Learn</div>
-        <div class="stat-val" style="color:var(--accent)">${hm(totLearn-acadLearn)}</div>
-        <div class="stat-sub">today</div>
+    <div class="card-grid grid5" style="margin-bottom:0;flex-shrink:0">
+      <div class="stat" style="background:linear-gradient(135deg,rgba(124,106,255,0.13),rgba(124,106,255,0.04));border:1px solid rgba(124,106,255,0.25)">
+        <div class="stat-label" style="font-size:10px;letter-spacing:.5px;text-transform:uppercase">Skill Learn</div>
+        <div class="stat-val" style="color:var(--accent);font-size:28px">${hm(totLearn-acadLearn)}</div>
+        <div class="stat-sub" style="color:var(--accent);opacity:.6">today</div>
       </div>
-      <div class="stat">
-        <div class="stat-label"><span style="font-size:18px">🔧</span><br>Skill Prac</div>
-        <div class="stat-val" style="color:var(--green)">${hm(totPrac-acadPrac)}</div>
-        <div class="stat-sub">today</div>
+      <div class="stat" style="background:linear-gradient(135deg,rgba(61,214,140,0.13),rgba(61,214,140,0.04));border:1px solid rgba(61,214,140,0.25)">
+        <div class="stat-label" style="font-size:10px;letter-spacing:.5px;text-transform:uppercase">Skill Prac</div>
+        <div class="stat-val" style="color:var(--green);font-size:28px">${hm(totPrac-acadPrac)}</div>
+        <div class="stat-sub" style="color:var(--green);opacity:.6">today</div>
       </div>
-      <div class="stat" style="border:1px solid rgba(124,106,255,.25)">
-        <div class="stat-label"><span style="font-size:18px">🎓</span><br>Acad. Learn</div>
-        <div class="stat-val" style="color:var(--accent)">${hm(acadLearn)}</div>
-        <div class="stat-sub">today</div>
+      <div class="stat" style="background:linear-gradient(135deg,rgba(124,106,255,0.08),rgba(180,106,255,0.04));border:1px solid rgba(176,106,255,0.25)">
+        <div class="stat-label" style="font-size:10px;letter-spacing:.5px;text-transform:uppercase">Acad. Learn</div>
+        <div class="stat-val" style="color:var(--purple);font-size:28px">${hm(acadLearn)}</div>
+        <div class="stat-sub" style="color:var(--purple);opacity:.6">today</div>
       </div>
-      <div class="stat" style="border:1px solid rgba(61,214,140,.2)">
-        <div class="stat-label"><span style="font-size:18px">🎓</span><br>Acad. Prac</div>
-        <div class="stat-val" style="color:var(--green)">${hm(acadPrac)}</div>
-        <div class="stat-sub">today</div>
+      <div class="stat" style="background:linear-gradient(135deg,rgba(45,224,200,0.1),rgba(45,224,200,0.03));border:1px solid rgba(45,224,200,0.22)">
+        <div class="stat-label" style="font-size:10px;letter-spacing:.5px;text-transform:uppercase">Acad. Prac</div>
+        <div class="stat-val" style="color:var(--teal);font-size:28px">${hm(acadPrac)}</div>
+        <div class="stat-sub" style="color:var(--teal);opacity:.6">today</div>
+      </div>
+      <div class="stat" style="background:linear-gradient(135deg,rgba(245,200,66,0.15),rgba(245,200,66,0.04));border:1px solid rgba(245,200,66,0.3)">
+        <div class="stat-label" style="font-size:10px;letter-spacing:.5px;text-transform:uppercase">Streak</div>
+        <div class="stat-val" style="color:var(--amber);font-size:28px">${streak}<span style="font-size:18px">🔥</span></div>
+        <div class="stat-sub" style="color:var(--amber);opacity:.6">days</div>
       </div>
     </div>
-    <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:8px;flex:1;min-height:0">
+    <div style="display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:8px;flex:1;min-height:0">
       <div class="card" style="margin-bottom:0;display:flex;flex-direction:column;min-height:0">
-        <div class="card-title" style="flex-shrink:0">This Week <span style="font-size:11px;color:var(--muted);font-weight:400">${pending_todos} tasks pending</span></div>
-        <div style="display:flex;gap:14px;align-items:center;margin-bottom:6px;font-size:10px;color:var(--muted);flex-shrink:0">
-          <span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:2px;background:var(--accent);display:inline-block"></span>Skill</span>
-          <span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:2px;background:var(--green);display:inline-block"></span>Academic</span>
+        <div class="card-title" style="flex-shrink:0">This Week <span style="font-size:11px;color:var(--muted);font-weight:400">${pending_todos} pending</span></div>
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:5px;font-size:10px;color:var(--muted);flex-shrink:0">
+          <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:var(--accent);display:inline-block"></span>Skill</span>
+          <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:var(--green);display:inline-block"></span>Academic</span>
         </div>
-        <div style="display:flex;align-items:flex-end;gap:4px;justify-content:space-between;flex:1;min-height:0">${weekBarHtml}</div>
+        <div style="display:flex;align-items:flex-end;gap:3px;justify-content:space-between;flex:1;min-height:0">${weekBarHtml}</div>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;min-height:0">
-        <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.7px;text-transform:uppercase;margin-bottom:6px;flex-shrink:0">Skill Progress</div>
+        <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.7px;text-transform:uppercase;margin-bottom:6px;flex-shrink:0">Skill Progress</div>
         <div style="flex:1;min-height:0;overflow-y:auto">${renderSkillSlider()}</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;min-height:0">
+        <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.7px;text-transform:uppercase;margin-bottom:6px;flex-shrink:0">Academic Progress</div>
+        <div style="flex:1;min-height:0;overflow-y:auto">${renderAcadSlider()}</div>
       </div>
     </div>
     <div style="display:grid;grid-template-columns:2.8fr 1fr;gap:8px;flex:1;min-height:0">
@@ -1812,26 +1939,26 @@ var renders={
         <div class="card-title" style="flex-shrink:0">Deadlines <button class="btn btn-sm" onclick="nav('deadlines');setTimeout(()=>{var el=document.getElementById('dl-inp');if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.focus();}},150)" style="margin-left:auto">Manage →</button></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1;min-height:0;overflow-y:auto">
           <div>
-            <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">📅 Upcoming <span style="font-weight:400;text-transform:none">(starts)</span></div>
+            <div style="font-size:10px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">📅 Upcoming</div>
             ${upcoming_by_start.length?upcoming_by_start.map(d=>{
               var sd=d.startDate||d.date;
               var diff=days_between(sd,today());
               return `<div style="padding:5px 0;border-bottom:1px solid var(--border)">
                 <div style="font-size:11px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.text}</div>
-                <div style="font-size:10px;color:var(--muted)">Starts: ${sd} ${diff===0?'· Today':diff>0?'· in '+diff+'d':'· started'}</div>
+                <div style="font-size:10px;color:var(--blue)">${diff===0?'Starts today':diff>0?'Starts in '+diff+'d':'Started'}</div>
               </div>`;
-            }).join(''):'<div class="empty" style="padding:8px 0">No upcoming deadlines</div>'}
+            }).join(''):'<div class="empty" style="padding:8px 0">No upcoming</div>'}
           </div>
           <div>
-            <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">⏰ Recent <span style="font-weight:400;text-transform:none">(ends)</span></div>
+            <div style="font-size:10px;font-weight:700;color:var(--coral);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">⏰ Active</div>
             ${recent_by_end.length?recent_by_end.map(d=>{
               var diff=days_between(d.date,today());
               var urgent=!d.done&&diff<=3;
               return `<div style="padding:5px 0;border-bottom:1px solid var(--border)">
                 <div style="font-size:11px;font-weight:600;color:${d.done?'var(--green)':urgent?'var(--coral)':'var(--text)'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.done?'✓ ':''}${d.text}</div>
-                <div style="font-size:10px;color:var(--muted)">Ends: ${d.date} ${d.done?'· Completed':diff===0?'· Today':diff<0?'· Overdue':'· in '+diff+'d'}</div>
+                <div style="font-size:10px;color:var(--muted)">${d.done?'Completed':diff===0?'Due today':diff<0?Math.abs(diff)+'d overdue':'in '+diff+'d'}</div>
               </div>`;
-            }).join(''):'<div class="empty" style="padding:8px 0">No recent deadlines</div>'}
+            }).join(''):'<div class="empty" style="padding:8px 0">No active deadlines</div>'}
           </div>
         </div>
       </div>
@@ -1845,6 +1972,7 @@ var renders={
     if(mc){mc.removeAttribute('data-dash');if(dl&&dl!=='default')mc.setAttribute('data-dash',dl);}
     startSliderAuto();
     updateRoutineRowFade();
+    _routineAutoScrollInit();
   },
 
   timer: function(){
@@ -1922,7 +2050,7 @@ var renders={
       <div class="card-grid grid2" style="margin-bottom:12px">
         <div class="field">
           <div class="label">${mode==='academic'?'Subject':'Skill'} *</div>
-          <select id="log-skill">
+          <select id="log-skill" onchange="updateLogSubSkills(this.value,'${mode}')">
             <option value="">Select ${mode==='academic'?'subject':'skill'}...</option>
             ${subjOpts}
           </select>
@@ -1931,6 +2059,12 @@ var renders={
           <div class="label">Date</div>
           <input type="date" id="log-date" value="${today()}">
         </div>
+      </div>
+      <div class="field" id="log-subskill-wrap" style="margin-bottom:12px;display:none">
+        <div class="label">Unit (optional)</div>
+        <select id="log-subskill">
+          <option value="">— None / General —</option>
+        </select>
       </div>
       <div class="field">
         <div class="label">Topic Covered *</div>
@@ -1944,6 +2078,16 @@ var renders={
         <div class="field">
           <div class="label">💻 Practice Time (mins)</div>
           <input type="number" id="log-prac" placeholder="0" min="0">
+        </div>
+      </div>
+      <div class="card-grid grid2" style="margin-bottom:12px">
+        <div class="field">
+          <div class="label">🕐 Start Time (optional)</div>
+          <input type="time" id="log-start-time" placeholder="e.g. 09:00">
+        </div>
+        <div class="field">
+          <div class="label">🕑 End Time (optional)</div>
+          <input type="time" id="log-end-time" placeholder="e.g. 10:30">
         </div>
       </div>
       <div class="field">
@@ -2001,28 +2145,73 @@ var renders={
           }).join('')
           +'</div>';
       }
+      var circ2=2*Math.PI*32;var dash2=circ2*(pct/100);
+      var ring='<svg width="70" height="70" viewBox="0 0 72 72" style="flex-shrink:0">'
+        +'<circle cx="36" cy="36" r="32" fill="none" stroke="var(--surface3)" stroke-width="6"/>'
+        +'<circle cx="36" cy="36" r="32" fill="none" stroke="'+sk.color+'" stroke-width="6" stroke-linecap="round"'
+        +' stroke-dasharray="'+dash2.toFixed(1)+' '+(circ2-dash2).toFixed(1)+'" transform="rotate(-90 36 36)"/>'
+        +'<text x="36" y="40" text-anchor="middle" font-size="13" font-weight="800" fill="'+sk.color+'" font-family="DM Sans,sans-serif">'+pct+'%</text>'
+        +'</svg>';
+      // Sub-skills section — parent skill name at top, clickable for direct sessions
+      var subSkills=sk.subSkills||[];
+      var parentOwnSess=DB.sessions.filter(function(s){return s.skillId===sk.id&&(!s.subSkillId||s.subSkillId==='');});
+      var parentL=parentOwnSess.reduce(function(a,s){return a+(s.learn||0);},0);
+      var parentP=parentOwnSess.reduce(function(a,s){return a+(s.prac||0);},0);
+      var subSkillHtml='<div style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px">'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">'
+        +'<span style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase">Sub-skills</span>'
+        +'<button class="btn btn-sm" onclick="openAddSubSkill(\''+sk.id+'\',\'skill\')">+ Add</button>'
+        +'</div>'
+        // Parent skill row — shows own direct sessions on click
+        +'<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;margin-bottom:6px;background:linear-gradient(135deg,'+sk.color+'18,'+sk.color+'08);border:1.5px solid '+sk.color+'35;cursor:pointer" onclick="showParentSkillSessions(\''+sk.id+'\',\'skill\')">'
+        +'<div style="width:9px;height:9px;border-radius:3px;flex-shrink:0;background:'+sk.color+'"></div>'
+        +'<span style="flex:1;font-size:13px;font-weight:800;color:var(--text)">'+sk.name+'</span>'
+        +'<span style="font-size:10px;color:var(--accent)">📖 '+hm(parentL)+'</span>'
+        +'<span style="font-size:10px;color:var(--green);margin-left:4px">🔧 '+hm(parentP)+'</span>'
+        +'</div>';
+      if(subSkills.length){
+        subSkills.forEach(function(ss){
+          var ssTot=DB.sessions.filter(function(s){return s.subSkillId===ss.id;});
+          var ssLearn=ssTot.reduce(function(a,s){return a+(s.learn||0);},0);
+          var ssPrac=ssTot.reduce(function(a,s){return a+(s.prac||0);},0);
+          subSkillHtml+='<div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:8px;margin-bottom:4px;background:var(--surface2);border:1px solid var(--border);cursor:pointer" onclick="showSubSkillDetail(\''+ss.id+'\',\''+sk.id+'\')">'
+            +'<div style="width:7px;height:7px;border-radius:50%;flex-shrink:0;background:'+sk.color+'"></div>'
+            +'<span style="flex:1;font-size:12px;font-weight:600;color:var(--text)">'+ss.name+'</span>'
+            +'<span style="font-size:10px;color:var(--accent)">📖 '+hm(ssLearn)+'</span>'
+            +'<span style="font-size:10px;color:var(--green)">🔧 '+hm(ssPrac)+'</span>'
+            +'<button class="icon-btn" style="font-size:10px;opacity:.5" onclick="event.stopPropagation();deleteSubSkill(\''+sk.id+'\',\''+ss.id+'\',\'skill\')">✕</button>'
+            +'</div>';
+        });
+      } else {
+        subSkillHtml+='<div style="font-size:11px;color:var(--muted2);font-style:italic;padding:4px 0">No sub-skills yet</div>';
+      }
+      subSkillHtml+='</div>';
+
       return `<div class="skill-card">
         <div class="skill-header">
           <div class="skill-color" style="background:${sk.color};width:16px;height:16px;border-radius:4px"></div>
           <div class="skill-name">${sk.name}${isComplete?' <span style="font-size:10px;color:var(--green);font-weight:800">✓ DONE</span>':''}</div>
           <div class="skill-hours">${totalH}h / ${maxH}h goal</div>
+          <button class="icon-btn" onclick="openEditSkill('${sk.id}','skill')" title="Edit">✏️</button>
           <button class="icon-btn" onclick="toggleSkillComplete('${sk.id}')" title="${isComplete?'Mark incomplete':'Mark complete'}" style="color:${isComplete?'var(--green)':'var(--muted2)'}">${isComplete?'✓':'○'}</button>
           <button class="icon-btn" onclick="deleteSkill('${sk.id}')">✕</button>
         </div>
         ${dateRow}
-        <div style="margin-bottom:6px">
-          <div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:10px;color:var(--muted)">Overall Progress</span><span style="font-size:10px;color:var(--accent)">${pct}%</span></div>
-          <div class="progress-track"><div class="progress-fill" style="background:${sk.color};width:${pct}%"></div></div>
-        </div>
-        <div class="skill-bar-wrap">
-          <span class="skill-bar-label" style="font-size:15px;font-weight:800;color:var(--text)">📖 Learn ${learnH}h</span>
-          <div class="skill-bar"><div class="skill-bar-fill" style="background:var(--accent);width:${Math.min(100,Math.round(learnH/maxH*100))}%"></div></div>
-        </div>
-        <div class="skill-bar-wrap">
-          <span class="skill-bar-label" style="font-size:15px;font-weight:800;color:var(--text)">🔧 Prac ${pracH}h</span>
-          <div class="skill-bar"><div class="skill-bar-fill" style="background:var(--green);width:${Math.min(100,Math.round(pracH/maxH*100))}%"></div></div>
+        <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:10px">
+          ${ring}
+          <div style="flex:1;min-width:0">
+            <div class="skill-bar-wrap">
+              <span class="skill-bar-label">📖 Learn ${learnH}h</span>
+              <div class="skill-bar"><div class="skill-bar-fill" style="background:var(--accent);width:${Math.min(100,Math.round(learnH/maxH*100))}%"></div></div>
+            </div>
+            <div class="skill-bar-wrap">
+              <span class="skill-bar-label">🔧 Prac ${pracH}h</span>
+              <div class="skill-bar"><div class="skill-bar-fill" style="background:var(--green);width:${Math.min(100,Math.round(pracH/maxH*100))}%"></div></div>
+            </div>
+          </div>
         </div>
         ${goalRow}
+        ${subSkillHtml}
         ${topics.length?`<div class="skill-topics">${topics.map(t=>`<span class="topic-chip">${t}</span>`).join('')}</div>`:''}
         <div class="skill-actions">
           <button class="btn btn-sm" onclick="nav('log')">+ Log Session</button>
@@ -2076,28 +2265,72 @@ var renders={
           }).join('')
           +'</div>';
       }
+      var circ3=2*Math.PI*32;var dash3=circ3*(pct/100);
+      var ring3='<svg width="70" height="70" viewBox="0 0 72 72" style="flex-shrink:0">'
+        +'<circle cx="36" cy="36" r="32" fill="none" stroke="var(--surface3)" stroke-width="6"/>'
+        +'<circle cx="36" cy="36" r="32" fill="none" stroke="'+sk.color+'" stroke-width="6" stroke-linecap="round"'
+        +' stroke-dasharray="'+dash3.toFixed(1)+' '+(circ3-dash3).toFixed(1)+'" transform="rotate(-90 36 36)"/>'
+        +'<text x="36" y="40" text-anchor="middle" font-size="13" font-weight="800" fill="'+sk.color+'" font-family="DM Sans,sans-serif">'+pct+'%</text>'
+        +'</svg>';
+      // Sub-skills section (Units for academic)
+      var subSkillsAc=sk.subSkills||[];
+      var parentOwnSessAc=DB.sessions.filter(function(s){return s.skillId===sk.id&&(!s.subSkillId||s.subSkillId==='');});
+      var parentLAc=parentOwnSessAc.reduce(function(a,s){return a+(s.learn||0);},0);
+      var parentPAc=parentOwnSessAc.reduce(function(a,s){return a+(s.prac||0);},0);
+      var subSkillHtmlAc='<div style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px">'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">'
+        +'<span style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase">Units</span>'
+        +'<button class="btn btn-sm" onclick="openAddSubSkill(\''+sk.id+'\',\'academic\')">+ Add</button>'
+        +'</div>'
+        // Parent subject row — shows own direct sessions on click
+        +'<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;margin-bottom:6px;background:linear-gradient(135deg,'+sk.color+'18,'+sk.color+'08);border:1.5px solid '+sk.color+'35;cursor:pointer" onclick="showParentSkillSessions(\''+sk.id+'\',\'academic\')">'
+        +'<div style="width:9px;height:9px;border-radius:3px;flex-shrink:0;background:'+sk.color+'"></div>'
+        +'<span style="flex:1;font-size:13px;font-weight:800;color:var(--text)">🎓 '+sk.name+'</span>'
+        +'<span style="font-size:10px;color:var(--accent)">📖 '+hm(parentLAc)+'</span>'
+        +'<span style="font-size:10px;color:var(--green);margin-left:4px">🔧 '+hm(parentPAc)+'</span>'
+        +'</div>';
+      if(subSkillsAc.length){
+        subSkillsAc.forEach(function(ss){
+          var ssTot=DB.sessions.filter(function(s){return s.subSkillId===ss.id;});
+          var ssLearn=ssTot.reduce(function(a,s){return a+(s.learn||0);},0);
+          var ssPrac=ssTot.reduce(function(a,s){return a+(s.prac||0);},0);
+          subSkillHtmlAc+='<div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:8px;margin-bottom:4px;background:var(--surface2);border:1px solid var(--border);cursor:pointer" onclick="showSubSkillDetail(\''+ss.id+'\',\''+sk.id+'\')">'
+            +'<div style="width:7px;height:7px;border-radius:50%;flex-shrink:0;background:'+sk.color+'"></div>'
+            +'<span style="flex:1;font-size:12px;font-weight:600;color:var(--text)">'+ss.name+'</span>'
+            +'<span style="font-size:10px;color:var(--accent)">📖 '+hm(ssLearn)+'</span>'
+            +'<span style="font-size:10px;color:var(--green)">🔧 '+hm(ssPrac)+'</span>'
+            +'<button class="icon-btn" style="font-size:10px;opacity:.5" onclick="event.stopPropagation();deleteSubSkill(\''+sk.id+'\',\''+ss.id+'\',\'academic\')">✕</button>'
+            +'</div>';
+        });
+      } else {
+        subSkillHtmlAc+='<div style="font-size:11px;color:var(--muted2);font-style:italic;padding:4px 0">No sub-skills yet</div>';
+      }
+      subSkillHtmlAc+='</div>';
       return `<div class="skill-card">
         <div class="skill-header">
           <div class="skill-color" style="background:${sk.color};width:16px;height:16px;border-radius:4px"></div>
           <div class="skill-name">🎓 ${sk.name}${isComplete?' <span style="font-size:10px;color:var(--green);font-weight:800">✓ DONE</span>':''}</div>
           <div class="skill-hours">${totalH}h / ${maxH}h goal</div>
+          <button class="icon-btn" onclick="openEditSkill('${sk.id}','academic')" title="Edit">✏️</button>
           <button class="icon-btn" onclick="toggleSubjectComplete('${sk.id}')" title="${isComplete?'Mark incomplete':'Mark complete'}" style="color:${isComplete?'var(--green)':'var(--muted2)'}">${isComplete?'✓':'○'}</button>
           <button class="icon-btn" onclick="deleteSubject('${sk.id}')">✕</button>
         </div>
         ${dateRow}
-        <div style="margin-bottom:6px">
-          <div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:10px;color:var(--muted)">Overall Progress</span><span style="font-size:10px;color:var(--accent)">${pct}%</span></div>
-          <div class="progress-track"><div class="progress-fill" style="background:${sk.color};width:${pct}%"></div></div>
-        </div>
-        <div class="skill-bar-wrap">
-          <span class="skill-bar-label" style="font-size:15px;font-weight:800;color:var(--text)">📖 Learn ${learnH}h</span>
-          <div class="skill-bar"><div class="skill-bar-fill" style="background:var(--accent);width:${Math.min(100,Math.round(learnH/maxH*100))}%"></div></div>
-        </div>
-        <div class="skill-bar-wrap">
-          <span class="skill-bar-label" style="font-size:15px;font-weight:800;color:var(--text)">🔧 Prac ${pracH}h</span>
-          <div class="skill-bar"><div class="skill-bar-fill" style="background:var(--green);width:${Math.min(100,Math.round(pracH/maxH*100))}%"></div></div>
+        <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:10px">
+          ${ring3}
+          <div style="flex:1;min-width:0">
+            <div class="skill-bar-wrap">
+              <span class="skill-bar-label">📖 Learn ${learnH}h</span>
+              <div class="skill-bar"><div class="skill-bar-fill" style="background:var(--accent);width:${Math.min(100,Math.round(learnH/maxH*100))}%"></div></div>
+            </div>
+            <div class="skill-bar-wrap">
+              <span class="skill-bar-label">🔧 Prac ${pracH}h</span>
+              <div class="skill-bar"><div class="skill-bar-fill" style="background:var(--green);width:${Math.min(100,Math.round(pracH/maxH*100))}%"></div></div>
+            </div>
+          </div>
         </div>
         ${goalRow}
+        ${subSkillHtmlAc}
         ${topics.length?`<div class="skill-topics">${topics.map(t=>`<span class="topic-chip">${t}</span>`).join('')}</div>`:''}
         <div class="skill-actions">
           <button class="btn btn-sm" onclick="window._logMode='academic';nav('log')">+ Log Session</button>
@@ -2125,7 +2358,7 @@ var renders={
       var tot=(s.learn||0)+(s.prac||0)+(s.read||0);
       return `<div class="log-entry">
         <div class="log-date">
-          <span>${s.date}${s.difficulty?' · '+s.difficulty:''}</span>
+          <span>${s.date}${s.difficulty?' · '+s.difficulty:''}${(s.startTime||s.endTime)?` · <span style="color:var(--accent);font-weight:700">🕐 ${s.startTime||'?'}${s.endTime?' – '+s.endTime:''}</span>`:''}</span>
           <div style="display:flex;gap:6px;align-items:center">
             ${sk?`<span class="tag tag-skill" style="background:${sk.color}22;color:${sk.color}">${isAcad?'🎓':'🧠'} ${sk.name}</span>`:''}
             <button class="icon-btn" onclick="deleteSession('${s.id}')">✕</button>
@@ -2488,7 +2721,7 @@ var renders={
           var diff=days_between(d.date,today());
           return `<div style="display:flex;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)">
             <span style="flex:1;font-size:13px">${d.text}</span>
-            <span class="days-left ${diff<=3?'days-over':'days-ok'}">${diff===0?'Today':diff<0?'Overdue':diff+'d'}</span>
+            <span class="days-left ${diff<=3?'days-over':'days-ok'}">${diff===0?'Today':diff<0?Math.abs(diff)+'d overdue':diff+'d'}</span>
             <input type="checkbox" ${d.done?'checked':''} onchange="toggleDeadline('${d.id}')">
           </div>`;
         }).join(''):'<div class="empty">No weekly deadlines</div>'}
@@ -2613,7 +2846,7 @@ var renders={
           var diff=days_between(d.date,today());
           return `<div style="display:flex;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)">
             <span style="flex:1;font-size:13px">${d.text}</span>
-            <span class="days-left ${diff<=7?'days-over':diff<=14?'days-warn':'days-ok'}">${diff<0?'Overdue':diff+'d'}</span>
+            <span class="days-left ${diff<=7?'days-over':diff<=14?'days-warn':'days-ok'}">${diff<0?Math.abs(diff)+'d overdue':diff+'d'}</span>
           </div>`;
         }).join(''):'<div class="empty">No monthly deadlines</div>'}
       </div>
@@ -2756,44 +2989,61 @@ function showDayDetail(d){
   statHtml+='<div style="background:var(--surface2);border-radius:10px;padding:12px 8px;text-align:center"><div style="font-size:20px;margin-bottom:4px">🧠</div><div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.4px;margin-bottom:5px">SKILL PRAC</div><div style="font-size:21px;font-weight:700;color:var(--green)">'+hm(skillPrac)+'</div></div>';
   statHtml+='</div>';
 
-  // Group sessions by subject (skillId) so the same skill/subject logged multiple
-  // times in a day collapses into a single row, summing learn/prac and merging topics.
-  var byId={};
-  var order=[];
+  // Group sessions by skillId for summary view; Details button shows individual sessions with time
+  var byId={};var order=[];
   sessions.forEach(function(s){
     var key=s.skillId||('__none__'+s.topic);
-    if(!byId[key]){ byId[key]={learn:0,prac:0,topics:[],skillId:s.skillId}; order.push(key); }
-    byId[key].learn+=s.learn||0;
-    byId[key].prac+=s.prac||0;
-    if(s.topic&&byId[key].topics.indexOf(s.topic)===-1) byId[key].topics.push(s.topic);
+    if(!byId[key]){byId[key]={learn:0,prac:0,topics:[],sessions:[],skillId:s.skillId};order.push(key);}
+    byId[key].learn+=s.learn||0;byId[key].prac+=s.prac||0;
+    if(s.topic&&byId[key].topics.indexOf(s.topic)===-1)byId[key].topics.push(s.topic);
+    byId[key].sessions.push(s);
   });
 
-  var sessHtml='<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.6px;margin-bottom:8px">SESSIONS</div>';
-  if(order.length){
-    order.forEach(function(key){
-      var grp=byId[key];
-      var sk=subjectById(grp.skillId,skillSnap);
-      var acad=isAcadId(grp.skillId);
+  var sessHtml='<div style="margin-bottom:14px">'
+    +'<div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.6px;margin-bottom:8px">SESSIONS ('+sessions.length+')</div>';
+  if(sessions.length){
+    sessions.forEach(function(s){
+      var sk=subjectById(s.skillId,skillSnap);
+      var acad=isAcadId(s.skillId);
+      var isPomo=s.topic==='Pomodoro session'||!!(s.note&&s.note.indexOf('Pomodoro')===0);
+      var learn=s.learn||0; var prac=s.prac||0;
       var typeTag='';
-      if(grp.learn>0&&grp.prac>0) typeTag='<span style="font-size:9px;font-weight:700;color:var(--accent);background:rgba(124,106,255,.14);padding:2px 6px;border-radius:5px;white-space:nowrap">📖 Learn + 🔧 Prac</span>';
-      else if(grp.learn>0) typeTag='<span style="font-size:9px;font-weight:700;color:var(--accent);background:rgba(124,106,255,.14);padding:2px 6px;border-radius:5px;white-space:nowrap">📖 Learning</span>';
-      else if(grp.prac>0) typeTag='<span style="font-size:9px;font-weight:700;color:var(--green);background:rgba(61,214,140,.14);padding:2px 6px;border-radius:5px;white-space:nowrap">🔧 Practice</span>';
-      var srcTag='<span style="font-size:9px;font-weight:700;color:var(--muted);white-space:nowrap">'+(acad?'🎓':'🧠')+'</span>';
-      var isPomo=grp.topics.some(function(t){return t==='Pomodoro session';});
-      sessHtml+='<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">';
-      if(isPomo){
-        sessHtml+='<span style="font-size:16px;flex-shrink:0" title="Pomodoro session">🍅</span>';
-      } else {
-        sessHtml+='<div style="width:8px;height:8px;border-radius:2px;background:'+sk.color+';flex-shrink:0"></div>';
+      if(learn>0&&prac>0) typeTag='<span style="font-size:9px;font-weight:700;color:var(--accent);background:rgba(124,106,255,.14);padding:2px 6px;border-radius:5px;white-space:nowrap">📖+🔧</span>';
+      else if(learn>0) typeTag='<span style="font-size:9px;font-weight:700;color:var(--accent);background:rgba(124,106,255,.14);padding:2px 6px;border-radius:5px;white-space:nowrap">📖 Learn</span>';
+      else if(prac>0) typeTag='<span style="font-size:9px;font-weight:700;color:var(--green);background:rgba(61,214,140,.14);padding:2px 6px;border-radius:5px;white-space:nowrap">🔧 Prac</span>';
+      var timeTag=(s.startTime||s.endTime)
+        ?'<span style="font-size:10px;font-weight:700;color:var(--amber);background:rgba(245,200,66,.12);padding:2px 7px;border-radius:5px;white-space:nowrap">🕐 '+(s.startTime||'?')+(s.endTime?' – '+s.endTime:'')+'</span>'
+        :'';
+      // Sub-skill name if any
+      var subSkillName='';
+      if(s.subSkillId){
+        var parentSk=DB.skills.find(function(x){return (x.subSkills||[]).find(function(ss){return ss.id===s.subSkillId;});})
+          ||(DB.academic&&(DB.academic.subjects||[]).find(function(x){return (x.subSkills||[]).find(function(ss){return ss.id===s.subSkillId;});}));
+        if(parentSk){var ss2=(parentSk.subSkills||[]).find(function(x){return x.id===s.subSkillId;});if(ss2)subSkillName=ss2.name;}
       }
-      sessHtml+=srcTag;
-      sessHtml+='<span style="flex:1;font-size:13px;font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+sk.name+(grp.topics.length&&!isPomo?' <span style="color:var(--muted);font-weight:400">· '+grp.topics.join(', ')+'</span>':isPomo?' <span style="color:var(--muted);font-weight:400">· Pomodoro</span>':'')+'</span>';
+      sessHtml+='<div style="padding:8px 0;border-bottom:1px solid var(--border)">';
+      // Row 1: icon + skill name + sub-skill + topic + type + total
+      sessHtml+='<div style="display:flex;align-items:center;gap:8px">';
+      sessHtml+=isPomo?'<span style="font-size:15px;flex-shrink:0">🍅</span>':'<div style="width:8px;height:8px;border-radius:2px;flex-shrink:0;background:'+sk.color+'"></div>';
+      sessHtml+='<span style="font-size:9px;font-weight:700;color:var(--muted)">'+(acad?'🎓':'🧠')+'</span>';
+      sessHtml+='<span style="flex:1;font-size:13px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+sk.name
+        +(subSkillName?' <span style="color:var(--accent);font-size:11px;font-weight:700">› '+subSkillName+'</span>':'')
+        +(s.topic&&!isPomo?' <span style="color:var(--muted);font-weight:400;font-size:11px">· '+s.topic+'</span>':'')
+        +'</span>';
       sessHtml+=typeTag;
-      sessHtml+='<span style="font-size:12px;color:var(--accent);white-space:nowrap">'+hm(grp.learn+grp.prac)+'</span>';
+      sessHtml+='<span style="font-size:12px;font-weight:700;color:var(--accent);white-space:nowrap">'+hm(learn+prac)+'</span>';
+      sessHtml+='</div>';
+      // Row 2: time + learn/prac breakdown + note
+      sessHtml+='<div style="display:flex;align-items:center;gap:8px;margin-top:4px;margin-left:16px;flex-wrap:wrap">';
+      if(timeTag) sessHtml+=timeTag;
+      if(learn>0) sessHtml+='<span style="font-size:10px;color:var(--accent)">📖 '+hm(learn)+'</span>';
+      if(prac>0) sessHtml+='<span style="font-size:10px;color:var(--green)">🔧 '+hm(prac)+'</span>';
+      if(s.note&&!isPomo) sessHtml+='<span style="font-size:10px;color:var(--muted);font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px">'+s.note+'</span>';
+      sessHtml+='</div>';
       sessHtml+='</div>';
     });
   } else {
-    sessHtml+='<div style="color:var(--muted2);font-size:13px;font-style:italic">No sessions logged</div>';
+    sessHtml+='<div style="color:var(--muted2);font-size:13px;font-style:italic;padding:8px 0">No sessions logged</div>';
   }
   sessHtml+='</div>';
 
@@ -2857,17 +3107,19 @@ function resetT(k){stopT(k);timers[k].s=0;var el=document.getElementById('td-'+k
 // break durations customizable via Settings
 // ════════════════════════════════════════════════
 if(!window._pomo) window._pomo = {
-  duration: (DB.settings&&DB.settings.pomoDuration)||25, // focus minutes
-  mode: 'skill',        // 'skill' | 'academic'
-  type: 'learn',        // 'learn' | 'prac'
-  phase: 'focus',       // 'focus' | 'short'
-  topic: '',            // what the user is working on this session
+  duration: (DB.settings&&DB.settings.pomoDuration)||25,
+  mode: 'skill',
+  type: 'learn',
+  phase: 'focus',
+  topic: '',
   session: 0,
   running: false,
   remaining: ((DB.settings&&DB.settings.pomoDuration)||25)*60,
   interval: null,
   skillId: '',
   acadId: '',
+  subSkillId: '',
+  focusStartTime: '',
 };
 if(!window._pomoLog) window._pomoLog = [];
 
@@ -3024,18 +3276,36 @@ function pomoPopulateSubjects(){
   var hasAcad6=((DB.academic&&DB.academic.subjects)||[]).length>0;
   if(label) label.textContent=pomo.mode==='academic'?'Subject':'Skill';
   var opts='<option value="">— Select —</option>';
+  var curId='';
   if(pomo.mode==='academic'){
-    opts+=((DB.academic&&DB.academic.subjects)||[]).map(function(s){return '<option value="'+s.id+'"'+(pomo.acadId===s.id?' selected':'')+'>'+s.name+'</option>';}).join('');
+    opts+=((DB.academic&&DB.academic.subjects)||[]).map(function(s){var sel2=pomo.acadId===s.id;if(sel2)curId=s.id;return '<option value="'+s.id+'"'+(sel2?' selected':'')+'>'+s.name+'</option>';}).join('');
   } else {
-    opts+=(DB.skills||[]).map(function(s){return '<option value="'+s.id+'"'+(pomo.skillId===s.id?' selected':'')+'>'+s.name+'</option>';}).join('');
+    opts+=(DB.skills||[]).map(function(s){var sel2=pomo.skillId===s.id;if(sel2)curId=s.id;return '<option value="'+s.id+'"'+(sel2?' selected':'')+'>'+s.name+'</option>';}).join('');
   }
   sel.innerHTML=opts;
-  sel.onchange=function(){
-    if(pomo.mode==='academic') pomo.acadId=this.value; else pomo.skillId=this.value;
-  };
   // Show/hide academic mode button if no subjects
   var acadBtn=document.getElementById('pf-mode-acad');
   if(acadBtn) acadBtn.style.display=hasAcad6?'':'none';
+  // Populate sub-skills for current selection
+  if(curId) pomoSkillChanged(curId);
+}
+
+function pomoSkillChanged(skillId){
+  var pomo=window._pomo;
+  if(!pomo)return;
+  if(pomo.mode==='academic') pomo.acadId=skillId; else pomo.skillId=skillId;
+  // Update sub-skill dropdown
+  var row=document.getElementById('pf-subskill-row');
+  var ssSel=document.getElementById('pf-subskill-sel');
+  if(!row||!ssSel)return;
+  var list=pomo.mode==='academic'?(DB.academic&&DB.academic.subjects||[]):DB.skills;
+  var sk=list.find(function(s){return s.id===skillId;});
+  var subs=sk&&sk.subSkills||[];
+  if(!skillId||!subs.length){row.style.display='none';pomo.subSkillId='';return;}
+  row.style.display='';
+  ssSel.innerHTML='<option value="">— None / General —</option>'
+    +subs.map(function(ss){return '<option value="'+ss.id+'"'+(pomo.subSkillId===ss.id?' selected':'')+'>'+ss.name+'</option>';}).join('');
+  ssSel.onchange=function(){pomo.subSkillId=this.value;};
 }
 
 function pomoSetMode(m){
@@ -3169,21 +3439,62 @@ function _pomoSaveSession(secs){
   var subjId=pomo.mode==='academic'?pomo.acadId:pomo.skillId;
   if(!subjId) return;
   var topic=(pomo.topic||'').trim()||'Pomodoro session';
+  var endNow=new Date();
+  var endTime=endNow.getHours().toString().padStart(2,'0')+':'+endNow.getMinutes().toString().padStart(2,'0');
+  var startTime=pomo.focusStartTime||'';
   var sessionEntry={
     id:Date.now()+'',
     date:today(),
     skillId:subjId,
+    subSkillId:pomo.subSkillId||'',
     topic:topic,
     note:'Pomodoro ('+Math.round(secs/60)+' min, '+pomo.mode+')',
     difficulty:'medium',
     learn: pomo.type==='learn'?secs:0,
     prac:  pomo.type==='prac'?secs:0,
-    read:0
+    read:0,
+    startTime:startTime,
+    endTime:endTime
   };
   DB.sessions.push(sessionEntry);
   if(!window._pomoLog) window._pomoLog=[];
   window._pomoLog.push({phase:'focus',secs:secs,label:pomo.type==='learn'?'Learning':'Practice',topic:topic});
+  pomo.focusStartTime=''; // clear for next session
   save();
+}
+
+// Saves whatever elapsed focus time exists as a partial session if the page is being
+// closed/refreshed mid-pomodoro, so that time isn't lost. Only fires for the focus phase
+// (break time isn't logged as study time) and only when a subject is selected.
+function _pomoSavePartialOnExit(){
+  var pomo=window._pomo;
+  if(!pomo||!pomo.running||pomo.phase!=='focus') return;
+  var subjId=pomo.mode==='academic'?pomo.acadId:pomo.skillId;
+  if(!subjId) return;
+  var totalSecs=_pomoPhaseSecs('focus');
+  var elapsed=totalSecs-(pomo.remaining||0);
+  if(elapsed<5) return;
+  var endNow=new Date();
+  var endTime=endNow.getHours().toString().padStart(2,'0')+':'+endNow.getMinutes().toString().padStart(2,'0');
+  var startTime=pomo.focusStartTime||'';
+  var note='Pomodoro ('+Math.round(elapsed/60)+' min, '+pomo.mode+' · partial — page closed)';
+  var topic=(pomo.topic||'').trim()||'Pomodoro session';
+  var sessionEntry={
+    id:Date.now()+'',
+    date:today(),
+    skillId:subjId,
+    subSkillId:pomo.subSkillId||'',
+    topic:topic,
+    note:note,
+    difficulty:'medium',
+    learn: pomo.type==='learn'?elapsed:0,
+    prac:  pomo.type==='prac'?elapsed:0,
+    read:0,
+    startTime:startTime,
+    endTime:endTime
+  };
+  DB.sessions.push(sessionEntry);
+  pomo.running=false;
 }
 
 function pomoStart(){
@@ -3200,6 +3511,11 @@ function pomoStart(){
     pomo.running=false; clearInterval(pomo.interval); pomo.interval=null; document.title='SkillPath';
   } else {
     pomo.running=true;
+    // Record focus start time once per focus session (don't overwrite if resuming after pause)
+    if(pomo.phase==='focus'&&!pomo.focusStartTime){
+      var _now=new Date();
+      pomo.focusStartTime=_now.getHours().toString().padStart(2,'0')+':'+_now.getMinutes().toString().padStart(2,'0');
+    }
     pomo.interval=setInterval(_pomoTick,1000);
   }
   _pomoRefreshUI();
@@ -3303,22 +3619,42 @@ function saveTimerSession(){
   var msg=document.getElementById('save-msg');if(msg){msg.style.display='inline';setTimeout(()=>msg.style.display='none',2000);}
 }
 
+function updateLogSubSkills(skillId,mode){
+  var wrap=document.getElementById('log-subskill-wrap');
+  var sel=document.getElementById('log-subskill');
+  if(!wrap||!sel)return;
+  var list=mode==='academic'?(DB.academic&&DB.academic.subjects||[]):DB.skills;
+  var sk=list.find(function(s){return s.id===skillId;});
+  var subs=sk&&sk.subSkills||[];
+  if(!skillId||!subs.length){wrap.style.display='none';return;}
+  wrap.style.display='';
+  sel.innerHTML='<option value="">— None / General —</option>'
+    +subs.map(function(ss){return '<option value="'+ss.id+'">'+ss.name+'</option>';}).join('');
+}
 function addLog(){
   var skillId=document.getElementById('log-skill')?.value;
+  var subSkillId=document.getElementById('log-subskill')?.value||'';
   var topic=document.getElementById('log-topic')?.value.trim();
   var date=document.getElementById('log-date')?.value||today();
   var learn=parseInt(document.getElementById('log-learn')?.value||0)*60;
   var prac=parseInt(document.getElementById('log-prac')?.value||0)*60;
   var note=document.getElementById('log-note')?.value.trim();
   var diff=document.getElementById('log-diff')?.value||'medium';
+  var startTime=document.getElementById('log-start-time')?.value||'';
+  var endTime=document.getElementById('log-end-time')?.value||'';
   if(!topic){notify('Please enter a topic!');return;}
   if(!learn&&!prac){notify('Enter at least one time value!');return;}
-  DB.sessions.push({id:Date.now()+'',date,skillId:skillId||'',topic,note,learn,prac,read:0,difficulty:diff});
+  var entry={id:Date.now()+'',date,skillId:skillId||'',topic,note,learn,prac,read:0,difficulty:diff,startTime,endTime};
+  if(subSkillId)entry.subSkillId=subSkillId;
+  DB.sessions.push(entry);
   save();notify('✓ Session logged!');
   document.getElementById('log-topic').value='';
   document.getElementById('log-learn').value='';
   document.getElementById('log-prac').value='';
   document.getElementById('log-note').value='';
+  document.getElementById('log-start-time').value='';
+  document.getElementById('log-end-time').value='';
+  var ssEl=document.getElementById('log-subskill');if(ssEl)ssEl.value='';
 }
 
 function openAddSkill(){
@@ -3369,8 +3705,411 @@ function toggleSkillComplete(id){
   save();renders.skills();
 }
 function deleteSkill(id){if(!confirm('Delete this skill?'))return;snapshotAllPastDates();DB.skills=DB.skills.filter(s=>s.id!==id);DB.sessions=DB.sessions.filter(s=>s.skillId!==id);save();renders.skills();}
-function deleteSession(id){DB.sessions=DB.sessions.filter(s=>s.id!==id);save();renders.history();}
+
+// ── SKILL EDIT ────────────────────────────────────────────────────────────────
+function openEditSkill(id,type){
+  var list=type==='academic'?(DB.academic.subjects||[]):DB.skills;
+  var sk=list.find(function(s){return s.id===id;});
+  if(!sk)return;
+  var modal=document.createElement('div');
+  modal.id='skill-edit-modal';
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
+  modal.innerHTML='<div style="background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:22px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto">'
+    +'<div style="font-size:16px;font-weight:800;margin-bottom:16px;color:var(--text)">✏️ Edit '+sk.name+'</div>'
+    +'<div class="field"><div class="label">Name</div><input id="es-name" value="'+sk.name+'"></div>'
+    +'<div class="field"><div class="label">Goal Hours</div><input id="es-goal" type="number" value="'+(sk.goalHours||100)+'" min="1"></div>'
+    +'<div class="field"><div class="label">Weekly Target (hrs)</div><input id="es-weekly" type="number" value="'+(sk.weeklyTarget||'')+'" min="0" placeholder="e.g. 10"></div>'
+    +'<div class="field"><div class="label">Monthly Target (hrs)</div><input id="es-monthly" type="number" value="'+(sk.monthlyTarget||'')+'" min="0" placeholder="e.g. 40"></div>'
+    +'<div class="field"><div class="label">Start Date</div><input id="es-start" type="date" value="'+(sk.startDate||'')+'"></div>'
+    +'<div class="field"><div class="label">Deadline</div><input id="es-deadline" type="date" value="'+(sk.deadline||'')+'"></div>'
+    +'<div class="field"><div class="label">Color</div><input id="es-color" type="color" value="'+(sk.color||'#7c6aff')+'"></div>'
+    +'<div style="display:flex;gap:8px;margin-top:16px">'
+    +'<button class="btn btn-accent" style="flex:1" onclick="saveEditSkill(\''+id+'\',\''+type+'\')">Save</button>'
+    +'<button class="btn" onclick="document.getElementById(\'skill-edit-modal\').remove()">Cancel</button>'
+    +'</div></div>';
+  document.body.appendChild(modal);
+  modal.addEventListener('click',function(e){if(e.target===modal)modal.remove();});
+}
+function saveEditSkill(id,type){
+  var list=type==='academic'?(DB.academic.subjects||[]):DB.skills;
+  var sk=list.find(function(s){return s.id===id;});
+  if(!sk)return;
+  sk.name=document.getElementById('es-name').value.trim()||sk.name;
+  sk.goalHours=parseInt(document.getElementById('es-goal').value)||100;
+  var wt=parseFloat(document.getElementById('es-weekly').value);
+  var mt=parseFloat(document.getElementById('es-monthly').value);
+  if(wt>0)sk.weeklyTarget=wt; else delete sk.weeklyTarget;
+  if(mt>0)sk.monthlyTarget=mt; else delete sk.monthlyTarget;
+  sk.startDate=document.getElementById('es-start').value||sk.startDate;
+  sk.deadline=document.getElementById('es-deadline').value||sk.deadline;
+  sk.color=document.getElementById('es-color').value||sk.color;
+  save();
+  document.getElementById('skill-edit-modal').remove();
+  if(type==='academic')renders.mysubjects();else renders.skills();
+  notify('✓ Skill updated!');
+}
+
+// ── SUB-SKILL CRUD ────────────────────────────────────────────────────────────
+function _getSkillList(type){return type==='academic'?(DB.academic.subjects||[]):DB.skills;}
+function showParentSkillSessions(skillId,type){
+  var list=type==='academic'?(DB.academic&&DB.academic.subjects||[]):DB.skills;
+  var sk=list.find(function(s){return s.id===skillId;});
+  if(!sk)return;
+  // Include ALL sessions for this skill (direct + sub-skill sessions) for aggregation
+  // but show only direct (no subSkillId) as the "parent" sessions
+  var sessions=DB.sessions.filter(function(s){return s.skillId===skillId&&(!s.subSkillId||s.subSkillId==='');}).slice().reverse();
+  var totL=sessions.reduce(function(a,s){return a+(s.learn||0);},0);
+  var totP=sessions.reduce(function(a,s){return a+(s.prac||0);},0);
+
+  // Group by first word of topic
+  var topicMap={};var topicOrder=[];
+  sessions.forEach(function(s){
+    var raw=(s.topic||'').trim();
+    var key=raw?raw.split(/\s+/)[0].toLowerCase():'(general)';
+    var display=raw?raw.split(/\s+/)[0]:'(general)';
+    if(!topicMap[key]){topicMap[key]={learn:0,prac:0,sessions:[],display:display};topicOrder.push(key);}
+    topicMap[key].learn+=s.learn||0;topicMap[key].prac+=s.prac||0;topicMap[key].sessions.push(s);
+  });
+
+  function topicSummaryHtml(){
+    if(!topicOrder.length)return '<div style="font-size:12px;color:var(--muted2);font-style:italic;padding:8px 0">No direct sessions yet</div>';
+    return topicOrder.map(function(key){
+      var g=topicMap[key];
+      return '<div onclick="window._pssShowTopic(\''+encodeURIComponent(key)+'\')" style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;margin-bottom:5px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;transition:border-color .15s" onmouseover="this.style.borderColor=\'var(--accent)\'" onmouseout="this.style.borderColor=\'var(--border)\'">'
+        +'<span style="flex:1;font-size:13px;font-weight:700;color:var(--text)">'+g.display+'</span>'
+        +'<span style="font-size:10px;color:var(--muted);margin-right:4px">'+g.sessions.length+'×</span>'
+        +(g.learn>0?'<span style="font-size:10px;color:var(--accent);font-weight:700">📖 '+hm(g.learn)+'</span>':'')
+        +(g.prac>0?'<span style="font-size:10px;color:var(--green);font-weight:700;margin-left:6px">🔧 '+hm(g.prac)+'</span>':'')
+        +'<span style="font-size:12px;color:var(--muted);margin-left:6px">›</span>'
+        +'</div>';
+    }).join('');
+  }
+
+  function sessionListHtml(list){
+    if(!list.length)return '<div style="font-size:12px;color:var(--muted2);font-style:italic">No sessions</div>';
+    return list.map(function(s){
+      var timeStr=(s.startTime||s.endTime)?'🕐 '+(s.startTime||'?')+(s.endTime?' – '+s.endTime:''):'';
+      return '<div style="padding:8px 0;border-bottom:1px solid var(--border)">'
+        +'<div style="display:flex;align-items:center;gap:8px">'
+        +(s.learn>0&&s.prac>0?'<span style="font-size:9px;font-weight:700;color:var(--accent);background:rgba(124,106,255,.14);padding:2px 5px;border-radius:4px">📖+🔧</span>'
+          :s.learn>0?'<span style="font-size:9px;font-weight:700;color:var(--accent);background:rgba(124,106,255,.14);padding:2px 5px;border-radius:4px">📖</span>'
+          :'<span style="font-size:9px;font-weight:700;color:var(--green);background:rgba(61,214,140,.14);padding:2px 5px;border-radius:4px">🔧</span>')
+        +'<span style="flex:1;font-size:12px;font-weight:600;color:var(--text)">'+s.date+(s.topic?' <span style="color:var(--muted);font-weight:400">· '+s.topic+'</span>':'')+'</span>'
+        +'<span style="font-size:11px;font-weight:700;color:var(--accent)">'+hm((s.learn||0)+(s.prac||0))+'</span>'
+        +'</div>'
+        +'<div style="display:flex;gap:8px;margin-top:3px;margin-left:8px;flex-wrap:wrap">'
+        +(timeStr?'<span style="font-size:10px;color:var(--amber);font-weight:700">'+timeStr+'</span>':'')
+        +(s.learn>0?'<span style="font-size:10px;color:var(--accent)">📖 '+hm(s.learn)+'</span>':'')
+        +(s.prac>0?'<span style="font-size:10px;color:var(--green)">🔧 '+hm(s.prac)+'</span>':'')
+        +'</div></div>';
+    }).join('');
+  }
+
+  var modal=document.createElement('div');
+  modal.id='parent-sess-modal';
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
+
+  function renderModal(view,activeKey){
+    var isTopicView=view==='topic';
+    var statsBar='<div style="display:flex;gap:8px;margin-bottom:12px;flex-shrink:0">'
+      +'<div style="flex:1;background:var(--surface2);border-radius:10px;padding:8px;text-align:center"><div style="font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">📖 Learn</div><div style="font-size:17px;font-weight:800;color:var(--accent)">'+hm(totL)+'</div></div>'
+      +'<div style="flex:1;background:var(--surface2);border-radius:10px;padding:8px;text-align:center"><div style="font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">🔧 Prac</div><div style="font-size:17px;font-weight:800;color:var(--green)">'+hm(totP)+'</div></div>'
+      +'<div style="flex:1;background:var(--surface2);border-radius:10px;padding:8px;text-align:center"><div style="font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Sessions</div><div style="font-size:17px;font-weight:800;color:var(--text)">'+sessions.length+'</div></div>'
+      +'</div>';
+    var breadcrumb='<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex-shrink:0;margin-bottom:10px">'
+      +'<div style="width:10px;height:10px;border-radius:3px;flex-shrink:0;background:'+sk.color+'"></div>'
+      +(isTopicView
+        ?'<span onclick="window._pssBack()" style="font-size:12px;font-weight:800;color:var(--accent);cursor:pointer;text-decoration:underline">'+(type==='academic'?'🎓 ':'')+sk.name+'</span>'
+          +'<span style="font-size:12px;color:var(--muted)">›</span>'
+          +'<span style="font-size:12px;font-weight:700;color:var(--text)">'+decodeURIComponent(activeKey)+'</span>'
+        :'<span style="font-size:14px;font-weight:800;color:var(--text)">'+(type==='academic'?'🎓 ':'')+sk.name+'</span>'
+          +'<span style="font-size:11px;color:var(--muted);margin-left:4px">· direct sessions</span>')
+      +'</div>';
+    var label=isTopicView?'All Sessions':'Topics';
+    var body=isTopicView?sessionListHtml((topicMap[decodeURIComponent(activeKey)]||{sessions:[]}).sessions):topicSummaryHtml();
+    modal.innerHTML='<div style="background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:20px;width:100%;max-width:480px;max-height:88vh;display:flex;flex-direction:column">'
+      +'<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0;margin-bottom:4px">'
+      +'<div style="flex:1">'+breadcrumb+'</div>'
+      +'<button class="icon-btn" onclick="document.getElementById(\'parent-sess-modal\').remove()">✕</button>'
+      +'</div>'
+      +statsBar
+      +'<div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase;margin-bottom:8px;flex-shrink:0">'+label+'</div>'
+      +'<div style="flex:1;overflow-y:auto">'+body+'</div>'
+      +'</div>';
+  }
+  window._pssBack=function(){renderModal('summary','');};
+  window._pssShowTopic=function(k){renderModal('topic',k);};
+  renderModal('summary','');
+  document.body.appendChild(modal);
+  modal.addEventListener('click',function(e){if(e.target===modal)modal.remove();});
+}
 function filterHistory(skillId){window._histFilter=skillId;nav('history');}
+function deleteSession(id){DB.sessions=DB.sessions.filter(s=>s.id!==id);save();renders.history();}
+function openAddSubSkill(skillId,type){
+  var modal=document.createElement('div');
+  modal.id='ss-modal';
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
+  modal.innerHTML='<div style="background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:22px;width:100%;max-width:360px">'
+    +'<div style="font-size:15px;font-weight:800;margin-bottom:14px;color:var(--text)">Add Unit</div>'
+    +'<div class="field"><div class="label">Unit Name</div><input id="ss-name" placeholder="e.g. NumPy, Algebra, Chapter 1..." autofocus></div>'
+    +'<div style="display:flex;gap:8px;margin-top:14px">'
+    +'<button class="btn btn-accent" style="flex:1" onclick="addSubSkill(\''+skillId+'\',\''+type+'\')">Add</button>'
+    +'<button class="btn" onclick="document.getElementById(\'ss-modal\').remove()">Cancel</button>'
+    +'</div></div>';
+  document.body.appendChild(modal);
+  modal.addEventListener('click',function(e){if(e.target===modal)modal.remove();});
+  setTimeout(function(){var el=document.getElementById('ss-name');if(el)el.focus();},100);
+}
+function addSubSkill(skillId,type){
+  var name=(document.getElementById('ss-name').value||'').trim();
+  if(!name){notify('Enter a name!');return;}
+  var list=_getSkillList(type);
+  var sk=list.find(function(s){return s.id===skillId;});
+  if(!sk)return;
+  if(!sk.subSkills)sk.subSkills=[];
+  sk.subSkills.push({id:Date.now()+'',name:name});
+  // Migrate existing sessions that match this sub-skill name
+  _ensureDBFields();
+  save();
+  document.getElementById('ss-modal').remove();
+  if(type==='academic')renders.mysubjects();else renders.skills();
+  notify('✓ Unit added!');
+}
+function deleteSubSkill(skillId,ssId,type){
+  if(!confirm('Delete this sub-skill? Sessions will still exist but lose sub-skill link.'))return;
+  var list=_getSkillList(type);
+  var sk=list.find(function(s){return s.id===skillId;});
+  if(!sk||!sk.subSkills)return;
+  sk.subSkills=sk.subSkills.filter(function(ss){return ss.id!==ssId;});
+  save();
+  if(type==='academic')renders.mysubjects();else renders.skills();
+}
+
+// ── SUB-SKILL DETAIL MODAL ────────────────────────────────────────────────────
+function showSubSkillDetail(ssId,parentSkillId){
+  var allSkills=DB.skills.concat((DB.academic&&DB.academic.subjects)||[]);
+  var parentSk=allSkills.find(function(sk){return sk.id===parentSkillId;});
+  if(!parentSk)return;
+  var ss=(parentSk.subSkills||[]).find(function(x){return x.id===ssId;});
+  if(!ss)return;
+  _showDrillDown({level:'subskill',parentSk:parentSk,ss:ss,ssId:ssId,parentSkillId:parentSkillId});
+}
+
+function _showDrillDown(ctx){
+  // Sessions directly tagged with this sub-skill
+  var directSessions=DB.sessions.filter(function(s){return s.subSkillId===ctx.ssId;});
+  // Also include main-skill sessions where topic starts with sub-skill name (case-insensitive)
+  var ssNameLower=ctx.ss.name.toLowerCase();
+  var matchedSessions=DB.sessions.filter(function(s){
+    if(s.subSkillId&&s.subSkillId!=='')return false; // already has a sub-skill assigned
+    if(s.skillId!==ctx.parentSk.id)return false;
+    var firstWord=(s.topic||'').trim().split(/\s+/)[0].toLowerCase();
+    return firstWord===ssNameLower;
+  });
+  // Merge, deduplicate by id
+  var seen={};var allSessions=[];
+  directSessions.concat(matchedSessions).forEach(function(s){if(!seen[s.id]){seen[s.id]=true;allSessions.push(s);}});
+  allSessions.sort(function(a,b){return b.date.localeCompare(a.date);});
+  var totLearn=allSessions.reduce(function(a,s){return a+(s.learn||0);},0);
+  var totPrac=allSessions.reduce(function(a,s){return a+(s.prac||0);},0);
+
+  // Group sessions by FIRST WORD of topic (case-insensitive) so "Array indexing", "Array slicing"
+  // all fall under "Array". Sessions with no topic go under "(general)".
+  var topicMap={};var topicOrder=[];
+  allSessions.forEach(function(s){
+    var raw=(s.topic||'').trim();
+    var key=raw?raw.split(/\s+/)[0].toLowerCase():'(general)';
+    var display=raw?raw.split(/\s+/)[0]:'(general)';
+    // Preserve display capitalisation from first seen
+    if(!topicMap[key]){topicMap[key]={learn:0,prac:0,sessions:[],display:display};topicOrder.push(key);}
+    topicMap[key].learn+=s.learn||0;topicMap[key].prac+=s.prac||0;topicMap[key].sessions.push(s);
+  });
+
+  // Parent skill's OWN sessions (skillId matches, no subSkillId or subSkillId='' for direct sessions)
+  var parentOwnSessions=DB.sessions.filter(function(s){
+    return s.skillId===ctx.parentSk.id&&(!s.subSkillId||s.subSkillId==='');
+  });
+  var parentOwnLearn=parentOwnSessions.reduce(function(a,s){return a+(s.learn||0);},0);
+  var parentOwnPrac=parentOwnSessions.reduce(function(a,s){return a+(s.prac||0);},0);
+
+  function topicSummaryHtml(){
+    if(!topicOrder.length)return '<div style="font-size:12px;color:var(--muted2);font-style:italic;padding:8px 0">No sessions yet</div>';
+    return topicOrder.map(function(key){
+      var g=topicMap[key];
+      return '<div onclick="window._ddShowTopic(\''+encodeURIComponent(key)+'\')" style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;margin-bottom:5px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;transition:border-color .15s" onmouseover="this.style.borderColor=\'var(--accent)\'" onmouseout="this.style.borderColor=\'var(--border)\'">'
+        +'<span style="flex:1;font-size:13px;font-weight:700;color:var(--text)">'+g.display+'</span>'
+        +'<span style="font-size:10px;color:var(--muted);margin-right:4px">'+g.sessions.length+'×</span>'
+        +(g.learn>0?'<span style="font-size:10px;color:var(--accent);font-weight:700">📖 '+hm(g.learn)+'</span>':'')
+        +(g.prac>0?'<span style="font-size:10px;color:var(--green);font-weight:700;margin-left:6px">🔧 '+hm(g.prac)+'</span>':'')
+        +'<span style="font-size:12px;color:var(--muted);margin-left:6px">›</span>'
+        +'</div>';
+    }).join('');
+  }
+
+  function sessionListHtml(sessions){
+    if(!sessions.length)return '<div style="font-size:12px;color:var(--muted2);font-style:italic">No sessions</div>';
+    return sessions.map(function(s){
+      var timeStr=(s.startTime||s.endTime)?'🕐 '+(s.startTime||'?')+(s.endTime?' – '+s.endTime:''):'';
+      return '<div style="padding:8px 0;border-bottom:1px solid var(--border)">'
+        +'<div style="display:flex;align-items:center;gap:8px">'
+        +(s.learn>0&&s.prac>0?'<span style="font-size:9px;font-weight:700;color:var(--accent);background:rgba(124,106,255,.14);padding:2px 5px;border-radius:4px">📖+🔧</span>'
+          :s.learn>0?'<span style="font-size:9px;font-weight:700;color:var(--accent);background:rgba(124,106,255,.14);padding:2px 5px;border-radius:4px">📖</span>'
+          :'<span style="font-size:9px;font-weight:700;color:var(--green);background:rgba(61,214,140,.14);padding:2px 5px;border-radius:4px">🔧</span>')
+        +'<span style="flex:1;font-size:12px;font-weight:600;color:var(--text)">'+s.date+(s.topic?' <span style="color:var(--muted);font-weight:400">· '+s.topic+'</span>':'')+'</span>'
+        +'<span style="font-size:11px;font-weight:700;color:var(--accent)">'+hm((s.learn||0)+(s.prac||0))+'</span>'
+        +'</div>'
+        +'<div style="display:flex;gap:8px;margin-top:3px;margin-left:8px;flex-wrap:wrap">'
+        +(timeStr?'<span style="font-size:10px;color:var(--amber);font-weight:700">'+timeStr+'</span>':'')
+        +(s.learn>0?'<span style="font-size:10px;color:var(--accent)">📖 '+hm(s.learn)+'</span>':'')
+        +(s.prac>0?'<span style="font-size:10px;color:var(--green)">🔧 '+hm(s.prac)+'</span>':'')
+        +'</div></div>';
+    }).join('');
+  }
+
+  var modal=document.createElement('div');
+  modal.id='ss-detail-modal';
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
+
+  function renderModal(view,activeKey){
+    var isTopicView=view==='topic';
+    var isSumView=view==='parent'; // parent skill own sessions
+
+    // Breadcrumb
+    var breadcrumb='<div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;flex-shrink:0;margin-bottom:12px">';
+    breadcrumb+='<span onclick="window._ddShowParent()" style="font-size:11px;color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline">'+ctx.parentSk.name+'</span>';
+    breadcrumb+='<span style="font-size:11px;color:var(--muted)">›</span>';
+    if(isTopicView){
+      breadcrumb+='<span onclick="window._ddBackToTopics()" style="font-size:11px;color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline">'+ctx.ss.name+'</span>';
+      breadcrumb+='<span style="font-size:11px;color:var(--muted)">›</span>';
+      breadcrumb+='<span style="font-size:11px;color:var(--text);font-weight:700">'+decodeURIComponent(activeKey)+'</span>';
+    } else if(isSumView){
+      breadcrumb+='<span style="font-size:11px;color:var(--text);font-weight:700">'+ctx.parentSk.name+' (direct sessions)</span>';
+    } else {
+      breadcrumb+='<span style="font-size:11px;color:var(--text);font-weight:700">'+ctx.ss.name+'</span>';
+    }
+    breadcrumb+='</div>';
+
+    // Stats bar — always shows this unit's totals
+    var statsBar='<div style="display:flex;gap:8px;margin-bottom:12px;flex-shrink:0">'
+      +'<div style="flex:1;background:var(--surface2);border-radius:10px;padding:8px;text-align:center"><div style="font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">📖 Learn</div><div style="font-size:17px;font-weight:800;color:var(--accent)">'+hm(isSumView?parentOwnLearn:totLearn)+'</div></div>'
+      +'<div style="flex:1;background:var(--surface2);border-radius:10px;padding:8px;text-align:center"><div style="font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">🔧 Prac</div><div style="font-size:17px;font-weight:800;color:var(--green)">'+hm(isSumView?parentOwnPrac:totPrac)+'</div></div>'
+      +'<div style="flex:1;background:var(--surface2);border-radius:10px;padding:8px;text-align:center"><div style="font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Sessions</div><div style="font-size:17px;font-weight:800;color:var(--text)">'+(isSumView?parentOwnSessions.length:allSessions.length)+'</div></div>'
+      +'</div>';
+
+    var label=isSumView?'Direct Sessions':isTopicView?('All Sessions · '+decodeURIComponent(activeKey)):'Topics';
+    var title='<div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase;margin-bottom:8px;flex-shrink:0">'+label+'</div>';
+    var body=isSumView?sessionListHtml(parentOwnSessions):isTopicView?sessionListHtml((topicMap[decodeURIComponent(activeKey)]||{sessions:[]}).sessions):topicSummaryHtml();
+
+    modal.innerHTML='<div style="background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:20px;width:100%;max-width:480px;max-height:88vh;display:flex;flex-direction:column">'
+      +'<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0;margin-bottom:4px">'
+      +'<div style="flex:1">'+breadcrumb+'</div>'
+      +'<button class="icon-btn" onclick="document.getElementById(\'ss-detail-modal\').remove()">✕</button>'
+      +'</div>'
+      +statsBar+title
+      +'<div style="flex:1;overflow-y:auto">'+body+'</div>'
+      +'</div>';
+  }
+
+  window._ddShowParent=function(){renderModal('parent','');};
+  window._ddBackToTopics=function(){renderModal('summary','');};
+  window._ddShowTopic=function(encodedKey){renderModal('topic',encodedKey);};
+
+  renderModal('summary','');
+  document.body.appendChild(modal);
+  modal.addEventListener('click',function(e){if(e.target===modal)modal.remove();});
+}
+function renderAcadSlider(){
+  var subjects=(DB.academic&&DB.academic.subjects)||[];
+  if(!subjects.length){
+    return '<div style="color:var(--muted);font-size:12px;font-style:italic;padding:8px 0">No subjects yet — <a onclick="nav(\'mysubjects\')" style="color:var(--accent);cursor:pointer">add one →</a></div>';
+  }
+  var slides=subjects.map(function(sk,i){
+    var tot=skill_total(sk.id);
+    var maxH=sk.goalHours||100;
+    var learnH=Math.round(tot.learn/3600*10)/10;
+    var pracH=Math.round(tot.prac/3600*10)/10;
+    var totalH=learnH+pracH;
+    var pct=Math.min(100,Math.round(totalH/maxH*100));
+    var circ=2*Math.PI*32;var dash=circ*(pct/100);
+    var ring='<svg width="60" height="60" viewBox="0 0 72 72" style="flex-shrink:0">'
+      +'<circle cx="36" cy="36" r="32" fill="none" stroke="var(--surface3)" stroke-width="6"/>'
+      +'<circle cx="36" cy="36" r="32" fill="none" stroke="'+sk.color+'" stroke-width="6" stroke-linecap="round"'
+      +' stroke-dasharray="'+dash.toFixed(1)+' '+(circ-dash).toFixed(1)+'" transform="rotate(-90 36 36)"/>'
+      +'<text x="36" y="40" text-anchor="middle" font-size="13" font-weight="800" fill="'+sk.color+'" font-family="DM Sans,sans-serif">'+pct+'%</text>'
+      +'</svg>';
+    var gp=goal_progress_for_skill(sk);
+    var goalHtml='';
+    if(gp.weekly.target||gp.monthly.target){
+      goalHtml='<div style="margin-top:5px;display:grid;grid-template-columns:1fr 1fr;gap:6px">'
+        +['weekly','monthly'].map(function(period){
+          var g=gp[period];if(!g.target)return '<div></div>';
+          var barPct=Math.min(100,g.pct);var over=g.actual>=g.target;
+          return '<div><div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:2px">'
+            +'<span style="text-transform:uppercase;font-weight:700">'+(period==='weekly'?'Week':'Month')+'</span>'
+            +'<span>'+g.actual+'/'+g.target+'h</span></div>'
+            +'<div style="height:4px;background:var(--surface3);border-radius:3px;overflow:hidden">'
+            +'<div style="height:100%;width:'+barPct+'%;background:'+(over?'var(--green)':sk.color)+';border-radius:3px"></div></div>'
+            +'<div style="font-size:9px;margin-top:2px">'+goalEtaLabel(g.eta)+'</div></div>';
+        }).join('')+'</div>';
+    }
+    // Deadline section — scrollable, fixed height
+    var taskDls=(DB.deadlines||[]).filter(function(dl){return dl.skillId===sk.id&&!dl.done;}).sort(function(a,b){return a.date.localeCompare(b.date);});
+    var dlHtml='';
+    if(taskDls.length){
+      dlHtml='<div style="margin-top:6px;max-height:72px;overflow-y:auto;padding-right:2px">'
+        +taskDls.map(function(dl){
+          var diff=days_between(dl.date,today());
+          var urgent=diff<=3;var warn=diff<=7&&diff>3;
+          var cl=urgent?'var(--coral)':warn?'var(--amber)':'var(--green)';
+          var badge=diff===0?'TODAY':diff<0?Math.abs(diff)+'d OVR':diff+'d';
+          return '<div style="display:flex;align-items:center;gap:5px;padding:3px 6px;border-radius:6px;margin-bottom:3px;background:var(--surface3)">'
+            +'<span style="font-size:10px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)">'+dl.text+'</span>'
+            +'<span style="font-size:9px;font-weight:800;color:'+cl+';white-space:nowrap;border:1px solid '+cl+';padding:1px 4px;border-radius:4px">'+badge+'</span>'
+            +'</div>';
+        }).join('')+'</div>';
+    }else{
+      dlHtml='<div style="font-size:10px;color:var(--muted2);margin-top:5px;font-style:italic">No deadlines</div>';
+    }
+    // Static top: ring + name + bar + goal (no scroll)
+    // Scrollable bottom: deadline only
+    return '<div class="acad-slide'+(i===0?' active':'')+'" id="acad-slide-'+i+'">'
+      +'<div style="display:flex;align-items:flex-start;gap:10px;flex-shrink:0">'
+      +ring
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">'
+      +'<div style="width:8px;height:8px;border-radius:2px;background:'+sk.color+';flex-shrink:0"></div>'
+      +'<div style="font-size:13px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🎓 '+sk.name+'</div>'
+      +'</div>'
+      +'<div style="font-size:10px;color:var(--muted);margin-bottom:4px">'+totalH+'h / '+maxH+'h &nbsp;·&nbsp; <span style="color:var(--accent);font-weight:700">📖 '+learnH+'h</span> <span style="color:var(--green);font-weight:700">🔧 '+pracH+'h</span></div>'
+      +'<div style="height:5px;background:var(--surface3);border-radius:3px;overflow:hidden">'
+      +'<div style="height:100%;width:'+pct+'%;background:'+sk.color+';border-radius:3px;transition:width .4s"></div></div>'
+      +goalHtml
+      +'</div></div>'
+      +dlHtml
+      +'</div>';
+  }).join('');
+
+  var dots=subjects.length>1?'<div class="slider-dots">'+subjects.map(function(sk,i){
+    return '<div class="acad-dot slider-dot'+(i===0?' active':'')+'" onclick="goAcadSlide('+i+')" id="acadot-'+i+'"></div>';
+  }).join('')+'</div>':'<div></div>';
+
+  var nav=subjects.length>1?'<div class="slider-nav" style="margin-top:10px">'
+    +'<button class="slider-btn" onclick="prevAcadSlide()">&#8592;</button>'
+    +dots
+    +'<button class="slider-btn" onclick="nextAcadSlide()">&#8594;</button>'
+    +'</div>':'';
+
+  return '<div id="acad-slider-wrap">'+slides+nav+'</div>';
+}
+var _acadSlide=0;
+function goAcadSlide(i){
+  var subjects=(DB.academic&&DB.academic.subjects)||[];
+  _acadSlide=Math.max(0,Math.min(subjects.length-1,i));
+  document.querySelectorAll('.acad-slide').forEach(function(el,j){el.classList.toggle('active',j===_acadSlide);});
+  document.querySelectorAll('.acad-dot').forEach(function(el,j){el.classList.toggle('active',j===_acadSlide);});
+}
+function nextAcadSlide(){var s=(DB.academic&&DB.academic.subjects)||[];goAcadSlide((_acadSlide+1)%s.length);}
+function prevAcadSlide(){var s=(DB.academic&&DB.academic.subjects)||[];goAcadSlide((_acadSlide-1+s.length)%s.length);}
 
 function renderTodoList(){
   var todos=getTodayTodos();
@@ -3433,7 +4172,7 @@ function renderDeadlines(list){
         </div>
       </div>
       <span class="tag tag-${d.type}">${d.type==='week'?'Weekly':d.type==='month'?'Monthly':'Skill'}</span>
-      ${!d.done?`<span class="days-left ${diff<=3?'days-over':diff<=7?'days-warn':'days-ok'}">${diff<0?'Overdue':diff===0?'Today':diff+'d'}</span>`:'<span style="font-size:11px;color:var(--green)">✓ Done</span>'}
+      ${!d.done?`<span class="days-left ${diff<=3?'days-over':diff<=7?'days-warn':'days-ok'}">${diff<0?Math.abs(diff)+'d overdue':diff===0?'Today':diff+'d'}</span>`:'<span style="font-size:11px;color:var(--green)">✓ Done</span>'}
       <input type="checkbox" style="width:auto" ${d.done?'checked':''} onchange="toggleDeadline('${d.id}')">
       <button class="icon-btn" onclick="deleteDeadline('${d.id}')">✕</button>
     </div>`;
@@ -3572,13 +4311,11 @@ function getTodayRoutineSummary(){
 }
 function renderRoutineDashRow(){
   var sum=getTodayRoutineSummary();
-  var slots=sum.slots,done=sum.done;
+  var slots=sum.slots;
   var d=today();
   var prog=DB.routine.dailyProgress[d]||{};
   if(!slots.length)return '<div class="empty">No routine set for today — go to Routine page to add tasks.</div>';
-  var html='';
 
-  // Build one card's HTML, reused twice in sequence so the marquee loop is seamless
   function cardHtml(s){
     var isDone=!!prog[s.id];
     var dayKey='day_'+new Date().getDay();
@@ -3587,16 +4324,13 @@ function renderRoutineDashRow(){
     var bg=isDone?'linear-gradient(135deg,rgba(61,214,140,.13),rgba(61,214,140,.04))':'linear-gradient(135deg,'+ac+'14,'+ac+'05)';
     var bdr=isDone?'rgba(61,214,140,0.4)':ac+'35';
     var h='<div onclick="routineToggleDash(\''+s.id+'\')" class="routine-row-card" style="flex:0 0 200px;width:200px;height:100%;min-height:110px;display:flex;flex-direction:column;justify-content:space-between;padding:14px 14px 12px;border-radius:14px;cursor:pointer;background:'+bg+';border:1.5px solid '+bdr+';transition:transform .2s,box-shadow .2s,border-color .2s;user-select:none;position:relative;overflow:hidden;box-sizing:border-box">';
-    // Top: color bar accent + done checkmark
     h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">';
     h+='<div style="width:28px;height:4px;border-radius:3px;background:'+ac+';opacity:0.8"></div>';
     h+='<div style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:'+(isDone?'var(--green)':'transparent')+';border:2px solid '+(isDone?'var(--green)':'var(--border2)')+';transition:.2s">'+(isDone?'<span style="color:#fff;font-size:12px;font-weight:900">✓</span>':'')+'</div>';
     h+='</div>';
-    // Task name — main focus
     h+='<div style="flex:1;display:flex;align-items:center">';
     h+='<span style="font-size:15px;font-weight:700;line-height:1.3;'+(isDone?'text-decoration:line-through;color:var(--muted)':'color:var(--text)')+';overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;word-break:break-word">'+taskLabel+'</span>';
     h+='</div>';
-    // Bottom: time only
     h+='<div style="margin-top:8px">';
     if(s.time)h+='<span style="font-size:12px;font-weight:700;color:'+ac+'">🕐 '+s.time+'</span>';
     h+='</div>';
@@ -3604,27 +4338,51 @@ function renderRoutineDashRow(){
     return h;
   }
 
-  // Only marquee-loop when there are enough cards to fill the row twice over;
-  // otherwise just show them statically (looping 2-3 tiny cards looks jittery, not smooth).
-  var enoughForLoop=slots.length>=4;
+  // Duplicate so translateX(-50%) seamlessly loops back to start
+  // Negative delay syncs animation position across 10s re-renders (no restart glitch)
   var oneSet=slots.map(cardHtml).join('');
-  // Rough duration so the scroll speed feels consistent regardless of how many cards there are
-  var pxPerCard=212; // 200px card + 12px gap
-  var totalPx=pxPerCard*slots.length;
-  var duration=Math.max(14,Math.round(totalPx/40)); // ~40px/sec
-
-  if(enoughForLoop){
-    html+='<div class="routine-row-scroll" style="flex:1;min-width:0;min-height:0;height:100%">';
-    html+='<div class="routine-row-track" id="routine-marquee-track" style="animation-duration:'+duration+'s;height:100%" onmouseenter="this.classList.add(\'paused\')" onmouseleave="this.classList.remove(\'paused\')">';
-    html+=oneSet+oneSet; // duplicate for seamless wraparound
-    html+='</div></div>';
-  } else {
-    html+='<div class="routine-row-scroll no-scroll-fx" style="display:flex;gap:12px;flex:1;min-width:0;min-height:0;height:100%;overflow-x:auto">';
-    html+=oneSet;
-    html+='</div>';
-  }
-  return html;
+  var cardW=212; // 200px + 12px gap
+  var dur=Math.max(10,Math.round((cardW*slots.length)/45));
+  var elapsed=-(Date.now()/1000 % dur);
+  return '<div class="routine-row-wrap" id="routine-row-wrap">'
+    +'<div class="routine-row-track" style="animation-duration:'+dur+'s;animation-delay:'+elapsed+'s">'
+    +oneSet+oneSet
+    +'</div></div>';
 }
+function _routineAutoScrollInit(){
+  // Mouse drag: pause animation and translate position manually while dragging
+  var wrap=document.getElementById('routine-row-wrap');
+  if(!wrap||wrap._dragInit)return;
+  wrap._dragInit=true;
+  var dragging=false,startX=0,dragOffset=0,moved=false;
+  wrap.addEventListener('mousedown',function(e){
+    dragging=true;moved=false;startX=e.clientX;dragOffset=0;
+    var track=wrap.querySelector('.routine-row-track');
+    if(track){track.style.animationPlayState='paused';}
+    wrap.style.cursor='grabbing';
+  });
+  document.addEventListener('mousemove',function(e){
+    if(!dragging)return;
+    dragOffset=e.clientX-startX;
+    if(Math.abs(dragOffset)>3)moved=true;
+    var track=wrap.querySelector('.routine-row-track');
+    if(track)track.style.transform='translateX('+dragOffset+'px)';
+  });
+  document.addEventListener('mouseup',function(){
+    if(!dragging)return;
+    dragging=false;
+    wrap.style.cursor='grab';
+    var track=wrap.querySelector('.routine-row-track');
+    if(track){
+      track.style.transform='';
+      track.style.animationPlayState='';
+    }
+  });
+  wrap.addEventListener('click',function(e){
+    if(moved){e.stopPropagation();e.preventDefault();moved=false;}
+  },true);
+}
+
 function routineToggleDash(slotId){
   routineCheckReset();
   var d=today();
@@ -4539,16 +5297,19 @@ function renderSkillSlider(){
     var taskDls=(DB.deadlines||[]).filter(function(dl){return dl.skillId===sk.id&&!dl.done;}).sort(function(a,b){return a.date.localeCompare(b.date);});
     var dlHtml='';
     if(taskDls.length){
-      dlHtml='<div style="margin-top:6px;max-height:46px;overflow-y:auto;padding-right:4px">'
-        +taskDls.slice(0,2).map(function(dl){
+      dlHtml='<div style="margin-top:6px;max-height:80px;overflow-y:auto;padding-right:4px">'
+        +taskDls.map(function(dl){
           var diff=days_between(dl.date,today());
-          var urgent=diff<=3;var warn=diff<=7&&diff>3;
-          var cl=urgent?'var(--coral)':warn?'var(--amber)':'var(--green)';
-          var bg=urgent?'var(--coral-bg)':warn?'var(--amber-bg)':'var(--green-bg)';
-          var bdr=urgent?'rgba(255,107,107,0.25)':warn?'rgba(245,200,66,0.2)':'rgba(61,214,140,0.15)';
+          var startDiff=dl.startDate?days_between(dl.startDate,today()):0;
+          var isUpcoming=dl.startDate&&startDiff>0; // starts in the future
+          var urgent=!isUpcoming&&diff<=3;var warn=!isUpcoming&&diff<=7&&diff>3;
+          var cl=isUpcoming?'var(--blue)':urgent?'var(--coral)':warn?'var(--amber)':'var(--green)';
+          var bg=isUpcoming?'var(--blue-bg)':urgent?'var(--coral-bg)':warn?'var(--amber-bg)':'var(--green-bg)';
+          var bdr=isUpcoming?'rgba(90,180,255,0.2)':urgent?'rgba(255,107,107,0.25)':warn?'rgba(245,200,66,0.2)':'rgba(61,214,140,0.15)';
+          var badge=isUpcoming?'📅 Upcoming · '+startDiff+'d':diff===0?'TODAY':diff<0?Math.abs(diff)+'D OVERDUE':diff+'d left';
           return '<div style="display:flex;align-items:center;gap:6px;padding:3px 7px;border-radius:7px;margin-bottom:3px;background:'+bg+';border:1px solid '+bdr+'">'
             +'<span style="font-size:10px;flex:1;color:var(--text);font-weight:'+(urgent?700:500)+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+dl.text+'</span>'
-            +'<span style="font-size:9px;font-weight:800;color:'+cl+';white-space:nowrap;border:1.5px solid '+cl+';padding:1px 5px;border-radius:5px">'+(diff===0?'TODAY':diff<0?'OVERDUE':diff+'d')+'</span>'
+            +'<span style="font-size:9px;font-weight:800;color:'+cl+';white-space:nowrap;border:1.5px solid '+cl+';padding:1px 5px;border-radius:5px">'+badge+'</span>'
             +'</div>';
         }).join('')+'</div>';
     }
@@ -4579,8 +5340,10 @@ function renderSkillSlider(){
     }
     if(!dlHtml) dlHtml='<div style="font-size:10px;color:var(--muted2);margin-top:6px;font-style:italic">No task deadlines</div>';
 
+    // Static part: ring + name + progress bar + goal bars (no scroll)
+    // Scrollable: deadline only
     return '<div class="skill-slide'+(i===0?' active':'')+'" id="skill-slide-'+i+'">'
-      +'<div style="display:flex;align-items:flex-start;gap:12px">'
+      +'<div style="display:flex;align-items:flex-start;gap:12px;flex-shrink:0">'
       +ring
       +'<div style="flex:1;min-width:0">'
       +'<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:2px">'
@@ -4588,12 +5351,13 @@ function renderSkillSlider(){
       +'<div style="font-size:14px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:130px">'+sk.name+'</div>'
       +skNameBadge
       +'</div>'
-      +'<div style="font-size:11px;color:var(--muted);margin-bottom:6px">'+totalH+'h / '+maxH+'h goal &nbsp;·&nbsp; <span style="font-weight:800;color:var(--accent)">📖 L:'+learnH+'h</span>&nbsp; <span style="font-weight:800;color:var(--green)">🔧 P:'+pracH+'h</span></div>'
+      +'<div style="font-size:11px;color:var(--muted);margin-bottom:6px">'+totalH+'h / '+maxH+'h goal &nbsp;·&nbsp; <span style="font-weight:800;color:var(--accent)">📖 '+learnH+'h</span>&nbsp; <span style="font-weight:800;color:var(--green)">🔧 '+pracH+'h</span></div>'
       +'<div style="height:5px;background:var(--surface3);border-radius:3px;overflow:hidden;margin-bottom:2px">'
       +'<div style="height:100%;width:'+pct+'%;background:'+sk.color+';border-radius:3px;transition:width .4s"></div></div>'
       +goalHtml
-      +dlHtml
-      +'</div></div></div>';
+      +'</div></div>'
+      +dlHtml  // deadline is already max-height+overflow-y:auto inside
+      +'</div>';
   }).join('');
 
   var dots=skills.length>1?'<div class="slider-dots">'+skills.map(function(sk,i){
@@ -4611,8 +5375,7 @@ function renderSkillSlider(){
 
 function goSkillSlide(idx){
   var skills=DB.skills;if(!skills||!skills.length)return;
-  var n=skills.length;
-  _sliderIdx=(idx+n)%n;
+  var n=skills.length;_sliderIdx=(idx+n)%n;
   document.querySelectorAll('.skill-slide').forEach(function(el,i){el.classList.toggle('active',i===_sliderIdx);});
   document.querySelectorAll('.slider-dot').forEach(function(el,i){el.classList.toggle('active',i===_sliderIdx);});
 }
@@ -4629,6 +5392,15 @@ function startSliderAuto(){
       if(document.getElementById('skill-slider-wrap'))nextSkillSlide();
       else{clearInterval(_sliderTimer);}
     },4000);
+  }
+  // Academic slider auto-play
+  if(window._acadSliderTimer)clearInterval(window._acadSliderTimer);
+  var acSubs=(DB.academic&&DB.academic.subjects)||[];
+  if(acSubs.length>1){
+    window._acadSliderTimer=setInterval(function(){
+      if(document.getElementById('acad-slider-wrap'))nextAcadSlide();
+      else{clearInterval(window._acadSliderTimer);}
+    },4500);
   }
 }
 
